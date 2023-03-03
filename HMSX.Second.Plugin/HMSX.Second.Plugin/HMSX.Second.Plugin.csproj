@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Program Files %28x86%29\Kingdee\K3Cloud\WebSite\bin\</OutputPath>
+    <OutputPath>F:\Program Files %28x86%29\Kingdee\K3Cloud\WebSite\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
@@ -38,23 +38,23 @@
   <ItemGroup>
     <Reference Include="HMSX.MFG.Mobile.Business.PlugIn, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.App, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.App.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.App.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.App.Core.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.Core.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.App.ServicePlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.App.ServicePlugIn.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.ServicePlugIn.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.ApprovalFlow.PlugIns, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -70,11 +70,11 @@
     </Reference>
     <Reference Include="Kingdee.BOS.Contracts, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.Contracts.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.Core.dll</HintPath>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Core.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.BOS.DataEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -1,0 +1,37 @@
+D:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.pdb
+D:\项目资料\宏明双新\HMSXProject\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\项目资料\宏明双新\HMSXProject\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+D:\项目资料\宏明双新\HMSXProject\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csprojResolveAssemblyReference.cache
+D:\WorkSpace\SBID\TEST87\K3Cloud\BIN\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\WorkSpace\SBID\TEST87\K3Cloud\BIN\HMSX.MFG.Mobile.Business.PlugIn.pdb
+D:\WorkSpace\SBID\TEST87\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\WorkSpace\SBID\TEST87\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+D:\WorkSpace\SBID\TEST87\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csprojResolveAssemblyReference.cache
+D:\WorkSpace\SBID\86-0209\K3Cloud\BIN\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\WorkSpace\SBID\86-0209\K3Cloud\BIN\HMSX.MFG.Mobile.Business.PlugIn.pdb
+D:\WorkSpace\SBID\86-0209\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csprojResolveAssemblyReference.cache
+D:\WorkSpace\SBID\86-0209\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+D:\WorkSpace\SBID\86-0209\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+F:\program\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll
+F:\program\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.pdb
+G:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CoreCompileInputs.cache
+G:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
+G:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+G:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+G:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.AssemblyReference.cache
+F:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CoreCompileInputs.cache
+F:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
+F:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+F:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll
+F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.pdb
+C:\Users\Administrator\Desktop\bin\HMSX.MFG.Mobile.Business.PlugIn.dll
+C:\Users\Administrator\Desktop\bin\HMSX.MFG.Mobile.Business.PlugIn.pdb
+F:\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.AssemblyReference.cache
+F:\HMSX_KF\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll
+F:\HMSX_KF\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.pdb
+F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CoreCompileInputs.cache
+F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
+F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
