@@ -5,7 +5,7 @@ using Kingdee.BOS.WebApi.ServicesStub;
 namespace Jac.XkDemo.BOS.WebApi
 {
     /// <summary>
-    /// 【WebApi】自定义WebApi接口123121312aa
+    /// 【WebApi】自定义WebApi接口123121312aa123
     /// </summary>
     public class CustomWebApiService : AbstractWebApiBusinessService
     {
