@@ -24,7 +24,6 @@ G:\Git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.
 G:\Git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.dll
 G:\Git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.pdb
 G:\Git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.AssemblyReference.cache
-G:\GitHub\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.AssemblyReference.cache
 G:\GitHub\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.CoreCompileInputs.cache
 G:\GitHub\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.CopyComplete
 G:\GitHub\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.dll
