@@ -1,0 +1,14 @@
+D:\WorkSpace\SCHS\86\K3Cloud\BIN\HMSX.PLM.WDGL.dll
+D:\WorkSpace\SCHS\86\K3Cloud\BIN\HMSX.PLM.WDGL.pdb
+D:\WorkSpace\SCHS\86\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.dll
+D:\WorkSpace\SCHS\86\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.pdb
+D:\WorkSpace\SCHS\86\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\86\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\86\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.AssemblyReference.cache
+D:\WorkSpace\SCHS\260开发测试\K3Cloud\BIN\HMSX.PLM.WDGL.dll
+D:\WorkSpace\SCHS\260开发测试\K3Cloud\BIN\HMSX.PLM.WDGL.pdb
+D:\WorkSpace\SCHS\260开发测试\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\260开发测试\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\260开发测试\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.dll
+D:\WorkSpace\SCHS\260开发测试\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.pdb
+D:\WorkSpace\SCHS\260开发测试\Code\HMSX.PLM.WDGL\obj\Debug\HMSX.PLM.WDGL.csproj.AssemblyReference.cache
