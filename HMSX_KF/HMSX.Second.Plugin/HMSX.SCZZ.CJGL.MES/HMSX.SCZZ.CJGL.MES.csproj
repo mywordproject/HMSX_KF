@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{145AFA54-AF25-4A62-98CB-F0C1E69B6651}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMSX.SCZZ.CJGL.MES</RootNamespace>
+    <AssemblyName>HMSX.SCZZ.CJGL.MES</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <ReferencePath>..\..\K3Cloud\BIN</ReferencePath>
+    <TargetFrameworkProfile />
+    <OutputPath>..\..\K3Cloud\BIN</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Users\Administrator\Desktop\BIN\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Kingdee.BOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App.ServicePlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.ServicePlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ApprovalFlow.PlugIns">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.ApprovalFlow.PlugIns.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Business.Bill">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Business.Bill.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Business.DynamicForm">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Business.DynamicForm.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Contracts, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.DataEntity, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.DataEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Mobile, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ServiceFacade.KDServiceFx">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.ServiceFacade.KDServiceFx.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ServiceHelper, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.WebApi.Client, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.WebApi.ServicesStub">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.ServicesStub.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Workflow.PlugIns">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.PlugIns.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Contracts">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Mobile.Business.PlugIn, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.Mobile.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Mobile.ServiceHelper, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.Mobile.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.PRD.App.Core">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.PRD.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.PRD.App.ReportPlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.PRD.App.ReportPlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.PRD.App.ServicePlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.PRD.App.ServicePlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.ServiceHelper">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.SFS.Common.Core, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.SFS.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Business.PlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Business.PlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Common.BusinessEntity">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Common.Interface">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Common.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.BusinessEntity">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Core">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Framework">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.STD.Business.PlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.STD.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.STD.Common.BusinessEntity">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.STD.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.Business.PlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.SCM.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TopSdk">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\TopSdk.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLXDBillPlugin.cs" />
+    <Compile Include="LGXJHServerPlugin.cs" />
+    <Compile Include="DBDLBPad.cs" />
+    <Compile Include="DBDSHJY.cs" />
+    <Compile Include="LGZXXJL.cs" />
+    <Compile Include="LLXDBillPlugin.cs" />
+    <Compile Include="LXDBillPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SCJDCX.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

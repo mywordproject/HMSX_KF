@@ -1,0 +1,449 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7887D8D5-B09E-4191-8A74-F5884DB23157}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMSX.Second.Plugin</RootNamespace>
+    <AssemblyName>HMSX.Second.Plugin</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>F:\Program Files %28x86%29\Kingdee\K3Cloud\WebSite\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="HMSX.MFG.Mobile.Business.PlugIn, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.App.ServicePlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.App.ServicePlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ApprovalFlow.PlugIns, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.ApprovalFlow.PlugIns.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Business.Bill, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Business.Bill.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Business.DynamicForm, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Business.DynamicForm.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Contracts, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.DataEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.DataEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Mobile, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Mobile.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.Mobile.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.OrmEngine, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.OrmEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ServiceFacade.KDServiceFx, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.ServiceFacade.KDServiceFx.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.BOS.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.WebApi.Client, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.WebApi.FormService, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.FormService.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.WebApi.ServicesStub, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.ServicesStub.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Workflow.PlugIns, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.PlugIns.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.BD.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.BD.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.HS.Report.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.HS.Report.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.HS.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.HS.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.App, Version=8.0.144.1, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Kingdee.K3.MFG.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Mobile.Business.PlugIn, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.Mobile.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.Mobile.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.Mobile.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.PRD.App.Core">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.PRD.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.PRD.App.ServicePlugIn">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.PRD.App.ServicePlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.QM.App.BillConvertServicePlugIn, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.QM.App.BillConvertServicePlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.ServiceHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.SFC.Common.BusinessEntity, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.SFC.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.SFC.Common.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.SFC.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.MFG.SFS.Common.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.SFS.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.App.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Business.PlugIn, Version=8.0.144.1, Culture=neutral, PublicKeyToken=null">
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Common.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.CFG.Common.Interface, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.CFG.Common.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Cad, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Cad.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Framework, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.Common.Installer, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Common.Installer.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.STD.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.STD.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.STD.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.STD.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.PLM.WF.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.WF.Common.BusinessEntity.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.App, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.SCM.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.Business.PlugIn, Version=7.7.2388.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.SCM.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.SCM.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.CP.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.SCM.CP.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.SCM.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\program\WebSite\bin\Kingdee.K3.SCM.ServiceHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=108.0.3.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TopSdk, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\TopSdk.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GXHBHZBillPlugin.cs" />
+    <Compile Include="MES\HBLLSMMobilePlugin.cs" />
+    <Compile Include="PLM\WDKPLMListPlugin.cs" />
+    <Compile Include="SJCJ\SJCJBillPlugin.cs" />
+    <Compile Include="study\InquiryBillToComparePrice.cs" />
+    <Compile Include="study\FieldMapInfo.cs" />
+    <Compile Include="study\QuoteData.cs" />
+    <Compile Include="study\QuoteSumData.cs" />
+    <Compile Include="WebAPI\GZAPI.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="MES\BGMobilePlugin.cs" />
+    <Compile Include="study\Class1.cs" />
+    <Compile Include="WebAPI\GZXX.cs" />
+    <Compile Include="WebAPI\PGCXAPI.cs" />
+    <Compile Include="YQHSPCFormPlugin.cs" />
+    <Compile Include="MES\GYSLRMobilePlugin.cs" />
+    <Compile Include="MES\JYDBJMobilePlugin.cs" />
+    <Compile Include="MES\JYDMobilePlugin.cs" />
+    <Compile Include="PCTRFilterPlugin.cs" />
+    <Compile Include="PCTRResportPlugin.cs" />
+    <Compile Include="MES\FXBGBillPlugin.cs" />
+    <Compile Include="MES\GXRWCS.cs" />
+    <Compile Include="MES\PGGXBGModilPlugin.cs" />
+    <Compile Include="PCTRCCLBillPlugin.cs" />
+    <Compile Include="PLM\BGDServerPlugincs.cs" />
+    <Compile Include="PLM\PLMYXPGBillPlugin.cs" />
+    <Compile Include="供应链\CGDDServicePlugin.cs" />
+    <Compile Include="供应链\CGRKDBillPlugin.cs" />
+    <Compile Include="供应链\CGRKDServerPlugin.cs" />
+    <Compile Include="供应链\CGSQBillPlugin.cs" />
+    <Compile Include="供应链\CGTLServicePlugin.cs" />
+    <Compile Include="供应链\CKSQServicePlugin.cs" />
+    <Compile Include="供应链\PGMXBillPlugin.cs" />
+    <Compile Include="供应链\SLTZBillPlugin.cs" />
+    <Compile Include="供应链\WMSclass.cs" />
+    <Compile Include="供应链\FHTZServicePlugin.cs" />
+    <Compile Include="供应链\KCXTZHServerPlugin.cs" />
+    <Compile Include="供应链\KCZTZHConvertPlugin.cs" />
+    <Compile Include="供应链\RKSQServicePlugin.cs" />
+    <Compile Include="供应链\SLTZDServicePlugin.cs" />
+    <Compile Include="供应链\THTZServicePlugin.cs" />
+    <Compile Include="供应链\WMSKCCXPlugin.cs" />
+    <Compile Include="供应链\WWDDBillPlugin.cs" />
+    <Compile Include="供应链\WWDDServicePlugin.cs" />
+    <Compile Include="供应链\WWYLQDServicePlugin.cs" />
+    <Compile Include="供应链\XSCKServicePlugin.cs" />
+    <Compile Include="供应链\XSDDBillPlugin.cs" />
+    <Compile Include="供应链\XSDDServicePlugin.cs" />
+    <Compile Include="供应链\XSJMBBillPlugin.cs" />
+    <Compile Include="供应链\YCDBillPlugin.cs" />
+    <Compile Include="供应链\YCDConvertPlugin.cs" />
+    <Compile Include="供应链\YCDListPlugin.cs" />
+    <Compile Include="供应链\YCDServicePlugin.cs" />
+    <Compile Include="供应链\ZDXZFormPlugin.cs" />
+    <Compile Include="基础资料\WLListPlugin.cs" />
+    <Compile Include="基础资料\WLPLMPlugin.cs" />
+    <Compile Include="基础资料\WLQDPLMPlugin.cs" />
+    <Compile Include="基础资料\WLQDZCFormPlugin.cs" />
+    <Compile Include="批号追溯\ZXSCPCZSFB.cs" />
+    <Compile Include="批号追溯\ZXSCPCZS.cs" />
+    <Compile Include="人人报销\CCSQBillPlugin.cs" />
+    <Compile Include="供应链\KCXTZHBillPlugin.cs" />
+    <Compile Include="生产制造\BLServerPlugin.cs" />
+    <Compile Include="生产制造\BLXDBillPlugin.cs" />
+    <Compile Include="生产制造\AuditInsertServerPlugin.cs" />
+    <Compile Include="DING\SPCSReportPlugin.cs" />
+    <Compile Include="DING\SPRLReportPlugin.cs" />
+    <Compile Include="kingdee\HSBaseReportPlugIn.cs" />
+    <Compile Include="kingdee\InivExceptionBalanceReport.cs" />
+    <Compile Include="DING\Body.cs" />
+    <Compile Include="kingdee\Class3.cs" />
+    <Compile Include="DING\SPReportPlugin.cs" />
+    <Compile Include="人人报销\FKSQDBillPlugin.cs" />
+    <Compile Include="Tool\Rootobject.cs" />
+    <Compile Include="Tool\Rootobject1.cs" />
+    <Compile Include="Tool\POST.cs" />
+    <Compile Include="Tool\Results.cs" />
+    <Compile Include="基础资料\WLQDServerPlugin.cs" />
+    <Compile Include="基础资料\WLServerPlugin.cs" />
+    <Compile Include="YCLListPlugin.cs" />
+    <Compile Include="生产制造\CJHSQServicePlugin.cs" />
+    <Compile Include="生产制造\GXHBBillPlugin.cs" />
+    <Compile Include="生产制造\GXHBConvertPlugin.cs" />
+    <Compile Include="生产制造\GXHBListPlugin.cs" />
+    <Compile Include="生产制造\QTCKConvertPlugin.cs" />
+    <Compile Include="生产制造\QTCKServicePlugin.cs" />
+    <Compile Include="生产制造\RKSQDBillPlugin.cs" />
+    <Compile Include="生产制造\SCDDBGDServicePlugin.cs" />
+    <Compile Include="生产制造\SCDDConvertPlugin.cs" />
+    <Compile Include="生产制造\GXHBHZServerPlugin.cs" />
+    <Compile Include="生产制造\DBSQDServerPlugin.cs" />
+    <Compile Include="生产制造\GXHBServerPlugin.cs" />
+    <Compile Include="生产制造\GYLXPGListPlugin.cs" />
+    <Compile Include="生产制造\GYLXPLXGFormPlugin.cs" />
+    <Compile Include="生产制造\JYDBillPlugin.cs" />
+    <Compile Include="生产制造\JYDListPlugin.cs" />
+    <Compile Include="生产制造\JYDServerPlugin.cs" />
+    <Compile Include="生产制造\LLDServerPlugin.cs" />
+    <Compile Include="生产制造\LLXDBillPlugin.cs" />
+    <Compile Include="生产制造\MJSQDBillPlugin.cs" />
+    <Compile Include="生产制造\PLXGBillPlugin.cs" />
+    <Compile Include="生产制造\QTCKBillPlugin.cs" />
+    <Compile Include="生产制造\RKSLBillPlugin.cs" />
+    <Compile Include="Tool\EObject.cs" />
+    <Compile Include="Tool\EIEnumerable.cs" />
+    <Compile Include="Tool\Result.cs" />
+    <Compile Include="Tool\Utils.cs" />
+    <Compile Include="固定资产\ZCZLBillPlugin.cs" />
+    <Compile Include="批号追溯\PHZSBillPluginFB.cs" />
+    <Compile Include="生产制造\SCDDBill.cs" />
+    <Compile Include="生产制造\SCDDBillPlugin.cs" />
+    <Compile Include="生产制造\SCDDList.cs" />
+    <Compile Include="生产制造\SCDDListPlugin.cs" />
+    <Compile Include="生产制造\SCHBBillPlugin.cs" />
+    <Compile Include="生产制造\SCHBConvertPlugin.cs" />
+    <Compile Include="生产制造\SCHBServicePlugin.cs" />
+    <Compile Include="生产制造\SCRKBillPlugin.cs" />
+    <Compile Include="生产制造\TMZDListPlugin.cs" />
+    <Compile Include="生产制造\TMZDPLXGFormPlugin.cs" />
+    <Compile Include="生产制造\ZJDBServerPlugin.cs" />
+    <Compile Include="生产制造\TLServerPlugin.cs" />
+    <Compile Include="考勤报表\KQBBGLReportPlugin.cs" />
+    <Compile Include="考勤报表\KQBBReportPlugin.cs" />
+    <Compile Include="批号追溯\DTBillPlugin.cs" />
+    <Compile Include="批号追溯\PHZSBillPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="生产制造\TLXDBillPlugin.cs" />
+    <Compile Include="生产进度查询\SCJDBillPlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
