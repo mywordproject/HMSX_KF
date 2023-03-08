@@ -42,7 +42,7 @@ namespace HMSX.Second.Plugin.生产制造
                         var entrys = dates["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in entrys)
                         {
-                            if (entry["MoNumber"].ToString().Substring(0, 2) == "MO")
+                            if (entry["MoNumber"].ToString().Contains("MO")|| entry["MoNumber"].ToString().Contains("XNY"))
                             {
                                 //单据转换上
                                 //string x = ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 6);
@@ -138,7 +138,7 @@ namespace HMSX.Second.Plugin.生产制造
                         DynamicObjectCollection docPriceEntity = dy["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in docPriceEntity)
                         {                         
-                            if (entry["MoNumber"].ToString().Substring(0, 2) == "MO")
+                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY"))
                             {
                                 string cxsql = $@"/*dialect*/select FMATERIALID,FFINISHQTY,FDISPATCHDETAILENTRYID from T_SFC_OPTRPTENTRY a
                                             inner join T_SFC_OPTRPT b on a.FID=b.FID

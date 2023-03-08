@@ -64,18 +64,36 @@ namespace HMSX.Second.Plugin
                 string phnumber = this.Model.GetValue("F_PH", e.Row) == null ? null : this.Model.GetValue("F_PH", e.Row).ToString();
                 string kssj = this.Model.GetValue("F_260_KSRQ") == null ? null : this.Model.GetValue("F_260_KSRQ").ToString();
                 string jssj = this.Model.GetValue("F_260_JSRQ") == null ? null : this.Model.GetValue("F_260_JSRQ").ToString();
-                string zwl = this.Model.GetValue("F_WLID", e.Row-1) == null ? null : this.Model.GetValue("F_WLID", e.Row-1).ToString();
-                string zphnumber = this.Model.GetValue("F_PH", e.Row-1) == null ? null : this.Model.GetValue("F_PH", e.Row-1).ToString();
+                string wlbm= this.Model.GetValue("F_WLBM", e.Row) == null ? "" : this.Model.GetValue("F_WLBM", e.Row).ToString();
+                int fj= this.Model.GetValue("FPARENTROWID",e.Row) == null ? 0 : Convert.ToInt32(this.Model.GetValue("FPARENTROWID",e.Row).ToString());
+                string zwl = "";
+                string zphnumber = "";
+                string fx= this.Model.GetValue("F_ZSFX", 0) == null ? "" : this.Model.GetValue("F_ZSFX", 0).ToString();
+                if (fx=="1" && fj>=0)
+                {
+                    zwl = this.Model.GetValue("F_WLID", fj - 1) == null ? "" : this.Model.GetValue("F_WLID", fj - 1).ToString();
+                    zphnumber = this.Model.GetValue("F_PH", fj - 1) == null ? "" : this.Model.GetValue("F_PH", fj - 1).ToString();
+                }
+                else if (fx == "2" && fj >=0 && wlbm.Contains("260.01.")==false)
+                {
+                    zwl = this.Model.GetValue("F_WLID", e.Row +1) == null ? "" : this.Model.GetValue("F_WLID", e.Row + 1).ToString();
+                    zphnumber = this.Model.GetValue("F_PH", e.Row +1) == null ? "" : this.Model.GetValue("F_PH", e.Row + 1).ToString();
+                }
+                else if (fx == "2" && fj == 0 && wlbm.Contains("260.01."))
+                {
+                    zwl = "1";
+                    zphnumber = "1";
+                }
                 if (wl != null && phnumber != null && kssj != null && jssj != null)
                 {
                     int i = 0;//判断是否带批号
                     if (phnumber.IndexOf('-') > 0)
                     {
-                        i = 1;
+                        i = 1;               
                         SJSJY(wl, phnumber, kssj, jssj, i,zwl,zphnumber);
                     }
                     else
-                    {
+                    {            
                         i = 2;
                         SJSJY(wl, phnumber, kssj, jssj, i, zwl, zphnumber);
                     }
@@ -124,6 +142,10 @@ namespace HMSX.Second.Plugin
             this.Model.DeleteEntryData("F_RUJP_Entity1");
             DynamicObject wl = (DynamicObject)this.Model.GetValue("F_260_WL");
             DynamicObject ph = (DynamicObject)this.Model.GetValue("F_RUJP_PH");
+            if(this.Model.GetValue("F_260_WL")==null || this.Model.GetValue("F_RUJP_PH")==null)
+            {
+                throw new KDBusinessException("", "物料或批号不能为空！！！");
+            }
             string wlid = wl["Id"].ToString();
             string wldm = wl["Number"].ToString();
             string wlmc = wl["Name"].ToString();
@@ -140,7 +162,7 @@ namespace HMSX.Second.Plugin
                 hs = 1;
                 this.Model.DeleteEntryData("F_RUJP_Entity");
                 DynamicObjectCollection rksl = DBUtils.ExecuteDynamicObject(this.Context, sql);
-                MLTC(wldm, wlmc, wlid, phdm, phid, 0, Convert.ToDouble(rksl[0]["FREALQTY"]),ggxh);
+                MLTC(wldm, wlmc, wlid, phdm, phid, 0, Convert.ToDouble(rksl[0]["FREALQTY"]),ggxh,1);
                 filldata(wlid, phdm, 1);
                 this.View.UpdateView("F_RUJP_Entity");
             }
@@ -150,7 +172,7 @@ namespace HMSX.Second.Plugin
                 hs = 1;
                 this.Model.DeleteEntryData("F_RUJP_Entity");
                 DynamicObjectCollection rksl = DBUtils.ExecuteDynamicObject(this.Context, sql);
-                MLTC(wldm, wlmc, wlid, phdm, phid, 0, Convert.ToDouble(rksl[0]["FREALQTY"]),ggxh);
+                MLTC(wldm, wlmc, wlid, phdm, phid, 0, Convert.ToDouble(rksl[0]["FREALQTY"]),ggxh,2);
                 filldata(wlid, phdm, 2);
                 this.View.UpdateView("F_RUJP_Entity");
             }
@@ -186,7 +208,7 @@ namespace HMSX.Second.Plugin
                             break;
                         }
                     }
-                    MLTC(wldm, wlmc, wlid, phdm, phid, parent, rks, GGXH);
+                    MLTC(wldm, wlmc, wlid, phdm, phid, parent, rks, GGXH,0);
                     if (isCZ == 0)
                     {
                         filldata(wlid, phdm, sx);
@@ -198,11 +220,11 @@ namespace HMSX.Second.Plugin
                 }
                 else
                 {
-                    MLTC(wldm, wlmc, wlid, phdm, phid, parent, rks, GGXH);
+                    MLTC(wldm, wlmc, wlid, phdm, phid, parent, rks, GGXH,0);
                 }
             }
         }
-        private void MLTC(string wldm, string wlmc, string wlid, string phbm, string phid, int parid, double sl,string ggxh)
+        private void MLTC(string wldm, string wlmc, string wlid, string phbm, string phid, int parid, double sl,string ggxh,int FX)
         {
             this.Model.CreateNewEntryRow("F_RUJP_Entity");
             this.View.Model.SetValue("FROWID", hs, hs - 1);
@@ -215,6 +237,7 @@ namespace HMSX.Second.Plugin
             this.View.Model.SetValue("F_PH", phbm, hs - 1);
             this.View.Model.SetValue("F_PHID", phid, hs - 1);
             this.View.Model.SetValue("F_260_RKSL", sl, hs - 1);
+            this.View.Model.SetValue("F_ZSFX", FX, hs - 1);
             hs++;
         }
         private void copydata(int oROWID, int oparID)
@@ -231,7 +254,7 @@ namespace HMSX.Second.Plugin
                 string phbm = this.Model.GetValue("F_PH", oROWID + j).ToString();
                 string phid = this.Model.GetValue("F_PHID", oROWID + j).ToString();
                 double nrks = Convert.ToDouble(this.View.Model.GetValue("F_260_RKSL", oROWID + j));
-                MLTC(wldm, wlmc, wlid, phbm, phid, parid + copyfw - 1, nrks, GGXH);
+                MLTC(wldm, wlmc, wlid, phbm, phid, parid + copyfw - 1, nrks, GGXH,0);
             }
         }
         public override void AfterBindData(EventArgs e)

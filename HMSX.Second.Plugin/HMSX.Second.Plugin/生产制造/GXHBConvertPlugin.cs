@@ -48,7 +48,7 @@ namespace HMSX.Second.Plugin.生产制造
                                             inner join T_SFC_OPTRPTENTRY b on a.fid=b.fid
                                             inner join T_BD_MATERIAL C ON C.FMATERIALID=B.FMATERIALID
                                             where fbillno='{entryRow["SrcBillNo"]}'
-                                            and substring(b.FMONUMBER,1,2)='MO'
+                                           AND (b.FMONUMBER LIKE '%MO%' OR b.FMONUMBER LIKE '%XNY%')
                                             and substring(C.FNUMBER,1,6)='260.02'";
                             var gxhb = DBUtils.ExecuteDynamicObject(Context, gxhbsql);
 
