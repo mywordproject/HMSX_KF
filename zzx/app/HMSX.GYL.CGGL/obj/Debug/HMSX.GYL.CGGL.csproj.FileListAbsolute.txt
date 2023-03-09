@@ -1,0 +1,13 @@
+D:\WorkSpace\SCHS\Development\K3Cloud\BIN\HMSX.GYL.CGGL.dll
+D:\WorkSpace\SCHS\Development\K3Cloud\BIN\HMSX.GYL.CGGL.pdb
+D:\WorkSpace\SCHS\Development\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\Development\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\Development\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.dll
+D:\WorkSpace\SCHS\Development\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.GYL.CGGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.GYL.CGGL.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.GYL.CGGL\obj\Debug\HMSX.GYL.CGGL.csproj.AssemblyReference.cache

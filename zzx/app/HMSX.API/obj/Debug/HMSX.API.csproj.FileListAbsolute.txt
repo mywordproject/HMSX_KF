@@ -1,0 +1,6 @@
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.API.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.API.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.API\obj\Debug\HMSX.API.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.API\obj\Debug\HMSX.API.csproj.CopyComplete
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.API\obj\Debug\HMSX.API.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.API\obj\Debug\HMSX.API.pdb

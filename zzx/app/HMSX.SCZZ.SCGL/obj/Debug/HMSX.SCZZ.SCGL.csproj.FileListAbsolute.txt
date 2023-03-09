@@ -1,0 +1,6 @@
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.SCZZ.SCGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.SCZZ.SCGL.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.SCGL\obj\Debug\HMSX.SCZZ.SCGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.SCGL\obj\Debug\HMSX.SCZZ.SCGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.SCGL\obj\Debug\HMSX.SCZZ.SCGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.SCGL\obj\Debug\HMSX.SCZZ.SCGL.pdb
