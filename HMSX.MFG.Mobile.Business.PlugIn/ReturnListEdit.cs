@@ -81,11 +81,30 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                     if (key == "FText_MaterialNumberScan")
                     {
                         string text = Convert.ToString(e.Value);
-                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        if (text.Contains("PGMX"))
                         {
-                            UpdateEntry(text);
-                            e.Value = string.Empty;
+                            string[] scanText1 = text.Split('-');
+                            if (scanText1.Length > 2)
+                            {
+                                string scanText2 = scanText1[3] + "-" + scanText1[4];
+                                UpdateEntry(scanText2);
+                                e.Value = string.Empty;
+                            }
+                            else
+                            {
+                                UpdateEntry(text);
+                                e.Value = string.Empty;
+                            }
                         }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                            {
+                                UpdateEntry(text);
+                                e.Value = string.Empty;
+                            }
+                        }
+                       
                     }
                 }
             }
@@ -105,7 +124,23 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             {
                 case "FBUTTON_MATERIALNUMBERSCAN":
                     string scanText = this.View.Model.GetValue("FText_MaterialNumberScan").ToString();
-                    this.UpdateEntry(scanText);
+                    if (scanText.Contains("PGMX"))
+                    {
+                        string[] scanText1 = scanText.Split('-');
+                        if (scanText1.Length > 2)
+                        {
+                            string scanText2 = scanText1[3] + "-" + scanText1[4];
+                            this.UpdateEntry(scanText2);
+                        }
+                        else
+                        {
+                            this.UpdateEntry(scanText);
+                        }
+                    }
+                    else
+                    {
+                        this.UpdateEntry(scanText);
+                    }                    
                     return;
                 case "FBUTTON_RETURN":
                     this.View.Close();

@@ -35,3 +35,7 @@ F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Busine
 F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
 F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
 F:\HMSX_KF\Code\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CoreCompileInputs.cache
+G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
+G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
+G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb

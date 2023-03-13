@@ -126,12 +126,17 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             switch (key = e.Key.ToUpper())
             {
                 case "FBUTTON_OPTPLANNUMBERSCAN":
-                    string scanText = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString();
-                    FillAllData(scanText);
-                    this.View.Model.SetValue("FText_OptPlanNumberScan", "");
-                    this.View.UpdateView("FText_OptPlanNumberScan");
-                    this.View.GetControl("FText_OptPlanNumberScan").SetFocus();
-                    this.View.GetControl("FText_OptPlanNumberScan").SetCustomPropertyValue("showKeyboard", true);
+                    string[] scanText1 = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString().Split('-');
+                    if (scanText1.Length >2)
+                    {
+                        string scanText= scanText1[0] + "-" + scanText1[1] + "-" + scanText1[2];
+                        FillAllData(scanText);
+                        this.View.Model.SetValue("FText_OptPlanNumberScan", "");
+                        this.View.UpdateView("FText_OptPlanNumberScan");
+                        this.View.GetControl("FText_OptPlanNumberScan").SetFocus();
+                        this.View.GetControl("FText_OptPlanNumberScan").SetCustomPropertyValue("showKeyboard", true);
+
+                    }
                     return;
 
                 case "FBUTTON_RETURN":
@@ -343,12 +348,16 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                 {
                     if (key == "FText_OptPlanNumberScan")
                     {
-                        string text = Convert.ToString(e.Value);
-                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        string[] text1 = Convert.ToString(e.Value).Split('-');
+                        if (text1.Length > 2)
                         {
-                            FillAllData(text);
-                            e.Value = string.Empty;
-                        }
+                            string text= text1[0] + "-" + text1[1] + "-" + text1[2];
+                            if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                            {
+                                FillAllData(text);
+                                e.Value = string.Empty;
+                            }
+                        }                    
                     }
                 }
             }

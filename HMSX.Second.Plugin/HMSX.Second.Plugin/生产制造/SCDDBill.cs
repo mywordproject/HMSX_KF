@@ -25,6 +25,20 @@ namespace HMSX.Second.Plugin.生产制造
             string sczz = this.Model.GetValue("FPRDORGID") == null ? "" : ((DynamicObject)this.Model.GetValue("FPRDORGID"))["Id"].ToString();
             if (sczz == "100026")
             {
+                var TEXTSJRW = this.Model.GetValue("F_260_TEXTSJRW");
+                if (TEXTSJRW != null && TEXTSJRW.ToString()!= ""&& TEXTSJRW.ToString() != " ")
+                {
+                    string scsql = $@"select F_260_SCDDBHQF,FDESCRIPTION FROM T_PRD_MO A
+L                                     EFT JOIN T_PRD_MO_L B ON A.FID=B.FID where F_260_TEXTSJRW='{TEXTSJRW.ToString()}'";
+                    var scddqfs = DBUtils.ExecuteDynamicObject(Context, scsql);
+                    foreach(var scddqf in scddqfs)
+                    {
+                        this.Model.SetValue("F_260_SCDDBHQF", scddqf["F_260_SCDDBHQF"]);
+                        this.Model.SetValue("FDESCRIPTION", scddqf["FDESCRIPTION"]);
+                        this.View.UpdateView("F_260_SCDDBHQF");
+                        this.View.UpdateView("FDESCRIPTION");
+                    }
+                }
                 var dates = this.Model.DataObject["TreeEntity"] as DynamicObjectCollection;
                 string HH = "";
                 string fsrbill ="";

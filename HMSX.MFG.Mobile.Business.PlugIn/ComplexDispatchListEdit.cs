@@ -97,11 +97,30 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                     if (key == "FText_MaterialNumberScan")
                     {
                         string text = Convert.ToString(e.Value);
-                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        if (text.Contains("PGMX"))
                         {
-                            updateEntry(text);
-                            e.Value = string.Empty;
+                            string[] scanText1 = text.Split('-');
+                            if (scanText1.Length > 2)
+                            {
+                                string scanText2 = scanText1[3] + "-" + scanText1[4];
+                                updateEntry(scanText2);
+                                e.Value = string.Empty;
+                            }
+                            else
+                            {
+                                updateEntry(text);
+                                e.Value = string.Empty;
+                            }
                         }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                            {
+                                updateEntry(text);
+                                e.Value = string.Empty;
+                            }
+                        }
+                        
                     }
                 }
             }
@@ -131,7 +150,23 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             {
                 case "FBUTTON_MATERIALNUMBERSCAN":
                     string scanText = this.View.Model.GetValue("FText_MaterialNumberScan").ToString();
-                    updateEntry(scanText);
+                    if (scanText.Contains("PGMX"))
+                    {
+                        string[] scanText1 = scanText.Split('-');
+                        if (scanText1.Length > 2)
+                        {
+                            string scanText2 = scanText1[3] + "-" + scanText1[4];
+                            updateEntry(scanText2);
+                        }
+                        else
+                        {
+                            updateEntry(scanText);
+                        }
+                    }
+                    else
+                    {
+                        updateEntry(scanText);
+                    }                
                     this.View.Model.SetValue("FText_MaterialNumberScan", " ");
                     this.View.UpdateView("FText_MaterialNumberScan");
                     this.InitFocus();

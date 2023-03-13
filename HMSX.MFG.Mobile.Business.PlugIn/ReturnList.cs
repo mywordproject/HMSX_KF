@@ -57,21 +57,25 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                 {
                     if (key == "FText_OptPlanNumberScan")
                     {
-                        string text = Convert.ToString(e.Value);
-                        _scanText = text;
-                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        string[] text1 = Convert.ToString(e.Value).Split('-');
+                        if (text1.Length > 2)
                         {
-                            if (Convert.ToBoolean(this.Model.GetValue("FIsCompleted")))
+                            string text = text1[0] + "-" + text1[1] + "-" + text1[2];
+                            _scanText = text;
+                            if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
                             {
-                                this.ReloadData(this.GetDispatchDetail(text), true);
-                                e.Value = string.Empty;
-                            }
-                            else
-                            {
-                                dispatchDetailInfo = this.GetDispatchDetail(text);
-                                FillAllData(text);
-                                e.Value = string.Empty;
+                                if (Convert.ToBoolean(this.Model.GetValue("FIsCompleted")))
+                                {
+                                    this.ReloadData(this.GetDispatchDetail(text), true);
+                                    e.Value = string.Empty;
+                                }
+                                else
+                                {
+                                    dispatchDetailInfo = this.GetDispatchDetail(text);
+                                    FillAllData(text);
+                                    e.Value = string.Empty;
 
+                                }
                             }
                         }
                     }
@@ -135,28 +139,27 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             base.View.GetControl<MobileListViewControl>("FMobileListViewEntity").SetFormat(this.ListFormaterManager);
             base.View.UpdateView("FMobileListViewEntity");
         }
-      
+
         public override void ButtonClick(ButtonClickEventArgs e)
         {
             string key;
             switch (key = e.Key.ToUpper())
             {
                 case "FBUTTON_OPTPLANNUMBERSCAN":
-                    string scanText = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString();
-
-                    if (Convert.ToBoolean(this.Model.GetValue("FIsCompleted")))
+                    string[] scanText1 = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString().Split('-');
+                    if (scanText1.Length > 2)
                     {
-
-                        this.ReloadData(this.GetDispatchDetail(scanText), true);
-
-                    }
-                    else
-                    {
-
-                        dispatchDetailInfo = this.GetDispatchDetail(scanText);
-                        FillAllData(scanText);
-
-                    }
+                        string scanText= scanText1[0] + "-" + scanText1[1] + "-" + scanText1[2];
+                        if (Convert.ToBoolean(this.Model.GetValue("FIsCompleted")))
+                        {
+                            this.ReloadData(this.GetDispatchDetail(scanText), true);
+                        }
+                        else
+                        {
+                            dispatchDetailInfo = this.GetDispatchDetail(scanText);
+                            FillAllData(scanText);
+                        }
+                    }              
                     return;
 
                 case "FBUTTON_RETURN":
@@ -171,7 +174,7 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
 
                     PickMaterial();
                     return;
-               
+
             }
         }
 

@@ -105,7 +105,7 @@ namespace HMSX.Second.Plugin.SJCJ
                         decimal xg = date1["F_HMD_XGC1"] != null && date1["F_HMD_XGC1"].ToString() != "" && date1["F_HMD_XGC1"].ToString() != " " ? Convert.ToDecimal(date1["F_HMD_XGC1"]) : 0;
                         decimal sgc = llz + sg;
                         decimal xgc = llz + xg;
-                        String[] propertys = { "F_HMD_SJZ1", "F_SCZ1", "F_SCZ2", "F_SCZ3", "F_SCZ4", "F_SCZ5", "F_SCZ6", "F_SCZ7",
+                        String[] propertys = { "F_260_SCZ1", "F_SCZ1", "F_SCZ2", "F_SCZ3", "F_SCZ4", "F_SCZ5", "F_SCZ6", "F_SCZ7",
                                          "F_SCZ8",  "F_SCZ9" ,  "F_SCZ10", "F_SCZ11", "F_SCZ12", "F_SCZ13", "F_SCZ14", "F_SCZ15"
                                        , "F_SCZ16", "F_SCZ17", "F_SCZ18", "F_SCZ19", "F_SCZ20", "F_SCZ21", "F_SCZ22", "F_SCZ23"
                                        , "F_SCZ24", "F_SCZ25", "F_SCZ26", "F_SCZ27", "F_SCZ28", "F_SCZ29", "F_SCZ30", "F_SCZ31"};

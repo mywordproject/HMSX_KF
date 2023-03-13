@@ -99,8 +99,13 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                         string text = Convert.ToString(e.Value);
                         if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
                         {
-                            FillAllData(text);
-                            e.Value = string.Empty;
+                            string[] scText = text.Split('-');
+                            if (scText.Length> 2)
+                            {
+                                string scanText = scText[0] + "-" + scText[1] + "-" + scText[2];
+                                FillAllData(scanText);
+                                e.Value = string.Empty;
+                            }
                         }
                     }
                 }
@@ -132,8 +137,13 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             switch (key = e.Key.ToUpper())
             {
                 case "FBUTTON_OPTPLANNUMBERSCAN":
-                    string scanText = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString();
-                    FillAllData(scanText);
+                    string[] scText = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString().Split('-');
+                    //op-0-10-pgmx-id
+                    if (scText.Length > 2)
+                    {
+                        string scanText = scText[0] + "-" + scText[1] + "-" + scText[2];
+                        FillAllData(scanText);
+                    }                
                     return;
 
                 case "FBUTTON_RETURN":
