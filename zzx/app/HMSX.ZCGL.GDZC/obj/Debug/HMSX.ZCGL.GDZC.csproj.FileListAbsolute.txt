@@ -1,0 +1,9 @@
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.ZCGL.GDZC.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.ZCGL.GDZC.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.ZCGL.GDZC\obj\Debug\HMSX.ZCGL.GDZC.csproj.AssemblyReference.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.ZCGL.GDZC\obj\Debug\HMSX.ZCGL.GDZC.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.ZCGL.GDZC\obj\Debug\HMSX.ZCGL.GDZC.csproj.CopyComplete
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.ZCGL.GDZC\obj\Debug\HMSX.ZCGL.GDZC.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.ZCGL.GDZC\obj\Debug\HMSX.ZCGL.GDZC.pdb
+F:\program\WebSite\bin\HMSX.ZCGL.GDZC.dll
+F:\program\WebSite\bin\HMSX.ZCGL.GDZC.pdb

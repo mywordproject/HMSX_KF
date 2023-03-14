@@ -1,0 +1,15 @@
+D:\WorkSpace\SCHS\Development\K3Cloud\BIN\HMSX.SCZZ.MJGL.dll
+D:\WorkSpace\SCHS\Development\K3Cloud\BIN\HMSX.SCZZ.MJGL.pdb
+D:\WorkSpace\SCHS\Development\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\Development\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\Development\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.dll
+D:\WorkSpace\SCHS\Development\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.pdb
+D:\WorkSpace\SCHS\Development\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.csproj.AssemblyReference.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.SCZZ.MJGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\K3Cloud\BIN\HMSX.SCZZ.MJGL.pdb
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.csproj.CoreCompileInputs.cache
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.csproj.CopyComplete
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.dll
+D:\WorkSpace\SCHS\HmsxDevelopment\Code\HMSX.SCZZ.MJGL\obj\Debug\HMSX.SCZZ.MJGL.pdb
+F:\program\WebSite\bin\HMSX.SCZZ.MJGL.dll
+F:\program\WebSite\bin\HMSX.SCZZ.MJGL.pdb
