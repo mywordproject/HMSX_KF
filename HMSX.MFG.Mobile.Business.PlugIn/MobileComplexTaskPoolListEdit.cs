@@ -157,36 +157,26 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                 if (text == "FTEXT_SCANCODE")
                 {
                     string[] strs = e.Value.ToString().Split('-');
-                    if (strs.Length>1)
+                    if (strs.Length>0)
                     {
                         e.Value = strs[0];
                     }
                 }
+                else if (text == "FTEXT_SCANCODE1")
+                {
+                    if (e.Value.ToString().StartsWith("PGMX")==false)
+                    {
+                        string[] strs = e.Value.ToString().Split('-');
+                        if (strs.Length > 0)
+                        {
+                            e.Value = strs[0];
+                        }
+                    }                    
+                }
             }
             base.BeforeUpdateValue(e);
         }
-        //public  void ScanCodeChanged1(BeforeUpdateValueEventArgs e)
-        //{
-        //    string text = Convert.ToString(e.Value);
-        //    if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
-        //    {
-        //        string text2 = Convert.ToString(base.View.Model.DataObject[this.ScanCodeField]);
-        //        if (!string.IsNullOrEmpty(text2))
-        //        {
-        //            if (text.StartsWith(text2))
-        //            {
-        //                e.Value = text.Substring(text2.Length);
-        //            }
-        //            else if (text.EndsWith(text2))
-        //            {
-        //                e.Value = text.Substring(0, text.IndexOf(text2));
-        //            }
-        //        }
 
-        //        this.CurrScanCode = Convert.ToString(e.Value);
-        //    }
-        //    base.View.GetControl(e.Key).SetFocus();
-        //}
         public override void EntityRowDoubleClick(EntityRowClickEventArgs e)
         {
             base.EntityRowDoubleClick(e);

@@ -104,12 +104,17 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
         }
 
         public override void BeforeUpdateValue(BeforeUpdateValueEventArgs e)
-        {
-            base.BeforeUpdateValue(e);
+        {          
             if (e.Key.ToUpper() == "FTEXT_SCANCODE")
             {
+                string[] strs = e.Value.ToString().Split('-');
+                if (strs.Length > 0)
+                {
+                    e.Value = strs[0];
+                }
                 this.SelectedDataIndex = new Dictionary<int, int>();
             }
+            base.BeforeUpdateValue(e);
         }
 
         public override void ButtonClick(ButtonClickEventArgs e)

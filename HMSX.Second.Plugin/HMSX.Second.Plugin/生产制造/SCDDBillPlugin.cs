@@ -222,9 +222,9 @@ namespace HMSX.Second.Plugin.生产制造
                         {
                             if (entry["MaterialId"]!=null &&
                                 ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0,6)=="260.02"&&
-                                dates["F_260_DDBHQF"].ToString() == "XNYYJ")
+                                dates["F_260_SCDDBHQF"].ToString() == "XNYYJ")
                             {
-                                entry["StockId_Id"] = 31718472;//正式ID31730768
+                                entry["StockId_Id"] = 31730768;//正式ID31730768
                             }
                             if (entry["ProductType"] != null && entry["ProductType"].ToString() == "1")
                             {

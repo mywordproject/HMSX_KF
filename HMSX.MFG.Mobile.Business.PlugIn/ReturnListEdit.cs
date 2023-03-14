@@ -186,7 +186,16 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
             List<ReturnInfo> listReturninfo = new List<ReturnInfo>();
             if (scanText != "")
             {
-                string strSql = string.Format(@"SELECT t.FMATERIALID,t1.FNUMBER,t.FLOT,t.FLOT_TEXT FROM T_BD_BARCODEMAIN t INNER JOIN T_BD_MATERIAL t1 ON t.FMATERIALID=t1.FMATERIALID WHERE FBARCODE='{0}'", scanText);
+                string strSql = "";
+                if (scanText.Substring(0, 2) == "PG")
+                {
+                    strSql = string.Format(@"SELECT T.FMATERIALID,T1.FNUMBER,T.FLOT,T.FLOT_TEXT FROM T_SFC_OPTRPTENTRY T INNER JOIN T_BD_MATERIAL T1 ON T.FMATERIALID=T1.FMATERIALID  WHERE F_SBID_BARCODE='{0}'", scanText);
+                }
+                else
+                {
+                    strSql = string.Format("SELECT T.FMATERIALID,T1.FNUMBER,T.FLOT,T.FLOT_TEXT FROM T_BD_BARCODEMAIN T INNER JOIN T_BD_MATERIAL  T1 ON T.FMATERIALID=T1.FMATERIALID  WHERE FBARCODE='{0}'", scanText);
+                }
+                //string strSql = string.Format(@"SELECT t.FMATERIALID,t1.FNUMBER,t.FLOT,t.FLOT_TEXT FROM T_BD_BARCODEMAIN t INNER JOIN T_BD_MATERIAL t1 ON t.FMATERIALID=t1.FMATERIALID WHERE FBARCODE='{0}'", scanText);
                 DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
                 if (rs.Count > 0)
                 {

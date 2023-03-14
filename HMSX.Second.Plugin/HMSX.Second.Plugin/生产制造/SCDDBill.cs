@@ -29,7 +29,7 @@ namespace HMSX.Second.Plugin.生产制造
                 if (TEXTSJRW != null && TEXTSJRW.ToString()!= ""&& TEXTSJRW.ToString() != " ")
                 {
                     string scsql = $@"select F_260_SCDDBHQF,FDESCRIPTION FROM T_PRD_MO A
-L                                     EFT JOIN T_PRD_MO_L B ON A.FID=B.FID where F_260_TEXTSJRW='{TEXTSJRW.ToString()}'";
+                                    LEFT JOIN T_PRD_MO_L B ON A.FID=B.FID where FBILLNO='{TEXTSJRW.ToString()}'";
                     var scddqfs = DBUtils.ExecuteDynamicObject(Context, scsql);
                     foreach(var scddqf in scddqfs)
                     {

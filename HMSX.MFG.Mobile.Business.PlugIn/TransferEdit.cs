@@ -50,7 +50,23 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                     if (this.View.BillModel.GetValue("FText_BarcodeScan") != null)
                     {
                         string scanText = this.View.BillModel.GetValue("FText_BarcodeScan").ToString();
-                        updateEntry(scanText);
+                        if (scanText.Contains("PGMX"))
+                        {
+                            string[] scanText1 = scanText.Split('-');
+                            if (scanText1.Length > 2)
+                            {
+                                string scanText2 = scanText1[3] + "-" + scanText1[4];
+                                updateEntry(scanText2);
+                            }
+                            else
+                            {
+                                updateEntry(scanText);
+                            }
+                        }
+                        else
+                        {
+                            updateEntry(scanText);
+                        }                       
                         this.View.BillModel.SetValue("FText_BarcodeScan", " ");
                         this.View.UpdateView("FText_BarcodeScan");
                         this.InitFocus();
@@ -165,11 +181,29 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                     if (key == "FText_BarcodeScan")
                     {
                         string text = Convert.ToString(e.Value);
-                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        if (text.Contains("PGMX"))
                         {
-                            updateEntry(text);
-                            e.Value = string.Empty;
+                            string[] text1 = text.Split('-');
+                            if (text1.Length > 2)
+                            {
+                                string scanText2 = text1[3] + "-" + text1[4];
+                                updateEntry(scanText2);
+                                e.Value = string.Empty;
+                            }
+                            else
+                            {
+                                updateEntry(text);
+                                e.Value = string.Empty;
+                            }
                         }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                            {
+                                updateEntry(text);
+                                e.Value = string.Empty;
+                            }
+                        }                       
                     }
                     if (key == "FStockId")
                     {
