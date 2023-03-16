@@ -92,6 +92,10 @@ namespace HMSX.Second.Plugin.生产制造
                                 {
                                     FStockId = 31116287;
                                 }
+                                else if (cxs[0]["FSHORTNAME"].ToString() == "VNFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                {
+                                    FStockId = 32379391;
+                                }
                                 if (FStockId != 0)
                                 {
                                     string cksql = $@"/*dialect*/update PAEZ_t_Cust_Entry100320 set FSTOCKID={FStockId} where FENTRYID={entry["Id"]}";

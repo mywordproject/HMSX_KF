@@ -118,7 +118,8 @@ namespace HMSX.Second.Plugin.生产制造
                         foreach (var entry in dates["TreeEntity"] as DynamicObjectCollection)
                         {
                             if (entry["MaterialId"]!=null &&((DynamicObject)entry["MaterialId"])["Number"].ToString().EndsWith(".000")&&
-                                entry["WorkShopID"]!=null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString()== "000362")
+                                entry["WorkShopID"]!=null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString()== "000362" &&
+                                entry["StockId"]!=null && ((DynamicObject)entry["StockId"])["Name"].ToString().Contains("模具"))
                             {
                                 if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) == 0)
                                 {
