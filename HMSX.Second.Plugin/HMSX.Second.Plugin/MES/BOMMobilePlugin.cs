@@ -1,4 +1,6 @@
 ﻿using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
+using Kingdee.BOS.Orm.DataEntity;
+using Kingdee.BOS.ServiceHelper;
 using Kingdee.K3.MFG.Mobile.Business.PlugIn.SFC.Complex;
 using System;
 using System.Collections.Generic;
@@ -19,10 +21,16 @@ namespace HMSX.Second.Plugin.MES
             {
                 if (e.Value.ToString().Contains("PGMX"))
                 {
-                    String[] strs = e.Value.ToString().Split('-');
-                    if (strs.Length > 4)
+                    string strSql = string.Format(@"/*dialect*/select top 1 concat(t.FOptPlanNo,'-',t.FSEQNUMBER,'-',t.FOperNumber) as OptPlanNo  
+                                              from T_SFC_DISPATCHDETAIL t 
+                                              inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                              where F_260_CSTM='{0}' 
+                                              order by FDISPATCHTIME desc",e.Value.ToString());
+                    DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
+                    if (rs.Count > 0)
                     {
-                        e.Value = strs[0] + "-" + strs[1]+"-"+strs[2];
+                        e.Value = rs[0]["OptPlanNo"].ToString();
+
                     }
                 }
             }

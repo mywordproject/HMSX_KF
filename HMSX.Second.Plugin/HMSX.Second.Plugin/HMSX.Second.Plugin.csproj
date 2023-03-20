@@ -313,6 +313,7 @@
     <Compile Include="MES\BOMMobilePlugin.cs" />
     <Compile Include="MES\HBLLSMMobilePlugin.cs" />
     <Compile Include="MES\JSWDMobilePlugin.cs" />
+    <Compile Include="MES\ZJLLMobilePlugin.cs" />
     <Compile Include="PLM\WDKPLMListPlugin.cs" />
     <Compile Include="SJCJ\SJCJBillPlugin.cs" />
     <Compile Include="study\InquiryBillToComparePrice.cs" />

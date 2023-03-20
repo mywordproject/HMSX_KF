@@ -6,6 +6,7 @@ using Kingdee.BOS.App.Data;
 using Kingdee.BOS.Core.DynamicForm;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
 using Kingdee.BOS.Core.NetworkCtrl;
+using Kingdee.BOS.Mobile;
 using Kingdee.BOS.Mobile.PlugIn.ControlModel;
 using Kingdee.BOS.Orm;
 using Kingdee.BOS.Orm.DataEntity;
@@ -31,6 +32,8 @@ namespace HMSX.Second.Plugin.MES
     [Description("工序任务超市--领料数大于零，不允许关闭")]
     public class GXRWCS : MobileComplexTaskPoolListEdit
     {
+        List<long> list = new List<long>();
+        Dictionary<long, long> dic = new Dictionary<long, long>();
         protected Dictionary<int, int> SelectedDataIndex = new Dictionary<int, int>();
         public override void ButtonClick(ButtonClickEventArgs e)
         {
@@ -47,7 +50,94 @@ namespace HMSX.Second.Plugin.MES
                 case "F_DYBQ":
                     this.printLable1();
                     break;
+                case "F_ZJLL":
+                    string ysm = this.Model.GetValue("F_YSM") == null ? "" : this.Model.GetValue("F_YSM").ToString();
+                    if (ysm != "")
+                    {
+                        PickMaterial(ysm);
+                    }
+                    break;
             }
+        }
+        public void PickMaterial(string tm)
+        {
+            string[] ysms = tm.Split(',');
+            string entryId = "0";
+            string FYSM = "";
+            if (tm.Length > 0)
+            {                
+                foreach (var ysm in ysms)
+                {
+                    string pgsql = $@"select top 1 FENTRYID,F_260_CSTM
+                                     FROM T_SFC_DISPATCHDETAILENTRY 
+                                     where F_260_CSTM = '{ysm}' order by FDISPATCHTIME desc";
+                    var pgs = DBUtils.ExecuteDynamicObject(Context, pgsql);
+                    foreach (var pg in pgs)
+                    {
+                        entryId = entryId + ',' + pg["FENTRYID"].ToString();
+                        FYSM = FYSM+ "'" + ysm + "'"+",";
+                        dic.Add(Convert.ToInt64(pg["FENTRYID"].ToString()), Convert.ToInt64(pg["FENTRYID"].ToString()));
+                        list.Add(Convert.ToInt64(pg["FENTRYID"].ToString()));
+                    }
+                }
+            }
+            SavePgBom();
+            MobileShowParameter param = new MobileShowParameter();
+            param.FormId = "k06daef5616224128b31d49c5ccbc9d76";
+            param.ParentPageId = this.View.PageId;
+            param.SyncCallBackAction = false;
+            param.CustomParams.Add("FPgEntryId", entryId);
+            param.CustomParams.Add("FYSM", FYSM.Trim(','));
+            this.ShowFrom(param);
+        }
+        public void SavePgBom()
+        {
+            string MoBillNo = "";//生产订单号
+            string MoBillEntrySeq = "";//生产订明细行号
+            foreach (var entryId in dic)
+            {
+                string strSql = string.Format(@"SELECT T.FMOBILLNO,T.FMOSEQ,T1.FWORKQTY FROM T_SFC_DISPATCHDETAIL T INNER JOIN T_SFC_DISPATCHDETAILENTRY T1 ON T.FID=T1.FID AND T1.FENTRYID IN({0})", entryId.Key);
+                DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
+                if (rs.Count > 0)
+                {
+                    for (int i = 0; i < rs.Count; i++)
+                    {
+                        MoBillNo = rs[i]["FMOBILLNO"].ToString();
+                        MoBillEntrySeq = rs[i]["FMOSEQ"].ToString();
+                        List<DynamicObject> PPBomInfo = this.GetPPBomInfo(MoBillNo, MoBillEntrySeq);
+                        foreach (DynamicObject obj in PPBomInfo)
+                        {
+                            Decimal mustQty = Convert.ToDecimal(obj["FNUMERATOR"]) / Convert.ToDecimal(obj["FDENOMINATOR"]) * Convert.ToDecimal(rs[i]["FWORKQTY"]) * (Convert.ToDecimal(obj["FUSERATE"]) / 100);
+                            DynamicObjectCollection rsentrys = DBServiceHelper.ExecuteDynamicObject(this.Context, string.Format("select * from t_PgBomInfo where FPgEntryId={0} AND FPPBomEntryId={1}", entryId.Key, Convert.ToInt64(obj["FENTRYID"])));
+                            if (rsentrys.Count == 0)
+                            {
+                                string Sql = string.Format(@" INSERT INTO t_PgBomInfo(FPgEntryId,FPPBomId,FPPBomEntryId,FMaterialId,FPgQty,FMustQty,FPickQty,FReturnQty,FFeedQty,FAllPickQty,FAvailableQty)
+                       Values({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10})", entryId.Key, Convert.ToInt64(obj["FID"]), Convert.ToInt64(obj["FENTRYID"]), Convert.ToInt64(obj["FMATERIALID"]), Convert.ToDecimal(rs[i]["FWORKQTY"]), mustQty, 0, 0, 0, 0, 0);
+                                int row = DBServiceHelper.Execute(this.Context, Sql);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private List<DynamicObject> GetPPBomInfo(string MoBillNo, string MoBillEntrySeq)
+        {
+            string strSql = string.Format(@"SELECT T.FPRDORGID,T.FMOBillNO,T.FMOENTRYSEQ,T1.FSEQ,T1.FID,T1.FENTRYID,T1.FMATERIALID,T3.FMASTERID,T3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,T2.FPICKEDQTY,T5.FSTOCKID,T1.FNUMERATOR,T1.FDENOMINATOR,T1.FSCRAPRATE,FUSERATE  FROM T_PRD_PPBOM T 
+                                                             INNER JOIN T_PRD_PPBOMENTRY T1 ON T.FID=T1.FID 
+                                                             INNER JOIN T_PRD_PPBOMENTRY_Q T2 ON T1.FID=T2.FID AND T1.FENTRYID=T2.FENTRYID  AND( T1.FMUSTQTY>(T2.FPICKEDQTY-t2.FGOODRETURNQTY) or FMUSTQTY=0 and FUSERATE=0)
+                                                             INNER JOIN T_PRD_PPBOMENTRY_C T5 ON T1.FID=T5.FID AND T1.FENTRYID=T5.FENTRYID
+                                                             INNER JOIN T_BD_MATERIAL T3 ON T1.FMATERIALID=T3.FMATERIALID  AND T3.FMATERIALID NOT IN (SELECT FMATERIALID FROM T_BD_MATERIALBASE WHERE FErpClsID=5 )
+                                                             INNER JOIN T_BD_MATERIAL_L T4 ON T1.FMATERIALID=T4.FMATERIALID AND T4.FLOCALEID=2052
+                                                             WHERE T.FMOBillNO='{0}' AND T.FMOENTRYSEQ={1} AND T5.FISSUETYPE IN ('1','3')", MoBillNo, MoBillEntrySeq);
+            DynamicObjectCollection source = DBServiceHelper.ExecuteDynamicObject(base.Context, strSql);
+            return source.ToList<DynamicObject>();
+        }
+        private void ShowFrom(MobileShowParameter param)
+        {
+            this.View.ShowForm(param, new Action<FormResult>((res) =>
+            {
+                this.View.Refresh();
+            }));
         }
         protected void AllSelect(string entityKey)
         {
@@ -86,7 +176,7 @@ namespace HMSX.Second.Plugin.MES
                         }
                     }
                     dictionarys.Add(dictionary);
-                }            
+                }
                 foreach (var dictionary in dictionarys)
                 {
                     //try
@@ -218,7 +308,7 @@ namespace HMSX.Second.Plugin.MES
             this.View.GetControl<MobileListViewControl>("FMobileListViewEntity_Detail").SetSelectRows(selectedRows);
             for (int i = 0; i < entryRowCount; i++)
             {
-                if(Array.IndexOf(selectedRows,i)==-1)
+                if (Array.IndexOf(selectedRows, i) == -1)
                 {
                     this.ListFormaterManager.SetControlProperty("FFlowLayout_Detail", i, "255,255,255", MobileFormatConditionPropertyEnums.BackColor);
                 }
