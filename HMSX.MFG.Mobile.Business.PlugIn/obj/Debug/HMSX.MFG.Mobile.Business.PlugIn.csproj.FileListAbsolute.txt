@@ -39,3 +39,4 @@ G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Bu
 G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.CopyComplete
 G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.dll
 G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.pdb
+G:\Git_HMSX\HMSX_KF\HMSX.MFG.Mobile.Business.PlugIn\obj\Debug\HMSX.MFG.Mobile.Business.PlugIn.csproj.AssemblyReference.cache

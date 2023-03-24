@@ -24,7 +24,8 @@ namespace HMSX.Second.Plugin
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FMaterialId", "FLot", "FSrcBillNo", "FRealQty", "FSrcEntrySeq", "F_RUJP_PgBARCODE", "FHMSXBZ", "FMtoNo", "FSrcBillNo" };
+            String[] propertys = { "FMaterialId", "FLot", "FSrcBillNo", "FRealQty", "FSrcEntrySeq", 
+                "F_RUJP_PgBARCODE", "FHMSXBZ", "FMtoNo", "FSrcBillNo" , "FDate","FApproveDate" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -83,7 +84,13 @@ namespace HMSX.Second.Plugin
                              )aa on aa.FBILLNO=a.FSRCBILLNO and aa.FSEQ=a.FSRCENTRYSEQ and aa.FMATERIALID=a.FMATERIALID and c.FNUMBER=aa.FNUMBER)";
                                 DBUtils.Execute(Context, up1sql);
                             }
-
+                            if (entry["MaterialId"]!=null &&((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 6) == "260.08")
+                            {
+                                string upsql1 = $@"update HMD_t_Cust_Entry100111 set
+                                  F_260_SJWCRQWCZZJTS ='{date["Date"]}'
+                                  where F_260_SBBM='{entry["MaterialId_Id"]}' ";
+                                DBUtils.Execute(Context, upsql1);
+                            }
                         }
                     }
                 }

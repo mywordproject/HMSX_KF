@@ -26,7 +26,7 @@ namespace HMSX.Second.Plugin.供应链
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = {"FBillNo", "F_260_XTLY" };
+            String[] propertys = {"FBillNo", "F_260_XTLY", "FMaterialId" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -142,6 +142,49 @@ namespace HMSX.Second.Plugin.供应链
                     {
                         string upsql = $@"/*dialect*/update T_STK_OUTSTOCKAPPLY set F_260_XTLY='' where FID={date["Id"]}";
                         DBUtils.Execute(Context, upsql);
+                        DynamicObjectCollection Entitys = date["BillEntry"] as DynamicObjectCollection;
+                        foreach (var entity in Entitys)
+                        {
+                            string sql = $@"/*dialect*/select wl.fmaterialid,wl.FNUMBER,wlz.FNAME,sqdb.F_HMD_QTY,cksq.fqty,
+                             case when sqdb.F_HMD_QTY<=cksq.fqty then '是'
+                             else '否' end 是否按时交付
+                             from HMD_t_Cust_Entry100111 sqdb
+                             left join HMD_t_Cust100134 sqda on sqda.fid=sqdb.fid
+                             left join T_BD_MATERIAL wl on sqdb.F_260_SBBM=wl.fmaterialid
+                             left join T_BD_MATERIAL_L wlz on wlz.fmaterialid=wl.fmaterialid
+                             left join (
+                             select a.fmaterialid,sum(a.fqty) fqty
+                             from HMD_t_Cust_Entry100111
+                             left join (
+                             select T_STK_OUTSTOCKAPPLYENTRY.fmaterialid,T_STK_OUTSTOCKAPPLYENTRY.fqty,convert(varchar,T_STK_OUTSTOCKAPPLY.fdate,23) fdate
+                             from T_STK_OUTSTOCKAPPLYENTRY
+                             left join T_STK_OUTSTOCKAPPLY on T_STK_OUTSTOCKAPPLY.fid=T_STK_OUTSTOCKAPPLYENTRY.fid
+                             left join T_BD_MATERIAL wl on T_STK_OUTSTOCKAPPLYENTRY.fmaterialid=wl.fmaterialid and wl.FNUMBER like '%260.08%'
+                             where T_STK_OUTSTOCKAPPLY.FDOCUMENTSTATUS='C') a on HMD_t_Cust_Entry100111.F_260_SBBM=a.fmaterialid
+                             where a.fdate<=HMD_t_Cust_Entry100111.F_260_JHJFRQSYBMYS
+                             group by a.fmaterialid
+                             ) cksq on cksq.fmaterialid=sqdb.F_260_SBBM                    
+                             where sqda.fbilltypeid1='63ff095bd57d36'
+                             and cksq.fmaterialid='{entity["MaterialId_Id"]}'
+                             and sqda.FDOCUMENTSTATUS='C'and sqdb.FBILLSTATUS1='B' and ((sqdb.F_260_SBXZGZ='2' and sqdb.F_260_YGJE>='20000') or sqdb.F_260_SBXZGZ='1')";
+                            var cks = DBUtils.ExecuteDynamicObject(Context, sql);
+                            foreach (var ck in cks)
+                            {
+                                if (ck["是否按时交付"].ToString() == "是")
+                                {
+                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='1' where F_260_SBBM={ck["fmaterialid"]}";
+                                    DBUtils.Execute(Context, upsql1);
+                                }
+                                else
+                                {
+                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='0' where F_260_SBBM={ck["fmaterialid"]}";
+                                    DBUtils.Execute(Context, upsql1);
+                                }
+
+                            }
+                            string upsql2 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set  F_260_SJJFRQJFSYBM='{date["ApproveDate"]}' where F_260_SBBM='{entity["MaterialId_Id"]}'";
+                            DBUtils.Execute(Context, upsql2);
+                        }
                     }
                 }
                 else if (FormOperation.Operation.Equals("BillUnClose", StringComparison.OrdinalIgnoreCase))

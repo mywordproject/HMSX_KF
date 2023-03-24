@@ -24,7 +24,7 @@ namespace HMSX.Second.Plugin.MES
                     string strSql = string.Format(@"/*dialect*/select top 1 concat(t.FOptPlanNo,'-',t.FSEQNUMBER,'-',t.FOperNumber) as OptPlanNo  
                                               from T_SFC_DISPATCHDETAIL t 
                                               inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
-                                              where F_260_CSTM='{0}' 
+                                              where F_260_CSTM!=''and F_260_CSTM like '%{0}%' 
                                               order by FDISPATCHTIME desc", e.Value.ToString());
                     DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
                     if (rs.Count > 0)

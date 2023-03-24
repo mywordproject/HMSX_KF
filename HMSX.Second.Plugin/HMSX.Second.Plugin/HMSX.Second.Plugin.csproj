@@ -313,6 +313,7 @@
     <Compile Include="MES\BOMMobilePlugin.cs" />
     <Compile Include="MES\HBLLSMMobilePlugin.cs" />
     <Compile Include="MES\JSWDMobilePlugin.cs" />
+    <Compile Include="MES\SMBDMobilePlugin.cs" />
     <Compile Include="MES\ZJLLMobilePlugin.cs" />
     <Compile Include="PLM\WDKPLMListPlugin.cs" />
     <Compile Include="SJCJ\SJCJBillPlugin.cs" />
@@ -345,6 +346,7 @@
     <Compile Include="供应链\CGTLServicePlugin.cs" />
     <Compile Include="供应链\CKSQServicePlugin.cs" />
     <Compile Include="供应链\PGMXBillPlugin.cs" />
+    <Compile Include="供应链\PGMXServerPlugin.cs" />
     <Compile Include="供应链\SLTZBillPlugin.cs" />
     <Compile Include="供应链\WMSclass.cs" />
     <Compile Include="供应链\FHTZServicePlugin.cs" />

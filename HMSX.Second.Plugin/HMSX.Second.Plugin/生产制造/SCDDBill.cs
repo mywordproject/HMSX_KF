@@ -21,9 +21,8 @@ namespace HMSX.Second.Plugin.生产制造
     {
         public override void AfterBindData(EventArgs e)
         {
-            base.AfterBindData(e);
-            string sczz = this.Model.GetValue("FPRDORGID") == null ? "" : ((DynamicObject)this.Model.GetValue("FPRDORGID"))["Id"].ToString();
-            if (sczz == "100026")
+            base.AfterBindData(e);            
+            if (Context.CurrentOrganizationInfo.ID == 100026)
             {
                 var TEXTSJRW = this.Model.GetValue("F_260_TEXTSJRW");
                 if (TEXTSJRW != null && TEXTSJRW.ToString()!= ""&& TEXTSJRW.ToString() != " ")
@@ -34,9 +33,13 @@ namespace HMSX.Second.Plugin.生产制造
                     foreach(var scddqf in scddqfs)
                     {
                         this.Model.SetValue("F_260_SCDDBHQF", scddqf["F_260_SCDDBHQF"]);
-                        this.Model.SetValue("FDESCRIPTION", scddqf["FDESCRIPTION"]);
+                        if(this.Model.GetValue("FDESCRIPTION") ==null || this.Model.GetValue("FDESCRIPTION").ToString()=="" || this.Model.GetValue("FDESCRIPTION").ToString() == " ")
+                        {
+                            this.Model.SetValue("FDESCRIPTION", scddqf["FDESCRIPTION"]);
+                            this.View.UpdateView("FDESCRIPTION");
+                        }                        
                         this.View.UpdateView("F_260_SCDDBHQF");
-                        this.View.UpdateView("FDESCRIPTION");
+                        
                     }
                 }
                 var dates = this.Model.DataObject["TreeEntity"] as DynamicObjectCollection;
