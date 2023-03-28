@@ -164,7 +164,7 @@ namespace HMSX.Second.Plugin.供应链
                              where a.fdate<=HMD_t_Cust_Entry100111.F_260_JHJFRQSYBMYS
                              group by a.fmaterialid
                              ) cksq on cksq.fmaterialid=sqdb.F_260_SBBM                    
-                             where sqda.fbilltypeid1='63ff095bd57d36'
+                             where sqda.fbilltypeid1='64112ee428922a'
                              and cksq.fmaterialid='{entity["MaterialId_Id"]}'
                              and sqda.FDOCUMENTSTATUS='C'and sqdb.FBILLSTATUS1='B' and ((sqdb.F_260_SBXZGZ='2' and sqdb.F_260_YGJE>='20000') or sqdb.F_260_SBXZGZ='1')";
                             var cks = DBUtils.ExecuteDynamicObject(Context, sql);

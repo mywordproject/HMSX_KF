@@ -65,7 +65,9 @@ namespace HMSX.Second.Plugin.生产制造
                 if (str != "")
                 {
                     //查询生产订单变更单状态为审核且超计划申请单未审核才允许结案
-                    string cjhsqsql = $@"	select F_260_SSDDBGZT,F_260_CJHZT from T_PRD_MO a
+                    foreach (var ids in EntryIds)
+                    {
+                        string cjhsqsql = $@"	select F_260_SSDDBGZT,F_260_CJHZT from T_PRD_MO a
 	                                  inner join T_PRD_MOENTRY b on a.fid=b.fid
 	                                  where (F_260_SSDDBGZT in ('创建' ,'审核中','重新审核','暂存')	
 	                                       and F_260_CJHZT in ('创建' ,'审核中','重新审核','暂存','已审核','')
@@ -74,11 +76,12 @@ namespace HMSX.Second.Plugin.生产制造
 	                                   and     F_260_CJHZT in ('创建' ,'审核中','重新审核','暂存')
 	                                   or     F_260_SSDDBGZT in ('' )	
 	                                   and     F_260_CJHZT in ('创建' ,'审核中','重新审核','暂存','已审核'))
-                                       AND FBILLNO IN({str.Trim(',')})";
-                    var cjhsqs = DBUtils.ExecuteDynamicObject(Context, cjhsqsql);
-                    if (cjhsqs.Count > 0)
-                    {
-                        throw new KDBusinessException("", "1.生产订单变更单状态为审核且超计划申请单状态为审核才允许结案 \n 2.生产订单变更单状态为空且超计划申请单状态为空才允许结案！\n3.生产订单变更单状态为审核且超计划申请单状态为空才允许结案");
+                                       AND FENTRYID IN({ids.Value})";
+                        var cjhsqs = DBUtils.ExecuteDynamicObject(Context, cjhsqsql);
+                        if (cjhsqs.Count > 0)
+                        {
+                            throw new KDBusinessException("", "1.生产订单变更单状态为审核且超计划申请单状态为审核才允许结案 \n 2.生产订单变更单状态为空且超计划申请单状态为空才允许结案！\n3.生产订单变更单状态为审核且超计划申请单状态为空才允许结案");
+                        }
                     }
                     //查询所有子订单
                     string zddsql = $@"select a.FID,FENTRYID from T_PRD_MO a

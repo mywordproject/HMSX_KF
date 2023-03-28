@@ -52,10 +52,7 @@ namespace HMSX.Second.Plugin.MES
                     break;
                 case "F_ZJLL":
                     string ysm = this.Model.GetValue("F_YSM") == null ? "" : this.Model.GetValue("F_YSM").ToString();
-                    if (ysm != "")
-                    {
-                        PickMaterial(ysm);
-                    }
+                    PickMaterial(ysm);
                     break;
                 case "F_SMBD":
                     SMBD();
@@ -69,13 +66,13 @@ namespace HMSX.Second.Plugin.MES
             Dictionary<string, object> currentRowData = this.GetCurrentRowData(rowIndex);
             string malnumber = currentRowData["FProductId"].ToString().Substring(0, currentRowData["FProductId"].ToString().IndexOf("/"));
             string[] scdd = currentRowData["FMONumber"].ToString().Split('-');
-            string wlqdsql = $@"select * from T_ENG_BOM a
-                        left join T_ENG_BOMCHILD b on a.fid=b.fid
-                        left join t_BD_MaterialBase c ON c.FMATERIALID=b.FMATERIALID
-                        left join t_BD_Material d on a.FMATERIALID=d.FMATERIALID
-                        where d.fnumber='{malnumber}' and FERPCLSID=1";
+            string wlqdsql = $@"select * from T_PRD_PPBOM a
+                         inner join T_PRD_PPBOMENTRY b  on b.fid=a.fid
+                         left join t_BD_MaterialBase c ON c.FMATERIALID=b.FMATERIALID
+                         left join t_BD_Material d on a.FMATERIALID=d.FMATERIALID 
+                         where d.fnumber='{malnumber}' and a.FMOBILLNO='{scdd[0]}' and a.FMOENTRYSEQ='{scdd[1]}' and FERPCLSID!=1 ";
             wlqd = DBUtils.ExecuteDynamicObject(Context, wlqdsql);
-            if (wlqd.Count > 0)
+            if (wlqd.Count == 0)
             {
                 throw new KDBusinessException("", "冲压工序无需扫码绑定初始条码！！");
 
@@ -107,9 +104,10 @@ namespace HMSX.Second.Plugin.MES
             string[] ysms = tm.Split(',');
             string entryId = "0";
             string cstm = "";
-            if (ysms.Length > 0)
+            dic.Clear();
+            if (ysms.Length > 0 && tm != "")
             {
-                dic.Clear();
+
                 int i = 1;
                 foreach (var ysm in ysms)
                 {
@@ -143,6 +141,7 @@ namespace HMSX.Second.Plugin.MES
             param.CustomParams.Add("FPgEntryId", entryId);
             param.CustomParams.Add("FYSM", cstm);
             this.ShowFrom(param);
+
         }
         public void SavePgBom()
         {

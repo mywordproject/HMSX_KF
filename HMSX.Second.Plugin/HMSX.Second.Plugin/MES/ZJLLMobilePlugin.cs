@@ -29,7 +29,7 @@ namespace HMSX.Second.Plugin.MES
 {
     [Kingdee.BOS.Util.HotUpdate]
     [Description("直接领料")]
-    public class ZJLLMobilePlugin: AbstractMobilePlugin
+    public class ZJLLMobilePlugin : AbstractMobilePlugin
     {
         string FEntryId;//派工明细EntryId
         string FYSM;
@@ -45,7 +45,7 @@ namespace HMSX.Second.Plugin.MES
         {
             base.OnInitialize(e);
             FEntryId = e.Paramter.GetCustomParameter("FPgEntryId").ToString();
-            FYSM= e.Paramter.GetCustomParameter("FYSM").ToString();
+            FYSM = e.Paramter.GetCustomParameter("FYSM").ToString();
             //获取生产订单编号，生产订单行号
             string strSql = string.Format(@"SELECT FMOBILLNO,FMOSEQ FROM T_SFC_DISPATCHDETAIL WHERE FID=(SELECT TOP 1 FID FROM T_SFC_DISPATCHDETAILENTRY WHERE FENTRYID IN ({0}))", FEntryId);
             DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
@@ -73,13 +73,56 @@ namespace HMSX.Second.Plugin.MES
                 case "FSUBMIT":
                     this.Confirm();
                     return;
+                case "F_BUTTON_SM":
+                    string scanText = this.View.Model.GetValue("F_TMSM") == null ? "" : this.View.Model.GetValue("F_TMSM").ToString();
+                    FillData1(scanText);
+                    this.View.Model.SetValue("F_TMSM", "");
+                    this.View.UpdateView("F_TMSM");
+                    this.View.GetControl("F_TMSM").SetFocus();
+                    this.View.GetControl("F_TMSM").SetCustomPropertyValue("showKeyboard", true);
+                    return;
             }
+        }
+        public override void BeforeUpdateValue(BeforeUpdateValueEventArgs e)
+        {
+            base.BeforeUpdateValue(e);
+            this.ScanCodeChanged(e);
+
+        }
+        private void ScanCodeChanged(BeforeUpdateValueEventArgs e)
+        {
+            try
+            {
+                string key;
+                if ((key = e.Key) != null)
+                {
+                    if (key == "F_TMSM")
+                    {
+                        if (!string.IsNullOrEmpty(e.Value.ToString()) && !string.IsNullOrWhiteSpace(e.Value.ToString()))
+                        {
+                            FillData1(e.Value.ToString());
+                            e.Value = string.Empty;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Value = string.Empty;
+                this.View.ShowStatusBarInfo(ex.Message);
+            }
+
+            this.View.GetControl(e.Key).SetFocus();
         }
         public override void AfterBindData(EventArgs e)
         {
             base.AfterBindData(e);
             this.View.GetControl("F_SBID_MobileListViewEntity").SetCustomPropertyValue("listEditable", true);
-            FillData();
+            if (!string.IsNullOrEmpty(FYSM) && !string.IsNullOrWhiteSpace(FYSM))
+            {
+                FillData();
+            }
+
         }
         public void FillData()
         {
@@ -176,7 +219,7 @@ namespace HMSX.Second.Plugin.MES
                     this.View.Model.SetValue("FStockQty", pickinfoList[i].stockQty, i);
                     this.View.Model.SetValue("FPBomEntryId", pickinfoList[i].pbomEntryId, i);
                     this.View.Model.SetValue("FPgEntryId", pickinfoList[i].pgEntryId, i);
-                    this.View.Model.SetItemValueByID("FKCZT", pickinfoList[i].Kczt, i); 
+                    this.View.Model.SetItemValueByID("FKCZT", pickinfoList[i].Kczt, i);
                     this.View.Model.SetItemValueByID("FISSCAN", "Y", i);
                     if (i == 0)
                     {
@@ -222,7 +265,7 @@ namespace HMSX.Second.Plugin.MES
             DynamicObjectCollection source = DBServiceHelper.ExecuteDynamicObject(base.Context, strSql);
             return source.ToList<DynamicObject>();
         }
-        
+
         protected virtual void Confirm()
         {
             //获取已扫描为Y的数据
@@ -583,6 +626,222 @@ namespace HMSX.Second.Plugin.MES
                 set { _IsParent = value; }
             }
 
+        }
+        public void FillData1(string scanText)
+        {
+            if (!string.IsNullOrEmpty(scanText) && !string.IsNullOrWhiteSpace(scanText))
+            {
+                var jys = this.Model.DataObject["SBID_K156fd801"] as DynamicObjectCollection;
+                foreach (var jy in jys)
+                {
+                    if (jy["F_YSTM"].ToString().Contains(scanText))
+                    {
+                        throw new KDBusinessException("", "重复扫码！！！");
+                    }
+                }
+                pickinfoList.Clear();
+                string ytm = "";
+                string strSql1 = string.Format(@"/*dialect*/select top 1 FENTRYID,FMOBILLNO,FMOSEQ,F_260_CSTM
+                                              from T_SFC_DISPATCHDETAIL t 
+                                              inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                              where  F_260_CSTM!=''and F_260_CSTM like '%{0}%' 
+                                              order by FDISPATCHTIME desc", scanText);
+                DynamicObjectCollection pg = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql1);
+                if (pg.Count > 0)
+                {
+                    SavePgBom(pg[0]["FENTRYID"].ToString());
+                    List<DynamicObject> PPBomInfo = this.GetPPBomInfo1(pg[0]["FENTRYID"].ToString(), pg[0]["FMOBILLNO"].ToString(), pg[0]["FMOSEQ"].ToString(), scanText);
+                    var ppBominfosum = (from p in PPBomInfo select new { materialid = Convert.ToInt64(p["FMATERIALID"]), stockId = Convert.ToInt64(p["FSTOCKID"]), LOT = Convert.ToInt64(p["F_LOT_TEXT"]), ystm = p["F_260_CSTM"] }).Distinct().ToList();
+                    foreach (var pp in ppBominfosum)
+                    {
+                        ytm = Convert.ToString(pp.ystm);
+                        string strSql = string.Format(@"SELECT  t.FSTOCKSTATUSID,T2.FNAME,t.FStockOrgId,t.FStockId,t.FMaterialId,t.FLot,t1.FNUMBER,t.FBASEUNITID,t.FBASEQTY FROM T_STK_INVENTORY t 
+                                                                  LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
+                                                                  left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId
+                                                                  WHERE 
+                                                                  t.FSTOCKSTATUSID=case when t.FStockId=22315406 then 27910195 else 10000 end
+                                                                  AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
+                                                                  and   T1.FNUMBER='{2}'
+                                                                  ORDER BY t.FSTOCKSTATUSID desc,FNUMBER ASC", pp.stockId, pp.materialid, pp.LOT);
+                        DynamicObjectCollection stockrs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
+                        var PPBomInfotmp = (from p in PPBomInfo where Convert.ToInt64(p["FMATERIALID"]) == pp.materialid && Convert.ToInt64(p["F_LOT_TEXT"]) == pp.LOT select p);
+                        DynamicObjectCollection tmp = stockrs;
+                        foreach (DynamicObject obj in PPBomInfotmp)
+                        {
+                            Decimal mustQty = Convert.ToDecimal(obj["FMustQty"]) - Convert.ToDecimal(obj["FPickQty"]);
+                            DynamicObjectCollection rs = tmp;
+                            for (int i = 0; i < rs.Count; i++)
+                            {
+                                if (Convert.ToDecimal(rs[i]["FBASEQTY"]) <= 0)
+                                {
+                                    continue;
+                                }
+                                kczt = rs[0]["FSTOCKSTATUSID"].ToString();
+                                pickinfo pInfo = new pickinfo();
+                                pInfo.MONumber = obj["FMOBillNO"].ToString();
+                                pInfo.MaterialNumber = obj["FNUMBER"].ToString();
+                                pInfo.MaterialName = obj["FNAME"].ToString();
+                                pInfo.Model = obj["FSPECIFICATION"].ToString();
+                                pInfo.MustQty = mustQty;
+                                pInfo.Kczt = rs[i]["FNAME"].ToString();
+                                if (rs[i]["FNUMBER"] != null)
+                                {
+                                    pInfo.lot = rs[i]["FNUMBER"].ToString();
+                                }
+
+                                if (rs[i]["FBASEQTY"] != null)
+                                {
+                                    pInfo.stockQty = Convert.ToDecimal(rs[i]["FBASEQTY"]);
+                                    pInfo.baseUnitId = Convert.ToInt64(rs[i]["FBASEUNITID"]);
+                                }
+                                else { }
+                                if (Convert.ToDecimal(rs[i]["FBASEQTY"]) >= mustQty)
+                                {
+                                    pInfo.Qty = mustQty;
+                                    tmp[i]["FBASEQTY"] = Convert.ToDecimal(rs[i]["FBASEQTY"]) - mustQty;
+                                    mustQty = 0;
+                                }
+                                else
+                                {
+                                    pInfo.Qty = Convert.ToDecimal(rs[i]["FBASEQTY"]);
+                                    mustQty = mustQty - Convert.ToDecimal(rs[i]["FBASEQTY"]);
+                                    tmp[i]["FBASEQTY"] = 0;
+                                    //tmp.RemoveAt(i);
+                                }
+                                pInfo.pbomEntryId = Convert.ToInt64(obj["FENTRYID"]);
+                                pInfo.pgEntryId = Convert.ToInt64(obj["FPgEntryId"]);
+
+                                pickinfoList.Add(pInfo);
+                                if (mustQty == 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+                    pickinfoList = pickinfoList.OrderBy(p => p.MaterialNumber).ThenBy(p => p.lot).ToList();
+                    if (pickinfoList.Count > 0)
+                    {
+                        string number = pickinfoList[0].MaterialNumber.ToString();
+                        Decimal allqty = 0;
+                        for (int i = 0; i < pickinfoList.Count; i++)
+                        {
+                            var dates = this.Model.DataObject["SBID_K156fd801"] as DynamicObjectCollection;
+                            int rowCount = this.View.Model.GetEntryRowCount("F_SBID_MobileListViewEntity");
+                            this.View.Model.CreateNewEntryRow("F_SBID_MobileListViewEntity");
+                            if (rowCount == 0)
+                            {
+                                this.View.Model.SetValue("FIsParent", "1", rowCount);
+                            }
+                            int j = 0;
+                            foreach (var date in dates)
+                            {
+                                if (rowCount > 0 && date["FMaterialNumber"] != null && date["FMaterialNumber"].ToString() == pickinfoList[i].MaterialNumber.ToString())
+                                {
+                                    this.View.Model.SetValue("FIsParent", "0", rowCount);
+                                    break;
+                                }
+                                if (rowCount > 0 && date["FMaterialNumber"] != null && date["FMaterialNumber"].ToString() != pickinfoList[i].MaterialNumber.ToString())
+                                {
+                                    
+                                    j++;
+                                }
+                            }
+                            if (j == dates.Count-1 && j>0)
+                            {
+                                this.View.Model.SetValue("FIsParent", "1", rowCount);
+                            }
+                            int Seq = rowCount + 1;
+                            this.View.Model.SetValue("FSeq", Seq, rowCount);
+                            this.View.Model.SetValue("FMONumber", pickinfoList[i].MONumber.ToString(), rowCount);
+                            this.View.Model.SetValue("FMaterialNumber", pickinfoList[i].MaterialNumber.ToString(), rowCount);
+                            this.View.Model.SetValue("FMaterialName", pickinfoList[i].MaterialName.ToString(), rowCount);
+                            this.View.Model.SetValue("FModel", pickinfoList[i].Model.ToString(), rowCount);
+                            this.View.Model.SetValue("FLot", pickinfoList[i].lot, rowCount);
+                            this.View.Model.SetValue("FBaseUnitID", pickinfoList[i].baseUnitId, rowCount);
+                            this.View.Model.SetValue("FMustQty", pickinfoList[i].MustQty, rowCount);
+                            this.View.Model.SetValue("FQty", pickinfoList[i].Qty, rowCount);
+                            allqty = allqty + Convert.ToDecimal(pickinfoList[i].Qty);
+                            this.View.Model.SetValue("FStockQty", pickinfoList[i].stockQty, rowCount);
+                            this.View.Model.SetValue("FPBomEntryId", pickinfoList[i].pbomEntryId, rowCount);
+                            this.View.Model.SetValue("FPgEntryId", pickinfoList[i].pgEntryId, rowCount);
+                            this.View.Model.SetItemValueByID("FKCZT", pickinfoList[i].Kczt, rowCount);
+                            this.View.Model.SetItemValueByID("FISSCAN", "Y", rowCount);
+                            this.View.Model.SetItemValueByID("F_YSTM", ytm, rowCount);
+                            
+                            this.View.UpdateView("F_SBID_MobileListViewEntity");
+                        }
+                        this.View.Model.SetValue("FAllQty", allqty);
+                        this.View.UpdateView("FAllQty");
+                    }
+                }
+            }
+        }
+        /// <summary>
+        ///  获取用料清单信息
+        /// </summary>
+        /// <param name="MoBillNo"></param>
+        /// <param name="MoBillEntrySeq"></param>
+        /// <returns></returns>
+        private List<DynamicObject> GetPPBomInfo1(string pgid, string BillNo, string MoSeq, string tm)
+        {
+            string strSql = string.Format(@"SELECT T.FPRDORGID,T.FMOBillNO,T.FMOENTRYSEQ,T1.FSEQ,T1.FID,T1.FENTRYID,T1.FMATERIALID,T1.FMaterialType,T1.FREPLACEGROUP,T3.FMASTERID,T3.FNUMBER,T4.FNAME,
+                                            T4.FSPECIFICATION,T2.FPICKEDQTY,T5.FSTOCKID,T1.FNUMERATOR,T1.FDENOMINATOR,T1.FSCRAPRATE,T6.FMustQty,T6.FAvailableQty as FPickQty ,T6.FPgEntryId,
+                                            T6.GYS,t6.FPPBOMID,T6.FPPBOMENTRYID,PGMX.F_LOT_TEXT,F_260_CSTM   FROM T_PRD_PPBOM T 
+                                            INNER JOIN T_PRD_PPBOMENTRY T1 ON T.FID=T1.FID 
+                                            INNER JOIN T_PRD_PPBOMENTRY_Q T2 ON T1.FID=T2.FID AND T1.FENTRYID=T2.FENTRYID  AND T1.FMUSTQTY>(T2.FPICKEDQTY-t2.FGOODRETURNQTY)
+                                            INNER JOIN T_PRD_PPBOMENTRY_C T5 ON T1.FID=T5.FID AND T1.FENTRYID=T5.FENTRYID
+                                            INNER JOIN T_BD_MATERIAL T3 ON T1.FMATERIALID=T3.FMATERIALID  AND T3.FMATERIALID NOT IN (SELECT FMATERIALID FROM T_BD_MATERIALBASE WHERE FErpClsID=5 )
+                                            INNER JOIN T_BD_MATERIAL_L T4 ON T1.FMATERIALID=T4.FMATERIALID AND T4.FLOCALEID=2052
+                                            INNER JOIN t_PgBomInfo T6 ON T1.FENTRYID=T6.FPPBomEntryId AND T6.FPgEntryId IN ({0})   AND T6.FMustQty-T6.FAvailableQty>0
+                                            INNER JOIN 
+                                            (SELECT FMATERIALID,F_LOT_TEXT,F_260_CSTM  from T_SFC_DISPATCHDETAIL t 
+                                              inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  WHERE F_260_CSTM!=''and F_260_CSTM like '%{3}%' ) PGMX ON PGMX.FMATERIALID=T1.FMATERIALID
+                                            WHERE T.FMOBillNO='{1}' AND T.FMOENTRYSEQ={2} AND T5.FISSUETYPE IN ('1','3') 
+                                            ORDER BY T1.FMATERIALID ASC ", pgid, BillNo, MoSeq, tm);
+            DynamicObjectCollection source = DBServiceHelper.ExecuteDynamicObject(base.Context, strSql);
+            return source.ToList<DynamicObject>();
+        }
+        public void SavePgBom(string entryId)
+        {
+            string MoBillNo = "";//生产订单号
+            string MoBillEntrySeq = "";//生产订明细行号
+            string strSql = string.Format(@"SELECT T.FMOBILLNO,T.FMOSEQ,T1.FWORKQTY FROM T_SFC_DISPATCHDETAIL T INNER JOIN T_SFC_DISPATCHDETAILENTRY T1 ON T.FID=T1.FID AND T1.FENTRYID IN({0})", entryId);
+            DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
+            if (rs.Count > 0)
+            {
+                for (int i = 0; i < rs.Count; i++)
+                {
+                    MoBillNo = rs[i]["FMOBILLNO"].ToString();
+                    MoBillEntrySeq = rs[i]["FMOSEQ"].ToString();
+                    List<DynamicObject> PPBomInfo = this.GetPPBomInfo2(MoBillNo, MoBillEntrySeq);
+                    foreach (DynamicObject obj in PPBomInfo)
+                    {
+                        Decimal mustQty = Convert.ToDecimal(obj["FNUMERATOR"]) / Convert.ToDecimal(obj["FDENOMINATOR"]) * Convert.ToDecimal(rs[i]["FWORKQTY"]) * (Convert.ToDecimal(obj["FUSERATE"]) / 100);
+                        DynamicObjectCollection rsentrys = DBServiceHelper.ExecuteDynamicObject(this.Context, string.Format("select * from t_PgBomInfo where FPgEntryId={0} AND FPPBomEntryId={1}", entryId, Convert.ToInt64(obj["FENTRYID"])));
+                        if (rsentrys.Count == 0)
+                        {
+                            string Sql = string.Format(@" INSERT INTO t_PgBomInfo(FPgEntryId,FPPBomId,FPPBomEntryId,FMaterialId,FPgQty,FMustQty,FPickQty,FReturnQty,FFeedQty,FAllPickQty,FAvailableQty)
+                       Values({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10})", entryId, Convert.ToInt64(obj["FID"]), Convert.ToInt64(obj["FENTRYID"]), Convert.ToInt64(obj["FMATERIALID"]), Convert.ToDecimal(rs[i]["FWORKQTY"]), mustQty, 0, 0, 0, 0, 0);
+                            int row = DBServiceHelper.Execute(this.Context, Sql);
+                        }
+                    }
+                }
+            }
+
+        }
+        private List<DynamicObject> GetPPBomInfo2(string MoBillNo, string MoBillEntrySeq)
+        {
+            string strSql = string.Format(@"SELECT T.FPRDORGID,T.FMOBillNO,T.FMOENTRYSEQ,T1.FSEQ,T1.FID,T1.FENTRYID,T1.FMATERIALID,T3.FMASTERID,T3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,T2.FPICKEDQTY,T5.FSTOCKID,T1.FNUMERATOR,T1.FDENOMINATOR,T1.FSCRAPRATE,FUSERATE  FROM T_PRD_PPBOM T 
+                                                             INNER JOIN T_PRD_PPBOMENTRY T1 ON T.FID=T1.FID 
+                                                             INNER JOIN T_PRD_PPBOMENTRY_Q T2 ON T1.FID=T2.FID AND T1.FENTRYID=T2.FENTRYID  AND( T1.FMUSTQTY>(T2.FPICKEDQTY-t2.FGOODRETURNQTY) or FMUSTQTY=0 and FUSERATE=0)
+                                                             INNER JOIN T_PRD_PPBOMENTRY_C T5 ON T1.FID=T5.FID AND T1.FENTRYID=T5.FENTRYID
+                                                             INNER JOIN T_BD_MATERIAL T3 ON T1.FMATERIALID=T3.FMATERIALID  AND T3.FMATERIALID NOT IN (SELECT FMATERIALID FROM T_BD_MATERIALBASE WHERE FErpClsID=5 )
+                                                             INNER JOIN T_BD_MATERIAL_L T4 ON T1.FMATERIALID=T4.FMATERIALID AND T4.FLOCALEID=2052
+                                                             WHERE T.FMOBillNO='{0}' AND T.FMOENTRYSEQ={1} AND T5.FISSUETYPE IN ('1','3')", MoBillNo, MoBillEntrySeq);
+            DynamicObjectCollection source = DBServiceHelper.ExecuteDynamicObject(base.Context, strSql);
+            return source.ToList<DynamicObject>();
         }
     }
 }

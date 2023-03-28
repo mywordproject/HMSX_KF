@@ -59,6 +59,18 @@ namespace HMSX.Second.Plugin.MES
             {
                 case "FBUTTON_OPTPLANNUMBERSCAN":
                     string scanText = this.View.Model.GetValue("FText_OptPlanNumberScan").ToString();
+                    //校验剩余数量是否为零
+                    string syslsql = $@"SELECT top 1 F_260_SYBDSL from T_SFC_DISPATCHDETAILENTRY  
+                          WHERE F_260_CSTM!= ''and F_260_CSTM like '%{scanText}%'
+                          order by FDISPATCHTIME desc";
+                    var sysls = DBUtils.ExecuteDynamicObject(Context, syslsql);
+                    if (sysls.Count > 0)
+                    {
+                        if (Convert.ToDecimal(sysls[0]["F_260_SYBDSL"]) == 0)
+                        {
+                            throw new KDBusinessException("", "该条码剩余绑定数量为零！！！");
+                        }
+                    }
                     FillAllData(scanText);
                     this.View.Model.SetValue("FText_OptPlanNumberScan", "");
                     this.View.UpdateView("FText_OptPlanNumberScan");
@@ -90,9 +102,16 @@ namespace HMSX.Second.Plugin.MES
         }
         private void FillAllData(string ScanText)
         {
-            if (ScanText != "")
+            if (!string.IsNullOrEmpty(ScanText) && !string.IsNullOrWhiteSpace(ScanText))
             {
-
+                var jys = this.Model.DataObject["MobileListViewEntity"] as DynamicObjectCollection;
+                foreach (var jy in jys)
+                {
+                    if (jy["F_CSTM"].ToString().Contains(ScanText))
+                    {
+                        throw new KDBusinessException("", "重复扫码！！！");
+                    }
+                }
                 string ylqdsql = $@"/*dialect*/select 
                          PGMX.FMoBillNo,PGMX.FMOSEQ,PGMX.FMoNumber,PGMX.FOptPlanNo,PGMX.FProcess,PGMX.FOperNumber,PGMX.FSEQNUMBER, 
                          PGMX.OptPlanNo,PGMX.FMaterialId,PGMX.FMaterialName,PGMX.F_LOT_Text,PGMX.FWORKQTY,PGMX.F_260_CSTM,PGMX.FBARCODE  
@@ -107,9 +126,10 @@ namespace HMSX.Second.Plugin.MES
                            inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                            left join T_BD_MATERIAL_L t2 on t.FMATERIALID = t2.FMATERIALID and t2.FLOCALEID = 2052  
                            left join T_ENG_PROCESS_L t3 on t.FPROCESSID=t3.FID and t3.FLOCALEID = 2052
-                            WHERE F_260_CSTM!=''and F_260_CSTM like '%{ScanText}%'
+                            WHERE F_260_CSTM!=''and F_260_CSTM like '%{ScanText}%' and F_260_SYBDSL!=0
                            ) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
                          where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}'";
+                //校验剩余数量是否为零
                 var rs = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
                 if (rs.Count > 0)
                 {
@@ -132,8 +152,9 @@ namespace HMSX.Second.Plugin.MES
                         if (j == 0)
                         {
                             this.View.Model.InsertEntryRow("FMobileListViewEntity", 0);
+                            int rowCount = this.View.Model.GetEntryRowCount("FMobileListViewEntity");
                             int Seq = i + 1;
-                            this.View.Model.SetValue("FSeq", Seq + 1, i);
+                            this.View.Model.SetValue("FSeq", rowCount + 1, i);
                             this.View.Model.SetValue("FMONumber", rs[i]["FMoNumber"].ToString(), 0);
                             this.View.Model.SetValue("FOperPlanNo", rs[i]["OptPlanNo"].ToString(), 0);
                             if (rs[i]["FProcess"] != null)
@@ -152,7 +173,7 @@ namespace HMSX.Second.Plugin.MES
                 else
                 {
                     this.View.Model.SetValue("FText_OptPlanNumberScan", "");
-                    throw new KDBusinessException("", "条码不是物料" + WLDM + "的子项物料,请重新扫码！！！");
+                    throw new KDBusinessException("", "条码不是物料" + WLDM + "的子项物料,或者已被绑定，请重新扫码！！！");
                 }
             }
         }
@@ -173,6 +194,7 @@ namespace HMSX.Second.Plugin.MES
                     {
                         if (!string.IsNullOrEmpty(e.Value.ToString()) && !string.IsNullOrWhiteSpace(e.Value.ToString()))
                         {
+                            
                             FillAllData(e.Value.ToString());
                             e.Value = string.Empty;
                         }
@@ -197,7 +219,8 @@ namespace HMSX.Second.Plugin.MES
                          inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
                          inner join T_BD_MATERIAL c on  a.FMATERIALID=c.FMATERIALID
                          inner join T_BD_MATERIAL_L d on  b.FMATERIALID=d.FMATERIALID
-                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}'";
+                         inner join t_BD_MaterialBase e on b.FMATERIALID=e.FMATERIALID
+                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and FERPCLSID!=1";
             var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
             DynamicObjectCollection dates = this.Model.DataObject["MobileListViewEntity"] as DynamicObjectCollection;
             foreach(var ylqd in ylqds)
