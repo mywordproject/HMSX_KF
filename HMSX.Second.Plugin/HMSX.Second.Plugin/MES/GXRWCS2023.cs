@@ -1,4 +1,4 @@
-﻿using HMSX.MFG.Mobile.Business.PlugIn;
+﻿using HMSX.MFG.Mobile.Business.PlugIn.Second;
 using HMSX.Second.Plugin.供应链;
 using Kingdee.BOS;
 using Kingdee.BOS.App.Core.Utils;
@@ -30,8 +30,8 @@ using System.Text;
 namespace HMSX.Second.Plugin.MES
 {
     [HotUpdate]
-    [Description("工序任务超市--领料数大于零，不允许关闭")]
-    public class GXRWCS : MobileComplexTaskPoolListEdit
+    [Description("工序任务超市--领料数大于零，不允许关闭2023")]
+    public class GXRWCS2023 : MobileComplexTaskPoolListEdit
     {
         List<long> list = new List<long>();
         Dictionary<long, long> dic = new Dictionary<long, long>();
@@ -269,7 +269,7 @@ namespace HMSX.Second.Plugin.MES
                            WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
                              where c.FNUMBER='{dictionary["FMaterialNumber"]}'and  a.FMOBILLNO='{dictionary["FMoBillNo"]}' and a.FMOENTRYSEQ='{dictionary["FMoSeq"]}'";
                         var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
-                        if (ylqds.Count <= 1 && !dictionary["FMaterialNumber"].ToString().Contains("260.02."))
+                        if (ylqds.Count <= 1)
                         {
                             foreach (var ylqd in ylqds)
                             {

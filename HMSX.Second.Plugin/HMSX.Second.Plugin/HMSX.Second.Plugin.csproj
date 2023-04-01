@@ -40,6 +40,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.dll</HintPath>
     </Reference>
+    <Reference Include="HMSX.MFG.Mobile.Business.PlugIn.Second, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.MFG.Mobile.Business.PlugIn.Second.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.BOS, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.dll</HintPath>
@@ -311,8 +315,10 @@
   <ItemGroup>
     <Compile Include="GXHBHZBillPlugin.cs" />
     <Compile Include="MES\BOMMobilePlugin.cs" />
+    <Compile Include="MES\GXRWCS2023.cs" />
     <Compile Include="MES\HBLLSMMobilePlugin.cs" />
     <Compile Include="MES\JSWDMobilePlugin.cs" />
+    <Compile Include="MES\PGGXBGModilPlugin2023.cs" />
     <Compile Include="MES\SMBDMobilePlugin.cs" />
     <Compile Include="MES\ZJLLMobilePlugin.cs" />
     <Compile Include="PLM\WDKPLMListPlugin.cs" />

@@ -56,21 +56,42 @@ namespace HMSX.Second.Plugin.供应链
                                     }                                  
                                     i++;
                                 }
-                                string ylqdsql = $@"select 
-                                FNUMERATOR/FDENOMINATOR bl,F_260_SYBDSL,PGMX.FENTRYID
+                                string ylqdsql = $@"/*dialect*/select 
+                                FNUMERATOR/FDENOMINATOR bl,PGMX.FENTRYID
                                 from T_PRD_PPBOM a
-                                inner join T_PRD_PPBOMENTRY b on a.fid=b.fid                
+                                inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                                inner join t_BD_MaterialBase c ON c.FMATERIALID=b.FMATERIALID and FERPCLSID!=1
                                 INNER JOIN
-                                (SELECT FENTRYID,FMATERIALID,F_260_SYBDSL from T_SFC_DISPATCHDETAIL t 
-                                inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  WHERE F_260_CSTM!=''and ({tm.Trim('r').Trim('o')})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
+                                 (  SELECT distinct FMATERIALID,
+                                     (SELECT distinct  convert(varchar(255),b.FENTRYID)+','
+                                     from T_SFC_DISPATCHDETAIL A
+                                     inner join T_SFC_DISPATCHDETAILENTRY B on A.FID=B.FID  
+                                     WHERE F_260_CSTM!=''and ({tm}) AND A.FMATERIALID=T.FMATERIALID for xml path(''))as FENTRYID
+                                     from T_SFC_DISPATCHDETAIL t 
+                                     inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
+                                     WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
                                 where a.FMATERIALID='{date["MaterialId_Id"]}'and  a.FMOBILLNO='{date["MoBillNo"]}' and a.FMOENTRYSEQ='{date["MoSeq"]}'";
                                 var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
-                                foreach (var ylqd in ylqds)
+                                if (ylqds.Count <= 1 && !((DynamicObject)date["MaterialId"])["Number"].ToString().Contains("260.02."))
                                 {
-                                    string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
+                                    foreach (var ylqd in ylqds)
+                                    {
+                                        string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
                                     F_260_SYBDSL=FWORKQTY,F_260_XBSL=0
-                                    where FENTRYID='{ylqd["FENTRYID"]}'";
-                                    DBUtils.Execute(Context, upsql);
+                                    where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
+                                        DBUtils.Execute(Context, upsql);
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var ylqd in ylqds)
+                                    {
+                                        string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
+                             F_260_SYBDSL=F_260_SYBDSL+{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(entity["WorkQty"])},
+                               F_260_XBSL=F_260_XBSL-{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(entity["WorkQty"])}
+                             where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
+                                        DBUtils.Execute(Context, upsql);
+                                    }
                                 }
                             }
                         }

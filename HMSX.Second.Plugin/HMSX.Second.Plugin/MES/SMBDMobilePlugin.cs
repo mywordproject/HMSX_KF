@@ -98,6 +98,33 @@ namespace HMSX.Second.Plugin.MES
                 case "F_FHSJ":
                     FHSJ();
                     return;
+                case "F_BUTTON_SC":
+                    SC();
+                    this.View.UpdateView("FMobileListViewEntity");
+                    return;
+            }
+        }
+        public void SC()
+        {
+            int rowcount = this.View.Model.GetEntryRowCount("FMobileListViewEntity");
+            if (rowcount > 0)
+            {
+                for (int row = 0; row < rowcount; row++)
+                {
+                    if (Convert.ToBoolean(this.View.Model.GetValue("FSelect", row)))
+                    {
+                        this.Model.DeleteEntryRow("FMobileListViewEntity", row);
+                        if (this.View.Model.GetEntryRowCount("FMobileListViewEntity") != 0)
+                        {
+                            SC();
+                        }                      
+                        break;
+                    }
+                }               
+            }
+            else
+            {
+                throw new KDBusinessException("", "请选择需要删除的行！！！");
             }
         }
         private void FillAllData(string ScanText)
@@ -109,19 +136,19 @@ namespace HMSX.Second.Plugin.MES
                 {
                     if (jy["F_CSTM"].ToString().Contains(ScanText))
                     {
-                        throw new KDBusinessException("", "重复扫码！！！");
+                        throw new KDBusinessException("", "重复扫码或者已扫合批内的条码！！！");
                     }
                 }
                 string ylqdsql = $@"/*dialect*/select 
                          PGMX.FMoBillNo,PGMX.FMOSEQ,PGMX.FMoNumber,PGMX.FOptPlanNo,PGMX.FProcess,PGMX.FOperNumber,PGMX.FSEQNUMBER, 
-                         PGMX.OptPlanNo,PGMX.FMaterialId,PGMX.FMaterialName,PGMX.F_LOT_Text,PGMX.FWORKQTY,PGMX.F_260_CSTM,PGMX.FBARCODE  
+                         PGMX.OptPlanNo,PGMX.FMaterialId,PGMX.FMaterialName,PGMX.F_LOT_Text,PGMX.FWORKQTY,PGMX.F_260_CSTM,PGMX.FBARCODE,F_260_SYBDSL  
                          from T_PRD_PPBOM a
                          inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
                          inner join T_BD_MATERIAL c on  a.FMATERIALID=c.FMATERIALID
                          inner join T_BD_MATERIAL d on  b.FMATERIALID=d.FMATERIALID
                          INNER JOIN
                          (select FMoBillNo,FMOSEQ,concat(FMoBillNo,'-',FMOSEQ) as FMoNumber,FOptPlanNo,t3.FName as FProcess,FOperNumber,FSEQNUMBER,F_260_CSTM,
-                           concat(FOptPlanNo,'-',FSEQNUMBER,'-',FOperNumber) as OptPlanNo,t.FMaterialId,t2.FNAME as FMaterialName,t1.F_LOT_Text,t1.FWORKQTY,t1.FEntryId,t1.FBARCODE  
+                           concat(FOptPlanNo,'-',FSEQNUMBER,'-',FOperNumber) as OptPlanNo,t.FMaterialId,t2.FNAME as FMaterialName,t1.F_LOT_Text,t1.FWORKQTY,t1.FEntryId,t1.FBARCODE,F_260_SYBDSL  
                            from T_SFC_DISPATCHDETAIL t 
                            inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                            left join T_BD_MATERIAL_L t2 on t.FMATERIALID = t2.FMATERIALID and t2.FLOCALEID = 2052  
@@ -164,7 +191,7 @@ namespace HMSX.Second.Plugin.MES
                             this.View.Model.SetValue("FPgBarCode", rs[i]["FBARCODE"].ToString(), 0);
                             this.View.Model.SetValue("FProductId", rs[i]["FMaterialName"].ToString(), 0);
                             this.View.Model.SetValue("FLot", rs[i]["F_LOT_Text"].ToString(), 0);
-                            this.View.Model.SetValue("FQty", rs[i]["FWORKQTY"].ToString(), 0);
+                            this.View.Model.SetValue("FQty", rs[i]["F_260_SYBDSL"].ToString(), 0);
                             this.View.Model.SetValue("F_CSTM", rs[i]["F_260_CSTM"].ToString(), 0);
                             this.View.UpdateView("FMobileListViewEntity");
                         }
@@ -214,36 +241,63 @@ namespace HMSX.Second.Plugin.MES
             decimal bl = 0;
             string tm = "";
             string ylqdsql = $@"/*dialect*/select 
-                         d.FNAME,FNUMERATOR/FDENOMINATOR bl
+                        d.FMATERIALID,d.FNAME,b1.FSTOCKID,FNUMERATOR/FDENOMINATOR bl
                          from T_PRD_PPBOM a
                          inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                         inner join T_PRD_PPBOMENTRY_C b1 on b1.FENTRYID=b.FENTRYID
                          inner join T_BD_MATERIAL c on  a.FMATERIALID=c.FMATERIALID
                          inner join T_BD_MATERIAL_L d on  b.FMATERIALID=d.FMATERIALID
                          inner join t_BD_MaterialBase e on b.FMATERIALID=e.FMATERIALID
-                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and FERPCLSID!=1";
+                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and FERPCLSID!=1 and a.FPRDORGID=100026";
             var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
             DynamicObjectCollection dates = this.Model.DataObject["MobileListViewEntity"] as DynamicObjectCollection;
             foreach(var ylqd in ylqds)
             {
                 decimal pgsl = 0;
+                string pc = "";//批次
                 foreach (var date in dates)
                 {
                     if (ylqd["FNAME"].ToString() == date["FProductId"].ToString())
                     {
                         pgsl = pgsl + Convert.ToDecimal(date["FQty"]);
                         tm = tm + date["F_CSTM"].ToString()+",";
+                        pc+= "'"+date["FLot"].ToString()+"'" + ",";
                     }                  
                 }
+                if (pc != "")
+                {
+                    string[] strpc = pc.Trim(',').Split(',');
+                    string jskcsql = $@"/*dialect*/select * from 
+                                      (select TOP {strpc.Length} A.FMATERIALID,B.FNUMBER,A.FSTOCKID from T_STK_INVENTORY A
+                                       INNER JOIN T_BD_LOTMASTER B ON B.FLOTID =A.FLOT 
+                                       INNER JOIN 
+                                       (select A.FMATERIALID,B.F_RUJP_LOT from T_SFC_DISPATCHDETAIL A
+                                       LEFT JOIN T_SFC_DISPATCHDETAILENTRY  B ON A.FID=B.FID
+                                       WHERE F_260_CSTM!='' AND F_260_SYBDSL>0 and A.FMATERIALID='{ylqd["FMATERIALID"]}')PGMX  ON PGMX.FMATERIALID=A.FMATERIALID AND PGMX.F_RUJP_LOT=B.FNUMBER
+                                       where A.FMATERIALID='{ylqd["FMATERIALID"]}' and A.FSTOCKID='{ylqd["FSTOCKID"]}' AND A.FSTOCKORGID=100026 and A.FBASEQTY>0 and A.FSTOCKSTATUSID=case when A.FSTOCKID=22315406 then 27910195 else 10000 end
+                                       ORDER BY B.FNUMBER)jskc
+                                      WHERE jskc.FNUMBER IN({pc.Trim(',')}) ";
+                    var jskcs = DBUtils.ExecuteDynamicObject(Context, jskcsql);
+                    if (jskcs.Count != strpc.Length)
+                    {
+                        throw new KDBusinessException("", "绑定条码需按批号先进先出顺序绑定！！");
+                    }
+                }               
                 if (bl == 0)
                 {
                     bl = pgsl / Convert.ToDecimal(ylqd["bl"]);
                 }
                 else
                 {
-                    if(bl!= (pgsl / Convert.ToDecimal(ylqd["bl"])))
+                    if(bl>(pgsl / Convert.ToDecimal(ylqd["bl"])))
                     {
-                        throw new KDBusinessException("", "扫描条码的物料数量与BOM不成比例！！！");
+                        bl = (pgsl / Convert.ToDecimal(ylqd["bl"]));
+                        //throw new KDBusinessException("", "扫描条码的物料数量与BOM不成比例！！！");
                     }
+                }
+                if (bl == 0)
+                {
+                    throw new KDBusinessException("", "缺少绑定物料"+ ylqd["FNAME"].ToString() + "！！！");
                 }
             }
             if (Convert.ToDecimal(RLSL) < bl)
