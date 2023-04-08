@@ -652,6 +652,10 @@ namespace HMSX.MFG.Mobile.Business.PlugIn
                 }
                 foreach (DynamicObject obj in result)
                 {
+                    String upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
+                        F_260_CSTM='{dynamicObject2["OptPlanNo"].ToString().Replace(" ", "") + '-' + dynamicObject2["SeqNumber"].ToString().Replace(" ", "") + '-' + dynamicObject2["OperNumber"].ToString().Replace(" ", "") + '-' + obj["BarCode"].ToString().Replace(" ", "")}'                    
+                        where FENTRYID='{obj["Id"]}'";
+                    DBUtils.Execute(Context, upsql);
                     string billBarCode = obj["BarCode"].ToString();
                     this.Print(billBarCode, true);
                 }

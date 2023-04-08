@@ -66,18 +66,7 @@ namespace HMSX.Second.Plugin.MES
             int rowIndex = this.Model.GetEntryCurrentRowIndex("FMobileListViewEntity");
             Dictionary<string, object> currentRowData = this.GetCurrentRowData(rowIndex);
             string malnumber = currentRowData["FProductId"].ToString().Substring(0, currentRowData["FProductId"].ToString().IndexOf("/"));
-            string[] scdd = currentRowData["FMONumber"].ToString().Split('-');
-            string wlqdsql = $@"select * from T_PRD_PPBOM a
-                         inner join T_PRD_PPBOMENTRY b  on b.fid=a.fid
-                         left join t_BD_MaterialBase c ON c.FMATERIALID=b.FMATERIALID
-                         left join t_BD_Material d on a.FMATERIALID=d.FMATERIALID 
-                         where d.fnumber='{malnumber}' and a.FMOBILLNO='{scdd[0]}' and a.FMOENTRYSEQ='{scdd[1]}' and FERPCLSID!=1 ";
-            wlqd = DBUtils.ExecuteDynamicObject(Context, wlqdsql);
-            if (wlqd.Count == 0)
-            {
-                throw new KDBusinessException("", "冲压工序无需扫码绑定初始条码！！");
-
-            }
+            string[] scdd = currentRowData["FMONumber"].ToString().Split('-');          
             MobileShowParameter param = new MobileShowParameter();
             param.FormId = "k2ffc9666e58c4553a7ecacdb69e9b10a";
             param.ParentPageId = this.View.PageId;
@@ -233,65 +222,65 @@ namespace HMSX.Second.Plugin.MES
                 }
                 foreach (var dictionary in dictionarys)
                 {//反写绑定数量
-                    string pgtmsql = $@"select * from T_SFC_DISPATCHDETAILENTRY where FBARCODE='{dictionary["FBarCode"]}'";
-                    var pgtms = DBUtils.ExecuteDynamicObject(Context, pgtmsql);
-                    foreach (var pgtm in pgtms)
-                    {
-                        string[] cstms = pgtm["F_260_CSTM"].ToString().Split(',');
-                        string tm = "";
-                        int i = 1;
-                        foreach (string cstm in cstms)
-                        {
-                            if (i == cstms.Length)
-                            {
-                                tm = tm + "F_260_CSTM like '%" + cstm + "%'";
-                            }
-                            else
-                            {
-                                tm = tm + "F_260_CSTM like '%" + cstm + "%'  or ";
-                            }
-                            i++;
-                        }
-                        string ylqdsql = $@"/*dialect*/select 
-                              FNUMERATOR/FDENOMINATOR bl,PGMX.FENTRYID
-                              from T_PRD_PPBOM a
-                              inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
-                              INNER JOIN t_BD_Material c on a.FMATERIALID=c.FMATERIALID
-                              inner join t_BD_MaterialBase d ON b.FMATERIALID=d.FMATERIALID and FERPCLSID!=1
-                              INNER JOIN
-                               (  SELECT distinct FMATERIALID,
-                           (SELECT distinct  convert(varchar(255),b.FENTRYID)+','
-                           from T_SFC_DISPATCHDETAIL A
-                           inner join T_SFC_DISPATCHDETAILENTRY B on A.FID=B.FID  
-                           WHERE F_260_CSTM!=''and ({tm}) AND A.FMATERIALID=T.FMATERIALID for xml path(''))as FENTRYID
-                           from T_SFC_DISPATCHDETAIL t 
-                           inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
-                           WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
-                             where c.FNUMBER='{dictionary["FMaterialNumber"]}'and  a.FMOBILLNO='{dictionary["FMoBillNo"]}' and a.FMOENTRYSEQ='{dictionary["FMoSeq"]}'";
-                        var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
-                        if (ylqds.Count <= 1 && !dictionary["FMaterialNumber"].ToString().Contains("260.02."))
-                        {
-                            foreach (var ylqd in ylqds)
-                            {
-                                string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
-                             F_260_SYBDSL=FWORKQTY,F_260_XBSL=0
-                             where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
-                                DBUtils.Execute(Context, upsql);
-                            }
-                        }
-                        else
-                        {
-                            foreach (var ylqd in ylqds)
-                            {
-                                string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
-                             F_260_SYBDSL=F_260_SYBDSL+{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(pgtm["FWORKQTY"])},
-                               F_260_XBSL=F_260_XBSL-{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(pgtm["FWORKQTY"])}
-                             where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
-                                DBUtils.Execute(Context, upsql);
-                            }
-                        }
+                    //string pgtmsql = $@"select * from T_SFC_DISPATCHDETAILENTRY where FBARCODE='{dictionary["FBarCode"]}'";
+                    //var pgtms = DBUtils.ExecuteDynamicObject(Context, pgtmsql);
+                    //foreach (var pgtm in pgtms)
+                    //{
+                    //    string[] cstms = pgtm["F_260_CSTM"].ToString().Split(',');
+                    //    string tm = "";
+                    //    int i = 1;
+                    //    foreach (string cstm in cstms)
+                    //    {
+                    //        if (i == cstms.Length)
+                    //        {
+                    //            tm = tm + "F_260_CSTM like '%" + cstm + "%'";
+                    //        }
+                    //        else
+                    //        {
+                    //            tm = tm + "F_260_CSTM like '%" + cstm + "%'  or ";
+                    //        }
+                    //        i++;
+                    //    }
+                    //    string ylqdsql = $@"/*dialect*/select 
+                    //          FNUMERATOR/FDENOMINATOR bl,PGMX.FENTRYID
+                    //          from T_PRD_PPBOM a
+                    //          inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                    //          INNER JOIN t_BD_Material c on a.FMATERIALID=c.FMATERIALID
+                    //          inner join t_BD_MaterialBase d ON b.FMATERIALID=d.FMATERIALID and FERPCLSID!=1
+                    //          INNER JOIN
+                    //           (  SELECT distinct FMATERIALID,
+                    //       (SELECT distinct  convert(varchar(255),b.FENTRYID)+','
+                    //       from T_SFC_DISPATCHDETAIL A
+                    //       inner join T_SFC_DISPATCHDETAILENTRY B on A.FID=B.FID  
+                    //       WHERE F_260_CSTM!=''and ({tm}) AND A.FMATERIALID=T.FMATERIALID for xml path(''))as FENTRYID
+                    //       from T_SFC_DISPATCHDETAIL t 
+                    //       inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
+                    //       WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
+                    //         where c.FNUMBER='{dictionary["FMaterialNumber"]}'and  a.FMOBILLNO='{dictionary["FMoBillNo"]}' and a.FMOENTRYSEQ='{dictionary["FMoSeq"]}'";
+                    //    var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
+                    //    if (ylqds.Count <= 1 && !dictionary["FMaterialNumber"].ToString().Contains("260.02."))
+                    //    {
+                    //        foreach (var ylqd in ylqds)
+                    //        {
+                    //            string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
+                    //         F_260_SYBDSL=FWORKQTY,F_260_XBSL=0
+                    //         where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
+                    //            DBUtils.Execute(Context, upsql);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        foreach (var ylqd in ylqds)
+                    //        {
+                    //            string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
+                    //         F_260_SYBDSL=F_260_SYBDSL+{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(pgtm["FWORKQTY"])},
+                    //           F_260_XBSL=F_260_XBSL-{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(pgtm["FWORKQTY"])}
+                    //         where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
+                    //            DBUtils.Execute(Context, upsql);
+                    //        }
+                    //    }
                         
-                    }
+                    //}
                     string fsjysql = $@"select FNUMBER,FNAME from  T_BAS_PREBDFIVE a
                                            inner join T_BAS_PREBDFIVE_L b on a.FID=b.FID
                                            WHERE FNAME='关闭校验'";

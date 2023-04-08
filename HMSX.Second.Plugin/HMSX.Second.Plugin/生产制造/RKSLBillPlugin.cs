@@ -25,7 +25,7 @@ namespace HMSX.Second.Plugin
         {
             base.OnPreparePropertys(e);
             String[] propertys = { "FMaterialId", "FLot", "FSrcBillNo", "FRealQty", "FSrcEntrySeq", 
-                "F_RUJP_PgBARCODE", "FHMSXBZ", "FMtoNo", "FSrcBillNo" , "FDate","FApproveDate" };
+                "F_RUJP_PgBARCODE", "FHMSXBZ", "FMtoNo", "FSrcBillNo" , "FDate","FApproveDate","F_260_OptPlanNo" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -91,6 +91,14 @@ namespace HMSX.Second.Plugin
                                   where F_260_SBBM='{entry["MaterialId_Id"]}' ";
                                 DBUtils.Execute(Context, upsql1);
                             }
+                            //更新派工明细剩余绑定数
+                            if(entry["F_260_OptPlanNo"]!=null && entry["F_260_OptPlanNo"].ToString()!="" && entry["F_260_OptPlanNo"].ToString() != " ")
+                            {
+                                String syslsql = $@"update T_SFC_DISPATCHDETAILENTRY set                        
+                            F_260_SYBDSL=F_260_SYBDSL+{Convert.ToDecimal(entry["RealQty"])}
+                            where FBARCODE='{entry["F_RUJP_PgBARCODE"]}'";
+                                DBUtils.Execute(Context, syslsql);
+                            }                          
                         }
                     }
                 }
@@ -104,6 +112,15 @@ namespace HMSX.Second.Plugin
                         var entrys = date["Entity"] as DynamicObjectCollection;
                         foreach (var entry in entrys)
                         {
+                            //更新派工明细剩余绑定数
+                            if (entry["F_260_OptPlanNo"] != null && entry["F_260_OptPlanNo"].ToString() != "" && entry["F_260_OptPlanNo"].ToString() != " ")
+                            {
+                                String syslsql = $@"update T_SFC_DISPATCHDETAILENTRY set                        
+                                F_260_SYBDSL=F_260_SYBDSL-{Convert.ToDecimal(entry["RealQty"])}
+                                where FBARCODE='{entry["F_RUJP_PgBARCODE"]}'";
+                                DBUtils.Execute(Context, syslsql);
+                            }
+
                             string upsql = $@"update T_QM_INSPECTBILLENTRY
                         set  F_260_RKSL=F_260_RKSL-{Convert.ToDouble(entry["RealQty"].ToString())}
                         where FENTRYID =(select a.FENTRYID from T_QM_INSPECTBILLENTRY_A a

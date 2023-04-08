@@ -20,7 +20,7 @@ namespace HMSX.Second.Plugin.供应链
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "F_260_CSTM", "FMoBillNo", "FMoSeq" , "FMaterialId", "FWorkQty" , "F_260_LLSL" };
+            String[] propertys = { "F_260_CSTM", "FMoBillNo", "FMoSeq" , "FMaterialId", "FWorkQty" , "F_260_LLSL", "F_260_CFYSM" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -39,24 +39,27 @@ namespace HMSX.Second.Plugin.供应链
                         DynamicObject date = extended.DataEntity;
                         foreach (var entity in date["DispatchDetailEntry"] as DynamicObjectCollection)
                         {
-                            if (entity["F_260_CSTM"] != null && entity["F_260_CSTM"].ToString() != "" && Convert.ToDecimal(entity["F_260_LLSL"])==0)
+                            string cftm = entity["F_260_CFYSM"] == null ? "" : entity["F_260_CFYSM"].ToString();
+                            if (cftm=="" || cftm == " ")
                             {
-                                string[] cstms = entity["F_260_CSTM"].ToString().Split(',');
-                                string tm = "";
-                                int i = 1;
-                                foreach (string cstm in cstms)
+                                if (entity["F_260_CSTM"] != null && entity["F_260_CSTM"].ToString() != "" && Convert.ToDecimal(entity["F_260_LLSL"]) == 0)
                                 {
-                                    if(i== cstms.Length)
+                                    string[] cstms = entity["F_260_CSTM"].ToString().Split(',');
+                                    string tm = "";
+                                    int i = 1;
+                                    foreach (string cstm in cstms)
                                     {
-                                        tm = tm + "F_260_CSTM like '%" + cstm + "%'";
+                                        if (i == cstms.Length)
+                                        {
+                                            tm = tm + "F_260_CSTM like '%" + cstm + "%'";
+                                        }
+                                        else
+                                        {
+                                            tm = tm + "F_260_CSTM like '%" + cstm + "%'  or ";
+                                        }
+                                        i++;
                                     }
-                                    else
-                                    {
-                                        tm = tm + "F_260_CSTM like '%" + cstm + "%'  or ";
-                                    }                                  
-                                    i++;
-                                }
-                                string ylqdsql = $@"/*dialect*/select 
+                                    string ylqdsql = $@"/*dialect*/select 
                                 FNUMERATOR/FDENOMINATOR bl,PGMX.FENTRYID
                                 from T_PRD_PPBOM a
                                 inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
@@ -71,29 +74,50 @@ namespace HMSX.Second.Plugin.供应链
                                      inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
                                      WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
                                 where a.FMATERIALID='{date["MaterialId_Id"]}'and  a.FMOBILLNO='{date["MoBillNo"]}' and a.FMOENTRYSEQ='{date["MoSeq"]}'";
-                                var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
-                                if (ylqds.Count <= 1 && !((DynamicObject)date["MaterialId"])["Number"].ToString().Contains("260.02."))
-                                {
+                                    var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
                                     foreach (var ylqd in ylqds)
                                     {
-                                        string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
-                                    F_260_SYBDSL=FWORKQTY,F_260_XBSL=0
-                                    where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
-                                        DBUtils.Execute(Context, upsql);
-                                    }
-                                }
-                                else
-                                {
-                                    foreach (var ylqd in ylqds)
-                                    {
-                                        string upsql = $@"update T_SFC_DISPATCHDETAILENTRY set 
-                             F_260_SYBDSL=F_260_SYBDSL+{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(entity["WorkQty"])},
-                               F_260_XBSL=F_260_XBSL-{Convert.ToDecimal(ylqd["bl"]) * Convert.ToDecimal(entity["WorkQty"])}
-                             where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')})";
-                                        DBUtils.Execute(Context, upsql);
+                                        //派工数
+                                        decimal pgs = Convert.ToDecimal(entity["WorkQty"]);
+                                        string pgmxsql = $@"/*dialect*/select FENTRYID,F_260_XBSL-isnull(SL,0) F_260_XBSL from T_SFC_DISPATCHDETAILENTRY a
+	                                 left join (select PGTM,sum(SL)SL FROM  HMSX_CFB GROUP BY PGTM) b on a.FBARCODE=b.PGTM
+	                                 where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')}) order by FENTRYID";
+                                        var pgmxs = DBUtils.ExecuteDynamicObject(Context, pgmxsql);
+                                        foreach (var pgmx in pgmxs)
+                                        {
+                                            if (pgs > Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"]))
+                                            {
+                                                string upsql = $@"/*dialect*/update T_SFC_DISPATCHDETAILENTRY set 
+                                        F_260_SYBDSL+={Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"])},
+                                        F_260_XBSL-={Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"])}
+                                        where FENTRYID in ({pgmx["FENTRYID"].ToString().Trim(',')})";
+                                                DBUtils.Execute(Context, upsql);
+                                                pgs -= Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"]);
+                                            }
+                                            else
+                                            {
+                                                string upsql = $@"/*dialect*/update T_SFC_DISPATCHDETAILENTRY set 
+                                        F_260_SYBDSL=F_260_SYBDSL+{pgs * Convert.ToDecimal(ylqd["bl"])},
+                                        F_260_XBSL=F_260_XBSL-{pgs * Convert.ToDecimal(ylqd["bl"])}
+                                        where FENTRYID in ({pgmx["FENTRYID"].ToString().Trim(',')})";
+                                                DBUtils.Execute(Context, upsql);
+                                                pgs = 0;
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            else
+                            {
+                                //拆分表
+                                string upsql = $@"/*dialect*/ update T_SFC_DISPATCHDETAILENTRY set
+                            F_260_SYBDSL+=SL,F_260_XBSL-=SL
+                            from HMSX_CFB b where B.PGTM=T_SFC_DISPATCHDETAILENTRY.FBARCODE AND B.ZPGTM='{entity["Id"]}'";
+                                DBUtils.Execute(Context, upsql);
+                                string delsql = $@"/*dialect*/ delete HMSX_CFB where ZPGTM='{entity["Id"]}'";
+                                DBUtils.Execute(Context, delsql);
+                            }
+                            
                         }
                     }
                 }
