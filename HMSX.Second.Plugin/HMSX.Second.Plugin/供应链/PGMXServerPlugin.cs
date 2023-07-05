@@ -73,7 +73,7 @@ namespace HMSX.Second.Plugin.供应链
                                      from T_SFC_DISPATCHDETAIL t 
                                      inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
                                      WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
-                                where a.FMATERIALID='{date["MaterialId_Id"]}'and  a.FMOBILLNO='{date["MoBillNo"]}' and a.FMOENTRYSEQ='{date["MoSeq"]}'";
+                                where a.FMATERIALID='{date["MaterialId_Id"]}'and FNUMERATOR!=0 and  a.FMOBILLNO='{date["MoBillNo"]}' and a.FMOENTRYSEQ='{date["MoSeq"]}'";
                                     var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
                                     foreach (var ylqd in ylqds)
                                     {

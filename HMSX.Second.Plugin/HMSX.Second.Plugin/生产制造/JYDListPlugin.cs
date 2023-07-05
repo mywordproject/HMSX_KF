@@ -209,9 +209,41 @@ namespace HMSX.Second.Plugin.生产制造
                         {
                             foreach (var list in listcoll)
                             {
-                                string upsql1 = $@"update T_QM_INSPECTBILL set FINSPECTORID='{date[5]}' where FBILLNO='{list.DataRow["FBILLNO"].ToString()}'";
-                                DBUtils.ExecuteDynamicObject(Context, upsql1);
+                                //string upsql1 = $@"update T_QM_INSPECTBILL set FINSPECTORID='{date[5]}' where FBILLNO='{list.DataRow["FBILLNO"].ToString()}'";
+                                //DBUtils.ExecuteDynamicObject(Context, upsql1);
+                                string fid = list.FieldValues["FBillHead"].ToString();
+                                JObject json = new JObject();
+                                json.Add("IsDeleteEntry", false);
+                                JObject model = new JObject();
+                                model.Add("FID", fid);
+                                JObject FSourceOrgId = new JObject();
+                                FSourceOrgId.Add("FNumber", 260);//来源组织
+                                model.Add("FSourceOrgId", FSourceOrgId);
+                                JObject FInspectOrgId = new JObject();
+                                FInspectOrgId.Add("FNumber", 260);//质检组织
+                                model.Add("FInspectOrgId  ", FInspectOrgId);
+                                JObject jyy = new JObject();
+                                jyy.Add("FNumber", date[5]);
+                                model.Add("FInspectorId", jyy);
+                                json.Add("Model", model);
+                                var results = WebApiServiceCall.Save(this.Context, "QM_InspectBill", json.ToString());
+                                bool isSuccess = Convert.ToBoolean(JObject.Parse(JsonConvert.SerializeObject(results))["Result"]["ResponseStatus"]["IsSuccess"].ToString());
+                                string c = KDObjectConverter.SerializeObject(results);
+                                if (isSuccess)
+                                {
 
+                                }
+                                else
+                                {
+                                    string Errors = JObject.Parse(JsonConvert.SerializeObject(results))["Result"]["ResponseStatus"]["Errors"].ToString();
+                                    var JErrors = JArray.Parse(Errors);
+                                    string message = "";
+                                    foreach (var Error in JErrors)
+                                    {
+                                        message += ((JObject)Error)["Message"].ToString() + ",";
+                                    }
+                                    throw new KDBusinessException("", message);
+                                }
                             }
                             this.View.ShowMessage("批量修改成功！");
                             this.View.Refresh();

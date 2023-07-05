@@ -16,10 +16,10 @@ F:\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.cs
 F:\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.pdb
 F:\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.dll
 F:\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.AssemblyReference.cache
-F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.Second.Plugin.dll.config
-F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.Second.Plugin.dll
 F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.Second.Plugin.pdb
 G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.CoreCompileInputs.cache
 G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.CopyComplete
-G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.dll
 G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.pdb
+F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.Second.Plugin.dll.config
+F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\HMSX.Second.Plugin.dll
+G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.dll

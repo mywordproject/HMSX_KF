@@ -110,6 +110,18 @@ namespace HMSX.Second.Plugin.生产制造
                                             str += "_" + xmhs[0]["FNAME"].ToString();
                                         }
                                     }
+                                    if (entry["F_260_WLDWLX"].ToString() == "BD_Customer")
+                                    {
+                                        string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{entry["F_260_WLDWS_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1";
+                                        var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                        if (khwl.Count > 0 && khwl[0]["F_260_SFSI"].ToString() == "SI")
+                                        {
+                                            str += "_SI";
+                                        }
+                                    }
                                     string upsql = $@"/*dialect*/ update T_PRD_MOENTRY set FMTONO='{str}' where FENTRYID={entry["Id"]}";
                                     DBUtils.Execute(Context, upsql);
                                 }
@@ -117,9 +129,9 @@ namespace HMSX.Second.Plugin.生产制造
                         }
                         foreach (var entry in dates["TreeEntity"] as DynamicObjectCollection)
                         {
-                            if (entry["MaterialId"]!=null &&((DynamicObject)entry["MaterialId"])["Number"].ToString().EndsWith(".000")&&
-                                entry["WorkShopID"]!=null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString()== "000362" &&
-                                entry["StockId"]!=null && ((DynamicObject)entry["StockId"])["Name"].ToString().Contains("模具"))
+                            if (entry["MaterialId"] != null && ((DynamicObject)entry["MaterialId"])["Number"].ToString().EndsWith(".000") &&
+                                entry["WorkShopID"] != null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString() == "000362" &&
+                                entry["StockId"] != null && ((DynamicObject)entry["StockId"])["Name"].ToString().Contains("模具"))
                             {
                                 if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) == 0)
                                 {
@@ -130,14 +142,14 @@ namespace HMSX.Second.Plugin.生产制造
                                     throw new KDBusinessException("", "母订单单据编号不允许有横杠（-）");
                                 }
                             }
-                            if(entry["WorkShopID"] != null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString() == "000362" &&
-                                dates["BillNo"].ToString().Contains("-"))
-                            {
-                                if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"])!=0)
-                                {
-                                    throw new KDBusinessException("", "子订单模具用途为空");
-                                }
-                            }
+                            //if (entry["WorkShopID"] != null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString() == "000362" &&
+                            //    dates["BillNo"].ToString().Contains("-"))
+                            //{
+                            //    if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) != 0)
+                            //    {
+                            //        throw new KDBusinessException("", "子订单模具用途为空");
+                            //    }
+                            //}
                         }
                     }
                 }
@@ -221,8 +233,8 @@ namespace HMSX.Second.Plugin.生产制造
                         var entrys = dates["TreeEntity"] as DynamicObjectCollection;
                         foreach (var entry in entrys)
                         {
-                            if (entry["MaterialId"]!=null &&
-                                ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0,6)=="260.02"&&
+                            if (entry["MaterialId"] != null &&
+                                ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 6) == "260.02" &&
                                 dates["F_260_SCDDBHQF"].ToString() == "XNYYJ")
                             {
                                 entry["StockId_Id"] = 31730768;//正式ID31730768
@@ -235,7 +247,7 @@ namespace HMSX.Second.Plugin.生产制造
                             {
                                 foreach (var entry1 in entrys)
                                 {
-                                    if ( entry["ParentRowId"].ToString() == entry1["RowId"].ToString())
+                                    if (entry["ParentRowId"].ToString() == entry1["RowId"].ToString())
                                     {
                                         entry["Group"] = entry1["Seq"];
                                         break;
@@ -243,7 +255,11 @@ namespace HMSX.Second.Plugin.生产制造
                                 }
                                 entry["CheckProduct"] = 1;
                             }
-                            if (entry["MaterialId"]!=null && entry["ReqSrc"].ToString() == "1" && ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0,7)=="260.02.")
+                            if (dates["F_260_SCDDBHQF"]!=null && dates["F_260_SCDDBHQF"].ToString() == "YJ")
+                            {
+                                entry["F_260_SFNPI"] = "NPI_NEW";
+                            }
+                            else if (entry["MaterialId"] != null && entry["ReqSrc"].ToString() == "1" && ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 7) == "260.02.")
                             {
                                 string xsddsql = $@"select F_260_SFNPI from T_SAL_ORDER where FBILLNO='{entry["SaleOrderNo"]}'";
                                 var sxdd = DBUtils.ExecuteDynamicObject(Context, xsddsql);
@@ -252,10 +268,7 @@ namespace HMSX.Second.Plugin.生产制造
                                     entry["F_260_SFNPI"] = sxdd[0]["F_260_SFNPI"];
                                 }
                             }
-                            else if (entry["ReqSrc"].ToString() == "2")
-                            {
-                                entry["F_260_SFNPI"] = "批量";
-                            }
+                           
                             if (((DynamicObject)dates["BillType"])["Id"].ToString() == "0e74146732c24bec90178b6fe16a2d1c")
                             {
                                 if (((DynamicObject)entry["MaterialID"])["Number"].ToString().Substring(0, 6) == "260.02" &&
@@ -349,11 +362,11 @@ namespace HMSX.Second.Plugin.生产制造
                                 }
                             }
                         }
-                       //}
-                       //catch
-                       //{
-                       //    throw new KDBusinessException("", "访问WMS接口异常");
-                       //}
+                        //}
+                        //catch
+                        //{
+                        //    throw new KDBusinessException("", "访问WMS接口异常");
+                        //}
 
                     }
                 }

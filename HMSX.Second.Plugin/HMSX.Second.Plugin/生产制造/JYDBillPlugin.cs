@@ -31,6 +31,10 @@ namespace HMSX.Second.Plugin.生产制造
             //    this.View.InvokeFieldUpdateService("FInspectResult", xh);
             //}
         }
+        public override void AfterBindData(EventArgs e)
+        {
+            base.AfterBindData(e);
+        }
         public override void BeforeSave(BeforeSaveEventArgs e)
         {
             if (Context.CurrentOrganizationInfo.ID == 100026 && this.Model.GetValue("F_260_JYQF") != null)

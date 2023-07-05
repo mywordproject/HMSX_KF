@@ -62,7 +62,6 @@ namespace HMSX.Second.Plugin.MES
         }
         public void SMBD()
         {
-            string relt = "";
             int rowIndex = this.Model.GetEntryCurrentRowIndex("FMobileListViewEntity");
             Dictionary<string, object> currentRowData = this.GetCurrentRowData(rowIndex);
             string malnumber = currentRowData["FProductId"].ToString().Substring(0, currentRowData["FProductId"].ToString().IndexOf("/"));

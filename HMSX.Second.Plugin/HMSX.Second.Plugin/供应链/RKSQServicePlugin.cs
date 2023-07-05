@@ -147,6 +147,16 @@ namespace HMSX.Second.Plugin.供应链
                                                 str1 += "_" + xmhs[0]["FNUMBER"].ToString();
                                             }
                                         }
+                                        string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{entry["FHMSXKH_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1";
+                                        var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                        if (khwl.Count > 0 && khwl[0]["F_260_SFSI"].ToString() == "SI")
+                                        {
+                                            str += "_SI";
+                                            str1 += "_SI";
+                                        }
                                         string upsql = $@"/*dialect*/ update HMD_t_Cust_Entry100103 set FMTONO='{str}',F_260_JHGZHBM='{str1}' where FENTRYID={entry["Id"]}";
                                         DBUtils.Execute(Context, upsql);
                                     }
@@ -186,6 +196,15 @@ namespace HMSX.Second.Plugin.供应链
                                         {
                                             str2+= "_" + xmhname[0]["FNUMBER"];
                                            
+                                        }
+                                        string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{entry["FHMSXKH_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1";
+                                        var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                        if (khwl.Count > 0 && khwl[0]["F_260_SFSI"].ToString() == "SI")
+                                        {
+                                            str2 += "_SI";
                                         }
                                         string upsql = $@"/*dialect*/ update HMD_t_Cust_Entry100103 set F_260_JHGZHBM='{str2}' where FENTRYID={entry["Id"]}";
                                         DBUtils.Execute(Context, upsql);

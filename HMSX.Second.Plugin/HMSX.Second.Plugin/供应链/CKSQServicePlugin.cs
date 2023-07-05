@@ -172,12 +172,12 @@ namespace HMSX.Second.Plugin.供应链
                             {
                                 if (ck["是否按时交付"].ToString() == "是")
                                 {
-                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='1' where F_260_SBBM={ck["fmaterialid"]}";
+                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='1',FASJFSL={Convert.ToDecimal(ck["fqty"])} where F_260_SBBM={ck["fmaterialid"]}";
                                     DBUtils.Execute(Context, upsql1);
                                 }
                                 else
                                 {
-                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='0' where F_260_SBBM={ck["fmaterialid"]}";
+                                    string upsql1 = $@"/*dialect*/update HMD_t_Cust_Entry100111 set F_260_SFASJF='0',FASJFSL={Convert.ToDecimal(ck["fqty"])} where F_260_SBBM={ck["fmaterialid"]}";
                                     DBUtils.Execute(Context, upsql1);
                                 }
 

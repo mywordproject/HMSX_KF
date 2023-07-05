@@ -47,20 +47,21 @@ namespace HMSX.Second.Plugin.生产制造
                             DBUtils.Execute(Context, upsql);
                             if (entry["SrcStockId"] != null)
                             {
-                                if (
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK091" ||
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK092" ||
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK093" ||
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK067" ||
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK057" ||
-                                    ((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK028"  ||
-
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK091" ||
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK092" ||
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK093" ||
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK067" ||
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK057" ||
-                                    ((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK028")
+                                if (((DynamicObject)entry["SrcStockId"])["Name"].ToString().Contains("WMS")||
+                                    ((DynamicObject)entry["DestStockId"])["Name"].ToString().Contains("WMS"))
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK091" ||
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK092" ||
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK093" ||
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK067" ||
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK057" ||
+                                    //((DynamicObject)entry["SrcStockId"])["Number"].ToString() == "260CK028"  ||
+                                    //
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK091" ||
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK092" ||
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK093" ||
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK067" ||
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK057" ||
+                                    //((DynamicObject)entry["DestStockId"])["Number"].ToString() == "260CK028")
                                 {
                                     i = 1;
                                 }

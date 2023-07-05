@@ -149,15 +149,40 @@ namespace HMSX.Second.Plugin.MES
         {
             List<DynamicObject> PPBomInfo = this.GetPPBomInfo(MoBillNo, MoBillEntrySeq);
             var ppBominfosum = (from p in PPBomInfo select new { materialid = Convert.ToInt64(p["FMATERIALID"]), stockId = Convert.ToInt64(p["FSTOCKID"]), gys = Convert.ToInt64(p["GYS"]) }).Distinct().ToList();
+            string scddsql = $@"/*dialect*/ select  FBILLNO                                            
+                         from T_PRD_MO a
+                         inner join T_PRD_MOENTRY b on a.fid=b.fid
+                         inner join T_BAS_BILLTYPE c on c.FBILLTYPEID=A.FBILLTYPE
+                         where
+                         (A.FBILLNO like '%MO%' or A.FBILLNO like '%XNY%')
+                         and FPRDORGID=100026
+                         and  C.FNUMBER='SCDD02_SYS' and F_260_YDLX!='' 
+                         and FBILLNO='{MoBillNo}' and FSEQ='{MoBillEntrySeq}' ";
+            var scdd = DBUtils.ExecuteDynamicObject(Context, scddsql);
             foreach (var pp in ppBominfosum)
             {
-                string strSql = string.Format(@"SELECT  t.FSTOCKSTATUSID,T2.FNAME,t.FStockOrgId,t.FStockId,t.FMaterialId,t.FLot,t1.FNUMBER,t.FBASEUNITID,t.FBASEQTY FROM T_STK_INVENTORY t 
+                string strSql = "";
+                if (scdd.Count > 0)
+                {
+                    strSql = string.Format(@"SELECT  t.FSTOCKSTATUSID,T2.FNAME,t.FStockOrgId,t.FStockId,t.FMaterialId,t.FLot,t1.FNUMBER,t.FBASEUNITID,t.FBASEQTY FROM T_STK_INVENTORY t 
                 LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
                 left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId
-                WHERE t.FSTOCKSTATUSID=case when t.FStockId=22315406 then 27910195 else 10000 end   
+                WHERE t.FSTOCKSTATUSID in (33194113,33797546)  
                 AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
                 AND(t1.FSUPPLYID={2} or {2}=0 or {2}='')
                 ORDER BY FNUMBER ASC", pp.stockId, pp.materialid, pp.gys);
+                }
+                else
+                {
+                     strSql = string.Format(@"SELECT  t.FSTOCKSTATUSID,T2.FNAME,t.FStockOrgId,t.FStockId,t.FMaterialId,t.FLot,t1.FNUMBER,t.FBASEUNITID,t.FBASEQTY FROM T_STK_INVENTORY t 
+                LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
+                left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId
+                WHERE t.FSTOCKSTATUSID=case when t.FStockId in (22315406,31786848)  then 27910195 else 10000 end   
+                AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
+                AND(t1.FSUPPLYID={2} or {2}=0 or {2}='')
+                ORDER BY FNUMBER ASC", pp.stockId, pp.materialid, pp.gys);
+                }
+                  
                 DynamicObjectCollection stockrs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
                 var PPBomInfotmp = (from p in PPBomInfo where Convert.ToInt64(p["FMATERIALID"]) == pp.materialid && Convert.ToInt64(p["GYS"]) == pp.gys select p);
                 DynamicObjectCollection tmp = stockrs;
@@ -544,7 +569,6 @@ namespace HMSX.Second.Plugin.MES
                 {
                     DynamicObject obj1 = dynamicObjectCollection[i];
                     Decimal num = 0L;
-                    string lot;
                     for (int j = 0; j < pickinfoListsm.Count; j++)//需要领料数据
                     {
                         // foreach (DynamicObject rowObj in rows)//需要领料数据

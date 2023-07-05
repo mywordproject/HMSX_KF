@@ -23,6 +23,7 @@ using Kingdee.K3.PLM.CFG.Common.BusinessEntity.Manager.Document;
 using Kingdee.K3.PLM.CFG.Common.BusinessEntity.Manager.ERP;
 using Kingdee.K3.PLM.CFG.Common.BusinessEntity.Manager.InitializationTool;
 using Kingdee.K3.PLM.CFG.Common.BusinessEntity.Manager.PhysicalFile;
+using Kingdee.K3.PLM.CFG.Common.BusinessEntity.Operation;
 using Kingdee.K3.PLM.Common.BusinessEntity.View;
 using Kingdee.K3.PLM.Common.Core.BOSBridge;
 using Kingdee.K3.PLM.Common.Core.Operation;
@@ -60,7 +61,7 @@ namespace HMSX.Second.Plugin.基础资料
                     foreach (var date in e.DataEntitys)
                     {
                         string wl = date["MATERIALID"] == null ? "" : (date["MATERIALID"] as DynamicObject)["Number"].ToString().Substring(0, 7);
-                        if ((wl == "260.02." || wl == "260.03.") && date["BOMSRC"].ToString()!="A")
+                        if ((wl == "260.02." || wl == "260.03.") && date["BOMSRC"].ToString() != "A")
                         {
                             //创建BOM表单
                             using (CommonViewProxy proxy = new CommonViewProxy(PLMContext, formid, false))
@@ -95,7 +96,7 @@ namespace HMSX.Second.Plugin.基础资料
                                         {
                                             if (k == null)
                                             {
-                                                throw new KDBusinessException("", "子项物料"+((DynamicObject)erpBomId["MATERIALIDCHILD"])["Number"].ToString()+"未同步到plm，请联系系统管理员同步后再审核！");
+                                                throw new KDBusinessException("", "子项物料" + ((DynamicObject)erpBomId["MATERIALIDCHILD"])["Number"].ToString() + "未同步到plm，请联系系统管理员同步后再审核！");
                                             }
                                             id = Convert.ToInt64(k["Id"]);
                                         }
@@ -121,6 +122,97 @@ namespace HMSX.Second.Plugin.基础资料
 
                                 }
                                 //是否同步成功                     
+                            }
+                        }
+                    }
+                }
+                if (FormOperation.Operation.Equals("Forbid", StringComparison.OrdinalIgnoreCase))
+                {
+                    var formid = "10320000000000000005CA7946FD3274AAA";
+                    foreach (var date in e.DataEntitys)
+                    {
+                        string wl = date["MATERIALID"] == null ? "" : (date["MATERIALID"] as DynamicObject)["Number"].ToString().Substring(0, 7);
+                        if ((wl == "260.02." || wl == "260.03.") && date["BOMSRC"].ToString() != "A")
+                        {
+                            //创建BOM表单
+                            using (CommonViewProxy proxy = new CommonViewProxy(PLMContext, formid, false))
+                            {
+                                //查询出FID
+                                long fid = 0;
+                                string cxsql = $@"select FID from T_PLM_PDM_BASE_0 where FERPBOMID = '{date["Id"]}'";
+                                var cx = DBUtils.ExecuteDynamicObject(Context, cxsql);
+                                if (cx.Count > 0)
+                                {
+                                    fid = Convert.ToInt64(cx[0]["FID"]);
+                                    var view = proxy.GetEditView(fid);
+                                    var obj = view.Model.DataObject;
+                                    string targetStatus = "AD"; //归档对应的状态值
+                                    var stageConverts = new List<StageConvertItem>();
+                                    stageConverts.Add(new StageConvertItem { TargetStage = targetStatus, Object = obj });
+                                    var statusConvertResults = StageConvertMananger.Instance.SwitchStage(PLMContext, stageConverts);//返回状态转换结果
+                                }                   
+                            }
+                        }
+                    }
+                }
+                if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
+                {
+                    var formid = "10320000000000000005CA7946FD3274AAA";
+                    foreach (var date in e.DataEntitys)
+                    {
+                        string wl = date["MATERIALID"] == null ? "" : (date["MATERIALID"] as DynamicObject)["Number"].ToString().Substring(0, 7);
+                        if ((wl == "260.02." || wl == "260.03.") && date["BOMSRC"].ToString() != "A")
+                        {
+                            //创建BOM表单
+                            using (CommonViewProxy proxy = new CommonViewProxy(PLMContext, formid, false))
+                            {
+                                //查询出FID
+                                long fid = 0;
+                                string cxsql = $@"select FID from T_PLM_PDM_BASE_0 where FERPBOMID = '{date["Id"]}'";
+                                var cx = DBUtils.ExecuteDynamicObject(Context, cxsql);
+                                if (cx.Count > 0)
+                                {
+                                    fid = Convert.ToInt64(cx[0]["FID"]);
+                                    var view = proxy.GetEditView(fid);
+                                    var obj = view.Model.DataObject;
+                                    string targetStatus = "AJ"; //归档对应的状态值
+                                    var stageConverts = new List<StageConvertItem>();
+                                    stageConverts.Add(new StageConvertItem { TargetStage = targetStatus, Object = obj });
+                                    var statusConvertResults = StageConvertMananger.Instance.SwitchStage(PLMContext, stageConverts);//返回状态转换结果
+                                }
+                            }
+                        }
+                    }
+                }
+                if (FormOperation.Operation.Equals("Enable", StringComparison.OrdinalIgnoreCase))
+                {
+                    var formid = "10320000000000000005CA7946FD3274AAA";
+                    foreach (var date in e.DataEntitys)
+                    {
+                        string wl = date["MATERIALID"] == null ? "" : (date["MATERIALID"] as DynamicObject)["Number"].ToString().Substring(0, 7);
+                        if ((wl == "260.02." || wl == "260.03.") && date["BOMSRC"].ToString() != "A")
+                        {
+                            //创建BOM表单
+                            using (CommonViewProxy proxy = new CommonViewProxy(PLMContext, formid, false))
+                            {
+                                //查询出FID
+                                long fid = 0;
+                                string cxsql = $@"select FID from T_PLM_PDM_BASE_0 where FERPBOMID = '{date["Id"]}'";
+                                var cx = DBUtils.ExecuteDynamicObject(Context, cxsql);
+                                if (cx.Count > 0)
+                                {
+                                    fid = Convert.ToInt64(cx[0]["FID"]);
+                                    var view = proxy.GetEditView(fid);
+                                    var obj = view.Model.DataObject;
+                                    string targetStatus = "AJ"; //归档对应的状态值
+                                    if (date["DocumentStatus"]!=null && date["DocumentStatus"].ToString() == "C")
+                                    {
+                                        targetStatus = "AC";
+                                    }                                   
+                                    var stageConverts = new List<StageConvertItem>();
+                                    stageConverts.Add(new StageConvertItem { TargetStage = targetStatus, Object = obj });
+                                    var statusConvertResults = StageConvertMananger.Instance.SwitchStage(PLMContext, stageConverts);//返回状态转换结果
+                                }
                             }
                         }
                     }

@@ -16,6 +16,7 @@ using System.Text;
 using HMSX.Second.Plugin.Tool;
 using Kingdee.BOS.Core.DynamicForm.PlugIn;
 using Kingdee.BOS;
+using System.IO;
 
 namespace HMSX.Second.Plugin
 {
@@ -224,6 +225,8 @@ namespace HMSX.Second.Plugin
                 }
             }
         }
+        //static FileStream fs;
+        //static StreamWriter sw;
         private void MLTC(string wldm, string wlmc, string wlid, string phbm, string phid, int parid, double sl,string ggxh,int FX)
         {
             this.Model.CreateNewEntryRow("F_RUJP_Entity");
@@ -238,7 +241,14 @@ namespace HMSX.Second.Plugin
             this.View.Model.SetValue("F_PHID", phid, hs - 1);
             this.View.Model.SetValue("F_260_RKSL", sl, hs - 1);
             this.View.Model.SetValue("F_ZSFX", FX, hs - 1);
+            //fs = new FileStream("f:\\message.txt", FileMode.Append, FileAccess.Write);
+            //sw = new StreamWriter(fs);
+            //sw.WriteLine(Convert.ToString(hs) + ',' + Convert.ToString(parid) + ',' + wldm + ',' + wlmc + ',' + phbm);
+            //sw.Flush();
+            //sw.Close();
+            //fs.Close();
             hs++;
+            
         }
         private void copydata(int oROWID, int oparID)
         {

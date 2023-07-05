@@ -29,10 +29,11 @@ namespace HMSX.Second.Plugin.WebAPI
             long i = 0;
             try
             {
+                //and c.FWORKSHOPID = '146867'
                 string cxsql = $@"select A.FID,FBILLNO,MAX(FDISPATCHTIME) FDISPATCHTIME from T_SFC_DISPATCHDETAIL a
                                  left join T_SFC_DISPATCHDETAILENTRY b on a.fid=b.fid
                                  left join t_BD_MaterialProduce c  on a.FMATERIALID=c.fmaterialid
-                                 WHERE F_SBID_ORGID={zz} AND FDISPATCHTIME > '2022-10-25' AND F_260_LY=''  and c.FWORKSHOPID='146867'
+                                 WHERE F_SBID_ORGID={zz} AND FDISPATCHTIME > '2022-10-25' AND F_260_LY='' 
                                  GROUP BY A.FID,FBILLNO
                                  order by FDISPATCHTIME ";
                 var cxs = DBUtils.ExecuteDynamicObject(this.KDContext.Session.AppContext, cxsql);           

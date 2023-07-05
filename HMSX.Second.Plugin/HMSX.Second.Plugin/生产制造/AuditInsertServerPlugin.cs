@@ -5,6 +5,7 @@ using Kingdee.BOS.Core;
 using Kingdee.BOS.Core.DynamicForm.PlugIn;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
 using Kingdee.BOS.Core.List.PlugIn;
+using Kingdee.BOS.JSON;
 using Kingdee.BOS.Orm.DataEntity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,11 +26,10 @@ namespace HMSX.Second.Plugin
     [Kingdee.BOS.Util.HotUpdate]
     public class AuditInsertServerPlugin : AbstractOperationServicePlugIn
     {
-
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID", "F_260_XTLY", "FBillNo" };
+            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID", "F_260_XTLY", "FBillNo", "FMOBillNO" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -192,7 +192,24 @@ namespace HMSX.Second.Plugin
                             //}
                         }
                     }
-                }  
+                }
+                else if (FormOperation.Operation.Equals("Save", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (ExtendedDataEntity extended in e.SelectedRows)
+                    {
+                        DynamicObject dy = extended.DataEntity;
+                        if (dy["MOBillNO"].ToString().Substring(0, 2) == "YJ" && dy["MaterialID"]!=null)
+                        {
+                            DynamicObjectCollection wldu = ((DynamicObject)dy["MaterialID"])["MaterialProduce"] as DynamicObjectCollection;
+                            DynamicObjectCollection docPriceEntity = dy["PPBomEntry"] as DynamicObjectCollection;
+                            foreach (var entry in docPriceEntity)
+                            {
+                                entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
+                            }
+                        }
+                        
+                    }
+                }
             }
         }
     }

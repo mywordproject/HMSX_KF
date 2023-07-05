@@ -72,6 +72,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Business.DynamicForm.dll</HintPath>
     </Reference>
+    <Reference Include="Kingdee.BOS.BusinessEntity, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.BusinessEntity.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.BOS.Contracts, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Contracts.dll</HintPath>
@@ -104,6 +108,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.BOS.ServiceHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Kingdee.BOS.VerificationHelper, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.VerificationHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.BOS.WebApi.Client, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.Client.dll</HintPath>
@@ -116,9 +124,25 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.WebApi.ServicesStub.dll</HintPath>
     </Reference>
+    <Reference Include="Kingdee.BOS.Workflow, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Workflow.Contracts, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.BOS.Workflow.Models, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.Models.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.BOS.Workflow.PlugIns, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.BOS.Workflow.PlugIns.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.BD.BarCode.Business.PlugIn, Version=8.0.112.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.BD.BarCode.Business.PlugIn.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.K3.BD.ServiceHelper, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -128,9 +152,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Kingdee.K3.FIN.App.Core, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.FIN.App.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.K3.FIN.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.Business.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.CN.App.Core, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.FIN.CN.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingdee.K3.FIN.CN.App.Report, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.FIN.CN.App.Report.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.K3.FIN.Core, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -148,7 +184,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.FIN.ServiceHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Kingdee.K3.MFG.App, Version=8.0.144.1, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Kingdee.K3.MFG.App, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.App.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.K3.MFG.Common.BusinessEntity, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.Common.BusinessEntity.dll</HintPath>
@@ -179,6 +218,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.ServiceHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Kingdee.K3.MFG.SFC.Business.PlugIn, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.MFG.SFC.Business.PlugIn.dll</HintPath>
+    </Reference>
     <Reference Include="Kingdee.K3.MFG.SFC.Common.BusinessEntity, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\program\WebSite\bin\Kingdee.K3.MFG.SFC.Common.BusinessEntity.dll</HintPath>
@@ -195,7 +238,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.App.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Kingdee.K3.PLM.Business.PlugIn, Version=8.0.144.1, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Kingdee.K3.PLM.Business.PlugIn, Version=8.1.473.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\Program Files (x86)\Kingdee\K3Cloud\WebSite\bin\Kingdee.K3.PLM.Business.PlugIn.dll</HintPath>
     </Reference>
     <Reference Include="Kingdee.K3.PLM.CFG.Business.PlugIn, Version=8.0.144.1, Culture=neutral, processorArchitecture=MSIL">
@@ -313,18 +357,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DING\DDTXLPlugin.cs" />
     <Compile Include="GXHBHZBillPlugin.cs" />
     <Compile Include="MES\BOMMobilePlugin.cs" />
+    <Compile Include="MES\FXBGListPlugin.cs" />
+    <Compile Include="MES\GXPG.cs" />
     <Compile Include="MES\GXRWCS2023.cs" />
+    <Compile Include="MES\GXZYMobilePlugin.cs" />
     <Compile Include="MES\HBLLSMMobilePlugin.cs" />
     <Compile Include="MES\JSWDMobilePlugin.cs" />
     <Compile Include="MES\PGGXBGModilPlugin2023.cs" />
     <Compile Include="MES\SMBDMobilePlugin.cs" />
     <Compile Include="MES\ZJLLMobilePlugin.cs" />
+    <Compile Include="MES\ZYQRMobilePlugin.cs" />
+    <Compile Include="PLM\ECNBillPlugin.cs" />
     <Compile Include="PLM\WDKPLMListPlugin.cs" />
     <Compile Include="SJCJ\SJCJBillPlugin.cs" />
+    <Compile Include="SJCJ\SJCJServicePlugin.cs" />
+    <Compile Include="study\BankReport.cs" />
+    <Compile Include="study\CJDDGZTBillPlugin.cs" />
+    <Compile Include="study\Class2.cs" />
+    <Compile Include="study\OperationPickMtrlWork.cs" />
+    <Compile Include="study\LinkEntityInfo.cs" />
     <Compile Include="study\InquiryBillToComparePrice.cs" />
     <Compile Include="study\FieldMapInfo.cs" />
+    <Compile Include="study\LinkBillInfo.cs" />
+    <Compile Include="study\LinkDataInfo.cs" />
+    <Compile Include="study\LOOKUPFormPlugin.cs" />
     <Compile Include="study\QuoteData.cs" />
     <Compile Include="study\QuoteSumData.cs" />
     <Compile Include="WebAPI\GZAPI.cs" />
@@ -333,6 +392,7 @@
     <Compile Include="study\Class1.cs" />
     <Compile Include="WebAPI\GZXX.cs" />
     <Compile Include="WebAPI\PGCXAPI.cs" />
+    <Compile Include="WebAPI\SBJDApi.cs" />
     <Compile Include="YQHSPCFormPlugin.cs" />
     <Compile Include="MES\GYSLRMobilePlugin.cs" />
     <Compile Include="MES\JYDBJMobilePlugin.cs" />
@@ -345,6 +405,8 @@
     <Compile Include="PCTRCCLBillPlugin.cs" />
     <Compile Include="PLM\BGDServerPlugincs.cs" />
     <Compile Include="PLM\PLMYXPGBillPlugin.cs" />
+    <Compile Include="ZXJH\DDTXLServicePlugin.cs" />
+    <Compile Include="ZXJH\GXHBServicePlugin.cs" />
     <Compile Include="供应链\CGDDServicePlugin.cs" />
     <Compile Include="供应链\CGRKDBillPlugin.cs" />
     <Compile Include="供应链\CGRKDServerPlugin.cs" />
@@ -382,6 +444,8 @@
     <Compile Include="批号追溯\ZXSCPCZS.cs" />
     <Compile Include="人人报销\CCSQBillPlugin.cs" />
     <Compile Include="供应链\KCXTZHBillPlugin.cs" />
+    <Compile Include="生产制造\BLPCLDBillPlugin.cs" />
+    <Compile Include="生产制造\BLPCLDServicePlugin.cs" />
     <Compile Include="生产制造\BLServerPlugin.cs" />
     <Compile Include="生产制造\BLXDBillPlugin.cs" />
     <Compile Include="生产制造\AuditInsertServerPlugin.cs" />
@@ -400,12 +464,18 @@
     <Compile Include="基础资料\WLQDServerPlugin.cs" />
     <Compile Include="基础资料\WLServerPlugin.cs" />
     <Compile Include="YCLListPlugin.cs" />
+    <Compile Include="生产制造\BRPTYHServicePlugin.cs" />
+    <Compile Include="生产制造\BRPTYHYEBillPlugin.cs" />
     <Compile Include="生产制造\CJHSQServicePlugin.cs" />
+    <Compile Include="生产制造\GXJHCHANGE.cs" />
     <Compile Include="生产制造\GXHBBillPlugin.cs" />
     <Compile Include="生产制造\GXHBConvertPlugin.cs" />
     <Compile Include="生产制造\GXHBListPlugin.cs" />
+    <Compile Include="生产制造\JYDConvertPlugin.cs" />
+    <Compile Include="生产制造\PHTZServicePlugin.cs" />
     <Compile Include="生产制造\QTCKConvertPlugin.cs" />
     <Compile Include="生产制造\QTCKServicePlugin.cs" />
+    <Compile Include="生产制造\QTRKServicePlugin.cs" />
     <Compile Include="生产制造\RKSQDBillPlugin.cs" />
     <Compile Include="生产制造\SCDDBGDServicePlugin.cs" />
     <Compile Include="生产制造\SCDDConvertPlugin.cs" />
@@ -437,6 +507,7 @@
     <Compile Include="生产制造\SCHBConvertPlugin.cs" />
     <Compile Include="生产制造\SCHBServicePlugin.cs" />
     <Compile Include="生产制造\SCRKBillPlugin.cs" />
+    <Compile Include="生产制造\TMCFBillPlugin.cs" />
     <Compile Include="生产制造\TMZDListPlugin.cs" />
     <Compile Include="生产制造\TMZDPLXGFormPlugin.cs" />
     <Compile Include="生产制造\ZJDBServerPlugin.cs" />

@@ -49,11 +49,12 @@ namespace HMSX.Second.Plugin.考勤报表
                 String F_260_RYFW = customFilter["F_260_RYFW"] == null ? String.Empty : Convert.ToString(customFilter["F_260_RYFW"]);
                 //String F_260_RQ = customFilter["F_260_RQ"] == null ? String.Empty : Convert.ToString(customFilter["F_260_RQ"]);
                 String F_260_KQKSRQ = customFilter["F_260_KQKSRQ"] == null ? String.Empty : Convert.ToString(customFilter["F_260_KQKSRQ"]);
-                String F_260_KQJZRQ = customFilter["F_260_KQJZRQ"] == null ? String.Empty : Convert.ToString(customFilter["F_260_KQJZRQ"]);               
+                String F_260_KQJZRQ = customFilter["F_260_KQJZRQ"] == null ? String.Empty : Convert.ToString(customFilter["F_260_KQJZRQ"]);
+                String F_BM = customFilter["F_BM"] == null ? String.Empty : Convert.ToString(((DynamicObject)customFilter["F_BM"])["Name"]);
                 reprotTitles.AddTitle("F_260_KQFW", F_260_KQFW);
                 reprotTitles.AddTitle("F_260_CX", F_260_CX);
                 reprotTitles.AddTitle("F_260_RYFW", F_260_RYFW);
-               // reprotTitles.AddTitle("F_260_RQ", F_260_RQ);
+                reprotTitles.AddTitle("F_260_RQ", F_BM);
                 reprotTitles.AddTitle("F_260_KQKSRQ", F_260_KQKSRQ);
                 reprotTitles.AddTitle("F_260_KQJZRQ", F_260_KQJZRQ);
             }
@@ -68,7 +69,7 @@ namespace HMSX.Second.Plugin.考勤报表
             DynamicObject customFilter = filter.FilterParameter.CustomFilter;
             ReportHeader reportHeader = new ReportHeader();
             //设置列
-            if(Convert.ToString(customFilter["F_260_KQFW"]) == "1")
+            if (Convert.ToString(customFilter["F_260_KQFW"]) == "1")
             {
                 reportHeader.AddChild("FJobNumber", new LocaleValue("工号", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 reportHeader.AddChild("FUserName", new LocaleValue("姓名", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
@@ -172,7 +173,7 @@ namespace HMSX.Second.Plugin.考勤报表
                 reportHeader.AddChild("FBreastLeaveTime", new LocaleValue("哺乳假(小时)", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 reportHeader.AddChild("FYearLeaveTime", new LocaleValue("年休假(小时)", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 reportHeader.AddChild("FSmallMaternityLeave", new LocaleValue("小产假(小时)", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
-                reportHeader.AddChild("FYearBalance", new LocaleValue("当前年假余额(小时)",                 this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
+                reportHeader.AddChild("FYearBalance", new LocaleValue("当前年假余额(小时)", this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 //reportHeader.AddChild("FWeekType", new LocaleValue("工作日休息打卡时长(小时)",         this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 //reportHeader.AddChild("FAcross",  new LocaleValue("休息日休息打卡时长(小时)",         this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);
                 //reportHeader.AddChild("FDDOverTime", new LocaleValue("节假日休息打卡时长(小时)",                 this.Context.UserLocale.LCID), SqlStorageType.Sqlvarchar);                         
@@ -199,27 +200,7 @@ namespace HMSX.Second.Plugin.考勤报表
             if (Convert.ToString(customFilter["F_260_KQFW"]) == "1")
             {
                 //日报接口
-                //查询
-                String F_260_CX = "";
-                if (customFilter["F_260_CX"] != null && !String.IsNullOrEmpty(customFilter["F_260_CX"].ToString()))
-                {
-                    F_260_CX = Convert.ToString(customFilter["F_260_CX"]);
-                }
-                JObject rb = new JObject();
-                rb.Add("PageIndex", 1);
-                rb.Add("PageSize", int.MaxValue);
-                JObject datas = new JObject();
-                datas.Add("StartTime", Convert.ToString(customFilter["F_260_KQKSRQ"]));
-                datas.Add("EndTime", Convert.ToString(customFilter["F_260_KQKSRQ"]));
-                datas.Add("FDept", "");
-                datas.Add("FScope", Convert.ToString(customFilter["F_260_RYFW"]));
-                datas.Add("KeyWord", Convert.ToString(customFilter["F_260_CX"]));
-                rb.Add("Data", datas);
-
-                Results.GetToken message = POST.HttpPost(rb.ToString(), "Http://222.210.102.21:8888/Api/UserAttendByDay");
-                if (message.Code == 5000)
-                {
-                    string cresql = $@"create table {tableName}(
+                string cresql = $@"create table {tableName}(
                         XH int, FAttendanceState VARCHAR(100), FDateType VARCHAR(100), FWeekType VARCHAR(100)           
                  , FDeptID VARCHAR(100), FTitle VARCHAR(100) , FDate VARCHAR(100) , FStartWorkTime VARCHAR(100)
                  , FEndWorkTime VARCHAR(100), FAcross int, FDDOverTime VARCHAR(100), FDDWorkDayOverTime VARCHAR(100)
@@ -235,13 +216,39 @@ namespace HMSX.Second.Plugin.考勤报表
                  , FCrtTime VARCHAR(100), FIsUpload VARCHAR(100), FUploadTime VARCHAR(100)  , FSmallMaternityLeave VARCHAR(100) , FUserName VARCHAR(100)
                  , FJobNumber VARCHAR(100), FDeptName VARCHAR(100), FGroupName VARCHAR(100), FClassName VARCHAR(100)
                  , FEmployeeType VARCHAR(100))";
-                    DBUtils.Execute(Context, cresql);
-                    List<Rootobject> date = message.Data.DataList;
-                    int XH = 1;
-                    foreach (var aa in date)
+                DBUtils.Execute(Context, cresql);
+                //查询               
+                String F_260_CX = "";
+                if (customFilter["F_260_CX"] != null && !String.IsNullOrEmpty(customFilter["F_260_CX"].ToString()))
+                {
+                    F_260_CX = Convert.ToString(customFilter["F_260_CX"]);
+                }
+                int XH = 1;
+                string str = "";
+                for (int i = 1; i < 255; i++)
+                {
+                    JObject rb = new JObject();
+                    rb.Add("PageIndex", i);
+                    rb.Add("PageSize",1000);
+                    JObject datas = new JObject();
+                    datas.Add("StartTime", Convert.ToString(customFilter["F_260_KQKSRQ"]).Substring(0, 10));
+                    datas.Add("EndTime", Convert.ToString(customFilter["F_260_KQJZRQ"]).Substring(0, 10));
+                    datas.Add("FDept", customFilter["F_BM"] == null ? "" : Convert.ToString(((DynamicObject)customFilter["F_BM"])["Name"]));
+                    datas.Add("FScope", Convert.ToString(customFilter["F_260_RYFW"]));
+                    datas.Add("KeyWord", Convert.ToString(customFilter["F_260_CX"]));
+                    rb.Add("Data", datas);
+                    Results.GetToken message = POST.HttpPost(rb.ToString(), "Http://222.210.102.21:8888/Api/UserAttendByDay");
+                    if (message.Code == 5000)
                     {
-                       String sql = $@"/*dialect*/ 
-                           insert into  {tableName} values ('{XH}','{aa.FAttendanceState}','{aa.FDateType}','{aa.FWeekType}','{aa.FDeptID}','{aa.FTitle}','{aa.FDate}'
+                        List<Rootobject> date = message.Data.DataList;
+                        
+                        if (date.Count == 0)
+                        {
+                            break;
+                        }
+                        foreach (var aa in date)
+                        {
+                            str+=$@"('{XH}','{aa.FAttendanceState}','{aa.FDateType}','{aa.FWeekType}','{aa.FDeptID}','{aa.FTitle}','{aa.FDate}'
                           ,'{aa.FStartWorkTime}','{aa.FEndWorkTime}','{aa.FAcross}','{aa.FDDOverTime}','{aa.FDDWorkDayOverTime}','{aa.FDDWeekEndOverTime}','{aa.FDDHolidayOverTime}'
                           ,'{aa.FOnDutyTime}','{aa.FOffDutyTime}','{aa.FAttendanceResult}','{aa.FOverClockTime}','{aa.FWorkTime}','{aa.FRealWorkTime}','{aa.FWorkCount}','{aa.FRealWorkCount}','{aa.FLateTime}','{aa.FLateCount}'
                          ,'{aa.FAbsentCount}','{aa.FAbsentTime}','{aa.FLeaveEarly}','{aa.FLeaveEarlyCount}','{aa.FLeaveTime}','{aa.FLeaveCount}','{aa.FOvertime}','{aa.FWorkDayOverTime}'
@@ -249,40 +256,28 @@ namespace HMSX.Second.Plugin.考勤报表
                          ,'{aa.FExchangeLeaveTime}','{aa.FPersonalLeaveTime}','{aa.FSickLeaveTime}','{aa.FPaternityLeaveTime}','{aa.FMaternityLeaveTime}','{aa.FInspectionLeaveTime}'
                          ,'{aa.FBreastLeaveTime}','{aa.FYearLeaveTime}','{aa.FTSReturnTime}','{aa.FTSDeduTime}','{aa.FTSAddTime}','{aa.FTSShortRestTime}','{aa.FBatchShortRestTime}'
                          ,'{aa.FEdtTime}','{aa.FCrtTime}','{aa.FIsUpload}','{aa.FUploadTime}','{aa.FSmallMaternityLeave}','{aa.FUserName}','{aa.FJobNumber}','{aa.FDeptName}'
-                         ,'{aa.FGroupName}','{aa.FClassName}','{aa.FEmployeeType}')";
-                          DBUtils.ExecuteDynamicObject(this.Context, sql);
-                        XH++;
+                         ,'{aa.FGroupName}','{aa.FClassName}','{aa.FEmployeeType}')"+",";
+                            //DBUtils.ExecuteDynamicObject(this.Context, sql);
+                            XH++;
+                        }
+                    }
+                    else
+                    {
+                        throw new KDBusinessException("", "" + message.Msg + "");
+                    }
+                    if (str!= "")
+                    {
+                        string insertsql = $@"/*dialect*/ insert into  {tableName} values{str.Trim(',')}";
+                        DBUtils.ExecuteDynamicObject(this.Context, insertsql);
+                        str = "";
                     }
                 }
-                else
-                {
-                    throw new KDBusinessException("", "" + message.Msg + "");
-                }             
+                
             }
             else
             {
                 //月报接口
-                //查询
-                String F_260_CX = "";
-                if (customFilter["F_260_CX"] != null && !String.IsNullOrEmpty(customFilter["F_260_CX"].ToString()))
-                {
-                    F_260_CX = Convert.ToString(customFilter["F_260_CX"]);
-                }
-                JObject rb = new JObject();
-                rb.Add("PageIndex", 1);
-                rb.Add("PageSize", int.MaxValue);
-                JObject datas = new JObject();
-                datas.Add("StartTime", Convert.ToString(customFilter["F_260_KQKSRQ"]));
-                datas.Add("EndTime", Convert.ToString(customFilter["F_260_KQJZRQ"]));
-                datas.Add("FDept", "");
-                datas.Add("FScope", Convert.ToString(customFilter["F_260_RYFW"]));
-                datas.Add("KeyWord", Convert.ToString(customFilter["F_260_CX"]));
-                rb.Add("Data", datas);
-
-                Results.GetToken1 message = POST.HttpPost1(rb.ToString(), "Http://222.210.102.21:8888/Api/UserAttendByMonth");
-                if (message.Code == 5000)
-                {
-                    string cresql = $@"create table {tableName}(
+                string cresql = $@"create table {tableName}(
                         XH int, FJobNumber varchar(100)
                     ,FUserName varchar(100),FEmployeeType  varchar(100),FDeptName varchar(100),FGroupName varchar(100),
                     FTitle varchar(100),FWorkTime varchar(100),FRealWorkTime varchar(100),FWorkCount varchar(100),
@@ -294,13 +289,38 @@ namespace HMSX.Second.Plugin.考勤报表
                     FExchangeLeaveTime varchar(100),FPersonalLeaveTime varchar(100),FSickLeaveTime varchar(100),FPaternityLeaveTime varchar(100),
                     FMaternityLeaveTime varchar(100),FInspectionLeaveTime varchar(100),FBreastLeaveTime varchar(100),FYearLeaveTime varchar(100),
                     FYearBalance varchar(100),FSmallMaternityLeave varchar(100))";
-                    DBUtils.Execute(Context, cresql);
-                    List<Rootobject1> date = message.Data.DataList;
-                    int XH = 1;
-                    foreach (var aa in date)
+                DBUtils.Execute(Context, cresql);
+                //查询
+                String F_260_CX = "";
+                if (customFilter["F_260_CX"] != null && !String.IsNullOrEmpty(customFilter["F_260_CX"].ToString()))
+                {
+                    F_260_CX = Convert.ToString(customFilter["F_260_CX"]);
+                }
+                int XH = 1;
+                string str = "";
+                for (int i = 1; i < 255; i++)
+                {
+                    JObject rb = new JObject();
+                    rb.Add("PageIndex", i);
+                    rb.Add("PageSize", 1000);
+                    JObject datas = new JObject();
+                    datas.Add("StartTime", Convert.ToString(customFilter["F_260_KQKSRQ"]));
+                    datas.Add("EndTime", Convert.ToString(customFilter["F_260_KQJZRQ"]));
+                    datas.Add("FDept", customFilter["F_BM"]==null?"":Convert.ToString(((DynamicObject)customFilter["F_BM"])["Name"]));
+                    datas.Add("FScope", Convert.ToString(customFilter["F_260_RYFW"]));
+                    datas.Add("KeyWord", Convert.ToString(customFilter["F_260_CX"]));
+                    rb.Add("Data", datas);
+                    Results.GetToken1 message = POST.HttpPost1(rb.ToString(), "Http://222.210.102.21:8888/Api/UserAttendByMonth");
+                    if (message.Code == 5000)
                     {
-                        String sql = $@"/*dialect*/ 
-                           insert into  {tableName} values ('{XH}','{aa.FJobNumber}'
+                        List<Rootobject1> date = message.Data.DataList;
+                        if (date.Count == 0)
+                        {
+                            break;
+                        }
+                        foreach (var aa in date)
+                        {
+                            str+= $@"('{XH}','{aa.FJobNumber}'
                           ,'{aa.FUserName}','{aa.FEmployeeType}','{aa.FDeptName}','{aa.FGroupName}','{aa.FTitle}'
                           ,'{aa.FWorkTime}','{aa.FRealWorkTime}','{aa.FWorkCount}','{aa.FRealWorkCount}','{aa.FLateTime}','{aa.FLateCount}'
                           ,'{aa.FAbsentTime}','{aa.FAbsentCount}','{aa.FLeaveEarly}','{aa.FLeaveEarlyCount}'
@@ -308,15 +328,22 @@ namespace HMSX.Second.Plugin.考勤报表
                           ,'{aa.FWeekEndOverTime}','{aa.FHolidayOverTime}','{aa.FPaidLeaveBalance}','{aa.FShortRestTime}','{aa.FFuneralLeaveTime}'
                           ,'{aa.FMarriageLeaveTime}','{aa.FInjuryLeaveTime}','{aa.FPublicLeaveTime}','{aa.FExchangeLeaveTime}'
                           ,'{aa.FPersonalLeaveTime}','{aa.FSickLeaveTime}','{aa.FPaternityLeaveTime}','{aa.FMaternityLeaveTime}'
-                          ,'{aa.FInspectionLeaveTime}','{aa.FBreastLeaveTime}','{aa.FYearLeaveTime}','{aa.FYearBalance}','{aa.FSmallMaternityLeave}')";
+                          ,'{aa.FInspectionLeaveTime}','{aa.FBreastLeaveTime}','{aa.FYearLeaveTime}','{aa.FYearBalance}','{aa.FSmallMaternityLeave}')"+",";
+                            //DBUtils.ExecuteDynamicObject(this.Context, sql);
+                            XH++;
+                        }
+                    }
+                    else
+                    {
+                        throw new KDBusinessException("", "" + message.Msg + "");
+                    }
+                    if (str != "") 
+                    {
+                        String sql = $@"/*dialect*/ insert into  {tableName} values {str.Trim(',')}";
                         DBUtils.ExecuteDynamicObject(this.Context, sql);
-                        XH++;
+                        str = "";
                     }
                 }
-                else
-                {
-                    throw new KDBusinessException("", ""+ message.Msg +"");
-                }              
             }
             tempTableName = tableName;
         }
@@ -327,7 +354,7 @@ namespace HMSX.Second.Plugin.考勤报表
         public override List<SummaryField> GetSummaryColumnInfo(IRptParams filter)
         {
             var result = base.GetSummaryColumnInfo(filter);
-          //  result.Add(new SummaryField("FTAXAMOUNT", Kingdee.BOS.Core.Enums.BOSEnums.Enu_SummaryType.SUM));
+            //  result.Add(new SummaryField("FTAXAMOUNT", Kingdee.BOS.Core.Enums.BOSEnums.Enu_SummaryType.SUM));
             return result;
         }
 

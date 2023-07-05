@@ -20,42 +20,33 @@ namespace HMSX.Second.Plugin.MES
     [Description("返修报工--带出批号、派工明细")]
     public class FXBGBillPlugin: ComplexOperReworkRptEdit
     {
-        string ph = "";
+        string FID = "";
+        string FENTRYID = "";
 
         public override void OnInitialize(InitializeEventArgs e)
         {
             base.OnInitialize(e);
-            ph= e.Paramter.GetCustomParameter("F_RUJP_Lot")==null? "" :e.Paramter.GetCustomParameter("F_RUJP_Lot").ToString();
+            FID = e.Paramter.GetCustomParameter("FID") ==null? "" :e.Paramter.GetCustomParameter("FID").ToString();
+            FENTRYID = e.Paramter.GetCustomParameter("FENTRYID") == null ? "" : e.Paramter.GetCustomParameter("FENTRYID").ToString();
         }
         protected override void CalcRptRestQty()
         {
-            if (ph != "")
+            if (FID != "" && FENTRYID!="")
             {
-                string scdd = this.View.BillModel.GetValue("FMONUMBER").ToString();
-                string schh = this.View.BillModel.GetValue("FMOROWNUMBER").ToString();
-                string op = this.View.BillModel.GetValue("FSOURCEBILLNO").ToString();
-                string wl = ((DynamicObject)this.View.BillModel.GetValue("FMATERIALID"))["Id"].ToString();
-                string cxsql = $@"select FMONUMBER, FMOROWNUMBER, FSOURCEBILLNO, b.FMATERIALID, F_SBID_BARCODE,FREWORKQTY from T_SFC_OPTRPT a
-              inner join T_SFC_OPTRPTENTRY b on a.fid = b.fid
-              inner join T_SFC_OPTRPTENTRY_A b1 on b1.FENTRYID=b.FENTRYID
-              inner join T_BD_LOTMASTER c on c.FLOTID=b.FLOT 
-              where  c.fnumber='{ph}' and
-              FMONUMBER = '{scdd}' and FMOROWNUMBER = '{schh}'
-              and FSOURCEBILLNO = '{op}' and b.FMATERIALID = '{wl}'";
+                string cxsql = $@"select F_RUJP_LOT,FBARCODE from  T_SFC_DISPATCHDETAIL t 
+                                 left join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                 where T.FID='{FID}'AND t1.FENTRYID='{FENTRYID}'";
                 var tm = DBUtils.ExecuteDynamicObject(Context, cxsql);
                 if (tm.Count > 0)
                 {
-                    var piha = Tool.Utils.LoadBDData(Context, "BD_BatchMainFile", ph);
-                    //this.View.BillModel.SetItemValueByID("FLOT", Convert.ToInt32(piha["Id"].ToString()), 0);
-                    //this.View.BillModel.SetValue("FMLot_Text", ph, 0);                  
-                    //  this.View.BillModel.SetValue("Lot", ph, 0);
-                    this.View.BillModel.SetValue("F_SBID_BARCODE", tm[0]["F_SBID_BARCODE"].ToString(), 0);
-                    this.View.BillModel.SetValue("FFINISHQTY", tm[0]["FREWORKQTY"].ToString(), 0);
+                    this.View.BillModel.SetValue("F_SBID_BARCODE", tm[0]["FBARCODE"].ToString(), 0);
+                    //this.View.BillModel.SetValue("FFINISHQTY", tm[0]["FREWORKQTY"].ToString(), 0);
                     this.View.UpdateView("F_SBID_BARCODE");
-                    this.View.UpdateView("FFINISHQTY");
+                    // this.View.UpdateView("FFINISHQTY");
+                    this.View.BillModel.SetValue("FLOT", tm[0]["F_RUJP_LOT"], 0);
+                    this.View.UpdateView("FLOT");
                 }
-                this.View.BillModel.SetValue("FLOT", ph, 0);
-                this.View.UpdateView("FLOT");
+                
             }
         }
     }

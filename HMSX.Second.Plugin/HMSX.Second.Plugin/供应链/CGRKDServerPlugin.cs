@@ -1,8 +1,17 @@
 ﻿using Kingdee.BOS.App.Data;
+using Kingdee.BOS.Core.DynamicForm;
+using Kingdee.BOS.Core.DynamicForm.Operation;
 using Kingdee.BOS.Core.DynamicForm.PlugIn;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
+using Kingdee.BOS.Core.Interaction;
+using Kingdee.BOS.Core.List;
+using Kingdee.BOS.Core.Metadata;
+using Kingdee.BOS.Core.Metadata.ConvertElement.ServiceArgs;
 using Kingdee.BOS.JSON;
+using Kingdee.BOS.Orm;
 using Kingdee.BOS.Orm.DataEntity;
+using Kingdee.BOS.ServiceHelper;
+using Kingdee.K3.MFG.Mobile.ServiceHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -198,6 +207,78 @@ namespace HMSX.Second.Plugin.供应链
                         this.FormOperation.LoadKeys = KDObjectConverter.SerializeObject(loadKeys);
                     }
                 }
+            }
+        }
+        public override void AfterExecuteOperationTransaction(AfterExecuteOperationTransaction e)
+        {
+            base.AfterExecuteOperationTransaction(e);
+            if (Context.CurrentOrganizationInfo.ID == 100026)
+            {
+                if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var date in e.DataEntitys)
+                    {
+                        string sql = $@"select a.FID,FENTRYID,FSEQ FROM t_STK_InStock a
+                                            inner join T_STK_INSTOCKENTRY b on a.fid=b.fid 
+                                            left join t_bd_material c on c.FMATERIALID=b.FMATERIALID
+                                            where a.fid={date["Id"]} and c.fnumber like '260.02.%' 
+                                             and FMTONO like '%SI'";
+                        DynamicObjectCollection source = DBServiceHelper.ExecuteDynamicObject(base.Context, sql);
+                        if (source.Count > 0)
+                        {
+                            CreatePickMtrl(source.ToList<DynamicObject>());
+                        }
+                    }
+                }
+            }
+        }
+        protected virtual IOperationResult CreatePickMtrl(List<DynamicObject> ppBomInfos)
+        {
+            List<ListSelectedRow> list = new List<ListSelectedRow>();
+            foreach (DynamicObject dynamicObject in ppBomInfos)
+            {
+                ListSelectedRow item = new ListSelectedRow(Convert.ToString(dynamicObject["FID"]), Convert.ToString(dynamicObject["FENTRYID"]), Convert.ToInt32(dynamicObject["FSEQ"]) - 1, "daf67cbb-53ae-4250-8047-50a695e73996")
+                {
+                    EntryEntityKey = "FEntity"
+
+                };
+                list.Add(item);
+
+            }
+            ConvertOperationResult convertOperationResult;
+            string convertRuleId = "HMSXCGRK-ZJDB"; //
+            var ruleMeta = ConvertServiceHelper.GetConvertRule(this.Context, convertRuleId);
+            var rule = ruleMeta.Rule;
+            PushArgs args = new PushArgs(rule, list.ToArray())
+            {
+                TargetBillTypeId = "ce8f49055c5c4782b65463a3f863bb4a",
+
+            };
+            IOperationResult operationResult = null;
+            try
+            {
+                OperateOption operateOption = OperateOption.Create();
+                convertOperationResult = MobileCommonServiceHelper.Push(this.Context, args, operateOption, false);
+                DynamicObject[] array = (from p in convertOperationResult.TargetDataEntities
+                                         select p.DataEntity).ToArray<DynamicObject>();
+                foreach (DynamicObject obj in array)//源单数据
+                {
+                    //DynamicObjectCollection dynamicObjectCollection = obj["Entity"] as DynamicObjectCollection;
+                    //int rowcount = dynamicObjectCollection.Count;
+                }
+                FormMetadata cachedFormMetaData = FormMetaDataCache.GetCachedFormMetaData(base.Context, "STK_TransferDirect");
+                OperateOption option = OperateOption.Create();
+                option.AddInteractionFlag("Kingdee.K3.SCM.App.Core.AppBusinessService.UpdateStockService,Kingdee.K3.SCM.App.Core");
+                option.SetIgnoreInteractionFlag(true);
+                operationResult = BusinessDataServiceHelper.Save(base.Context, cachedFormMetaData.BusinessInfo, array, option, "");
+                if (operationResult.IsSuccess)
+                {
+                }
+                return operationResult;
+            }
+            catch
+            {
+                return operationResult;
             }
         }
     }

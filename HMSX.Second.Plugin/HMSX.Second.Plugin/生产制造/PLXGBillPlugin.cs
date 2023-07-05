@@ -26,7 +26,7 @@ namespace HMSX.Second.Plugin.生产制造
                 string bhg = this.Model.GetValue("F_260_BHG") == null ? "" : this.Model.GetValue("F_260_BHG").ToString();
                 string jyjgms = this.Model.GetValue("F_260_JYJG") == null ? "" : this.Model.GetValue("F_260_JYJG").ToString();
                 string zt = this.Model.GetValue("F_260_ZT") == null ? "" : this.Model.GetValue("F_260_ZT").ToString();
-                string zjy = this.Model.GetValue("F_260_ZJY") == null ? "" :((DynamicObject)this.Model.GetValue("F_260_ZJY"))["Id"].ToString();
+                string zjy = this.Model.GetValue("F_260_ZJY") == null ? "" :((DynamicObject)this.Model.GetValue("F_260_ZJY"))["Number"].ToString();
                 string rbjsycms = this.Model.GetValue("F_260_RBJSYCMS") == null ? "" : this.Model.GetValue("F_260_RBJSYCMS").ToString();
                 string jyjg = this.Model.GetValue("F_JYJG") == null ? "" : this.Model.GetValue("F_JYJG").ToString();
                 string[] rs = new string[8];

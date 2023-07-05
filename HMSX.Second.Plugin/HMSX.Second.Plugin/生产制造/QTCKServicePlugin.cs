@@ -19,7 +19,8 @@ namespace HMSX.Second.Plugin.生产制造
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "F_260_MFYPSE", "F_260_MFYPJE", "F_260_MFYPJSHJ", "FDate", "FBillTypeID", "F_260_HLLX" , "F_260_BWB" , "F_260_JSBB" };
+            String[] propertys = { "F_260_MFYPSE", "F_260_MFYPJE", "F_260_MFYPJSHJ", "FDate",
+                "FBillTypeID", "F_260_HLLX", "F_260_BWB", "F_260_JSBB","FLot" ,"FMaterialId","FQty"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -65,6 +66,52 @@ namespace HMSX.Second.Plugin.生产制造
 
                     }
 
+                }
+                if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var date in e.DataEntitys)
+                    {
+                        foreach (var entry in date["BillEntry"] as DynamicObjectCollection)
+                        {
+                            if (entry["MaterialId"] != null && entry["Lot"] != null)
+                            {
+                                string upsql = $@"/*dialect*/UPDATE T_SFC_DISPATCHDETAILENTRY SET F_260_SYBDSL-={Convert.ToDecimal(entry["Qty"])}
+                                              where FENTRYID in(
+                                              SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
+                                              inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                              where  F_RUJP_LOT!='' 
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               and FMATERIALID='{entry["MaterialId_Id"]}'
+                                               and F_RUJP_LOT='{entry["Lot_Text"]}'
+                                               )";
+                                DBUtils.Execute(Context, upsql);
+                            }
+
+                        }
+                    }
+                }
+                if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var date in e.DataEntitys)
+                    {
+                        foreach (var entry in date["BillEntry"] as DynamicObjectCollection)
+                        {
+                            if (entry["MaterialId"] != null && entry["Lot"] != null)
+                            {
+                                string upsql = $@"/*dialect*/UPDATE T_SFC_DISPATCHDETAILENTRY SET F_260_SYBDSL+={Convert.ToDecimal(entry["Qty"])}
+                                              where FENTRYID in(
+                                              SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
+                                              inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                              where  F_RUJP_LOT!='' 
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               and FMATERIALID='{entry["MaterialId_Id"]}'
+                                               and F_RUJP_LOT='{entry["Lot_Text"]}'
+                                               )";
+                                DBUtils.Execute(Context, upsql);
+                            }
+                        }
+
+                    }
                 }
             }
         }

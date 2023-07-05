@@ -5,11 +5,13 @@ using Kingdee.BOS.App.Core.Utils;
 using Kingdee.BOS.App.Data;
 using Kingdee.BOS.Core.DynamicForm;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
+using Kingdee.BOS.Core.Metadata;
 using Kingdee.BOS.Core.NetworkCtrl;
 using Kingdee.BOS.Mobile;
 using Kingdee.BOS.Mobile.PlugIn.ControlModel;
 using Kingdee.BOS.Orm;
 using Kingdee.BOS.Orm.DataEntity;
+using Kingdee.BOS.Orm.Metadata.DataEntity;
 using Kingdee.BOS.Resource;
 using Kingdee.BOS.ServiceHelper;
 using Kingdee.BOS.Util;
@@ -41,18 +43,29 @@ namespace HMSX.Second.Plugin.MES
             string a = e.Key.ToUpper();
             switch (a)
             {
-                case "F_260_QX":
+                case "F_QX":
                     AllSelect("FMobileListViewEntity_Detail");
                     break;
                 case "F_260_PLGB":
                     this.CloseRow1(false);
                     break;
-                case "F_DYBQ":
+                case "F_PAEZ_DYBQ":
                     this.printLable1();
                     break;
                 case "F_ZJLL":
-                    string ysm = this.Model.GetValue("F_YSM") == null ? "" : this.Model.GetValue("F_YSM").ToString();
-                    PickMaterial(ysm);
+                    if (Convert.ToBoolean(this.Model.DataObject["F_SFFP"]) == false && Convert.ToBoolean(this.Model.DataObject["F_TSHP"]) == false)
+                    {
+                        string ysm = this.Model.GetValue("F_YSM") == null ? "" : this.Model.GetValue("F_YSM").ToString();
+                        PickMaterial(ysm);
+                    }
+                    else
+                    {
+                        //int rowIndex = this.Model.GetEntryCurrentRowIndex("FMobileListViewEntity");
+                        //Dictionary<string, object> currentRowData = this.GetCurrentRowData(rowIndex);
+                        //optPlanOptId = Convert.ToInt64(currentRowData["OperId"]);
+                        PickMaterial1(optPlanOptId);
+                    }
+
                     break;
                 case "F_SMBD":
                     SMBD();
@@ -64,7 +77,11 @@ namespace HMSX.Second.Plugin.MES
             string relt = "";
             int rowIndex = this.Model.GetEntryCurrentRowIndex("FMobileListViewEntity");
             Dictionary<string, object> currentRowData = this.GetCurrentRowData(rowIndex);
-            string malnumber = currentRowData["FProductId"].ToString().Substring(0, currentRowData["FProductId"].ToString().IndexOf("/"));
+            optPlanOptId = Convert.ToInt64(currentRowData["OperId"]);
+            DynamicObject obj = GetOptplan(optPlanOptId);
+            DynamicObject material = obj["ProductId"] as DynamicObject;
+            string malnumber = material["Number"].ToString();
+            //string malnumber = currentRowData["FProductId"].ToString().Substring(0, currentRowData["FProductId"].ToString().IndexOf("/"));
             string[] scdd = currentRowData["FMONumber"].ToString().Split('-');
             string ck = currentRowData["F_260_CK"].ToString();
             MobileShowParameter param = new MobileShowParameter();
@@ -76,36 +93,55 @@ namespace HMSX.Second.Plugin.MES
             param.CustomParams.Add("SEQ", scdd[1]);
             param.CustomParams.Add("CK", ck);
             param.CustomParams.Add("RLSL", this.Model.DataObject["ClaimQty"].ToString());
+            param.CustomParams.Add("ZXBZSL", this.Model.DataObject["F_RUJP_Qty"].ToString());
             this.View.ShowForm(param, delegate (FormResult result)
             {
                 List<object> date = (List<object>)result.ReturnData;
                 if (date != null)
                 {
-                    if (date[3].ToString() == "是")
+                    if (date[3].ToString() == "是"&& date[5].ToString()=="否")
                     {
-                        base.View.GetControl("F_ZJLL").Enabled = false;
-                        base.View.UpdateView("F_ZJLL");
+                        base.View.GetControl("F_RUJP_QTY").Enabled = false;
+                        base.View.UpdateView("F_RUJP_QTY");
+                        base.View.GetControl("FCLAIMQTY").Enabled = false;
+                        base.View.UpdateView("FCLAIMQTY");
+                        base.View.GetControl("F_SFFP").Enabled = false;
+                        base.View.UpdateView("F_SFFP");
                         pickinfoList1 = date[0] as List<fhz>;
-                        sffp = date[3].ToString();
+                        this.Model.SetValue("F_SFFP", true);
+                        this.View.UpdateView("F_SFFP");
                         this.Model.SetValue("F_YSM", date[1]);
                         this.View.UpdateView("F_YSM");
                         this.Model.SetValue("FCLAIMQTY", date[2]);
                         this.View.UpdateView("FCLAIMQTY");
                         this.Model.SetValue("F_RUJP_QTY", date[4]);
                         this.View.UpdateView("F_RUJP_QTY");
+                        this.Model.SetValue("F_TSHP", false);
+                        base.View.GetControl("F_TSHP").Enabled = false;
+                        this.View.UpdateView("F_TSHP");
                     }
                     else
                     {
-                        base.View.GetControl("F_ZJLL").Enabled = true;
-                        base.View.UpdateView("F_ZJLL");
-                        pickinfoList1.Clear();
-                        sffp = date[3].ToString();
+                        base.View.GetControl("F_RUJP_QTY").Enabled = false;
+                        base.View.UpdateView("F_RUJP_QTY");
+                        base.View.GetControl("FCLAIMQTY").Enabled = false;
+                        base.View.UpdateView("FCLAIMQTY");
+                        base.View.GetControl("F_SFFP").Enabled = false;
+                        base.View.UpdateView("F_SFFP");
+                        this.Model.SetValue("F_SFFP", false);
+                        this.View.UpdateView("F_SFFP");
+                        pickinfoList1 = date[0] as List<fhz>;
+                        //pickinfoList1.Clear();
+                        // sffp = date[3].ToString();
                         this.Model.SetValue("F_YSM", date[1]);
                         this.View.UpdateView("F_YSM");
                         this.Model.SetValue("FCLAIMQTY", date[2]);
                         this.View.UpdateView("FCLAIMQTY");
                         this.Model.SetValue("F_RUJP_QTY", date[4]);
                         this.View.UpdateView("F_RUJP_QTY");
+                        this.Model.SetValue("F_TSHP", true);
+                        base.View.GetControl("F_TSHP").Enabled = false;
+                        this.View.UpdateView("F_TSHP");
                     }
                 }
             });
@@ -155,6 +191,72 @@ namespace HMSX.Second.Plugin.MES
             this.ShowFrom(param);
 
         }
+        public void PickMaterial1(long op)
+        {
+            string entryId = "0";
+            dic.Clear();
+            string strSql = string.Format(@"/*dialect*/select FMoBillNo,FMOSEQ,concat(FMoBillNo,'-',FMOSEQ) as FMoNumber,FOptPlanNo,t3.FName as FProcess,FOperNumber,FSEQNUMBER, 
+                                                                concat(FOptPlanNo,'-',FSEQNUMBER,'-',FOperNumber) as OptPlanNo,t.FMaterialId,t2.FNAME as FMaterialName,t1.F_LOT_Text,t1.FWORKQTY,t1.FEntryId,t1.FBARCODE  
+                                                                from T_SFC_DISPATCHDETAIL t 
+                                                                inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
+                                                               and t.FOperId={0}  
+                                                                 AND t1.FENTRYID NOT IN  (select  FPgEntryId from(select FPgEntryId,sum(FMustQty) as FMustQty,sum(FAvailableQty) as FPickQty  from t_PgBomInfo Group by FPgEntryId) a where a.FMustQty-a.FPickQty<=0) 
+                                                               AND T1.FSTATUS='B' 
+                                                                left join T_BD_MATERIAL_L t2 on t.FMATERIALID = t2.FMATERIALID and t2.FLOCALEID = 2052  
+                                                               left join T_ENG_PROCESS_L t3 on t.FPROCESSID=t3.FID and t3.FLOCALEID = 2052", op);
+            DynamicObjectCollection rs = DBServiceHelper.ExecuteDynamicObject(this.Context, strSql);
+            if (rs.Count > 0)
+            {
+                for (int i = 0; i < rs.Count; i++)
+                {
+                    entryId = entryId + ',' + rs[i]["FEntryId"].ToString();
+                    dic.Add(Convert.ToInt64(rs[i]["FEntryId"].ToString()), Convert.ToInt64(rs[i]["FEntryId"].ToString()));
+                }
+                SavePgBom();
+                MobileShowParameter param = new MobileShowParameter();
+                param.FormId = "kcda126f86b6f4754a6d58570ca2221e3";
+                param.ParentPageId = this.View.PageId;
+                param.SyncCallBackAction = false;
+                param.CustomParams.Add("FPgEntryId", entryId);
+                param.CustomParams.Add("ZJLL", "T");
+                this.ShowFrom(param);
+            }
+
+        }
+        public void PickMaterial2(string tm)
+        {
+            string[] ysms = tm.Split(',');
+            string entryId = "0";
+            string cstm = "";
+            dic.Clear();
+            if (ysms.Length > 0 && tm != "")
+            {
+                foreach (var ysm in ysms)
+                {
+                    string pgsql = $@"select top 1 FENTRYID,F_260_CSTM
+                                     FROM T_SFC_DISPATCHDETAILENTRY 
+                                     where F_260_CSTM!=''and F_260_CSTM like '%{ysm }%'
+                                    order by FDISPATCHTIME desc";
+                    var pgs = DBUtils.ExecuteDynamicObject(Context, pgsql);
+                    foreach (var pg in pgs)
+                    {
+                        entryId = entryId + ',' + pg["FENTRYID"].ToString();
+                        dic.Add(Convert.ToInt64(pg["FENTRYID"].ToString()), Convert.ToInt64(pg["FENTRYID"].ToString()));
+                        list2.Add(Convert.ToInt64(pg["FENTRYID"].ToString()));
+                    }                  
+                }               
+            }
+            SavePgBom();
+            MobileShowParameter param = new MobileShowParameter();
+            param.FormId = "k06daef5616224128b31d49c5ccbc9d76";
+            param.ParentPageId = this.View.PageId;
+            param.SyncCallBackAction = false;
+            param.CustomParams.Add("FPgEntryId", entryId);
+            param.CustomParams.Add("FYSM", cstm);
+            param.CustomParams.Add("CSTM", tm);
+            this.ShowFrom(param);
+
+        }
         private List<DynamicObject> GetPPBomInfo(string MoBillNo, string MoBillEntrySeq)
         {
             string strSql = string.Format(@"SELECT T.FPRDORGID,T.FMOBillNO,T.FMOENTRYSEQ,T1.FSEQ,T1.FID,T1.FENTRYID,T1.FMATERIALID,T3.FMASTERID,T3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,T2.FPICKEDQTY,T5.FSTOCKID,T1.FNUMERATOR,T1.FDENOMINATOR,T1.FSCRAPRATE,FUSERATE  FROM T_PRD_PPBOM T 
@@ -176,9 +278,10 @@ namespace HMSX.Second.Plugin.MES
         }
         protected void AllSelect(string entityKey)
         {
+            var dictionary = this.detailTableData;
             int entryRowCount = this.Model.GetEntryRowCount(entityKey);
             List<int> list = new List<int>();
-            for (int i = 0; i < entryRowCount; i++)
+            for (int i = 0; i < dictionary.Count; i++)
             {
                 list.Add(i);
                 this.ListFormaterManager.SetControlProperty("FFlowLayout_Detail", i, "255,234,199", MobileFormatConditionPropertyEnums.BackColor);
@@ -251,7 +354,7 @@ namespace HMSX.Second.Plugin.MES
                            from T_SFC_DISPATCHDETAIL t 
                            inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID  
                            WHERE F_260_CSTM!=''and ({tm})) PGMX ON PGMX.FMATERIALID=b.FMATERIALID
-                             where c.FNUMBER='{dictionary["FMaterialNumber"]}'and  a.FMOBILLNO='{dictionary["FMoBillNo"]}' and a.FMOENTRYSEQ='{dictionary["FMoSeq"]}'";
+                             where c.FNUMBER='{dictionary["FMaterialNumber"]}'and FNUMERATOR!=0 and  a.FMOBILLNO='{dictionary["FMoBillNo"]}' and a.FMOENTRYSEQ='{dictionary["FMoSeq"]}'";
                             var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
                             foreach (var ylqd in ylqds)
                             {
@@ -444,6 +547,22 @@ namespace HMSX.Second.Plugin.MES
                 string billBarCode = dictionary["FBarCode"].ToString();
                 this.Print(billBarCode, false);
             }
+        }
+        /// <summary>
+        /// 获取工序计划物料信息
+        /// </summary>
+        /// <param name="operId"></param>
+        /// <returns></returns>
+        private DynamicObject GetOptplan(long operId)
+        {
+            SqlParam sqlParam = new SqlParam("@OperId", KDDbType.Int64, optPlanOptId);
+            long num = DBServiceHelper.ExecuteScalar<long>(base.Context, "SELECT S.FID FROM T_SFC_OPERPLANNINGDETAIL d INNER JOIN T_SFC_OPERPLANNINGSEQ s ON s.FENTRYID=d.FENTRYID WHERE d.FDETAILID=@OperId", 0L, new SqlParam[]
+            {
+              sqlParam
+            });
+            DynamicObjectType dynamicObjectType = ((FormMetadata)MetaDataServiceHelper.Load(base.Context, "SFC_OperationPlanning", true)).BusinessInfo.GetDynamicObjectType();
+            DynamicObject optPlan = BusinessDataServiceHelper.LoadSingle(base.Context, num, dynamicObjectType, null);
+            return optPlan;
         }
 
         /**

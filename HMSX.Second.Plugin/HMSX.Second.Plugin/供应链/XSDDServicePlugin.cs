@@ -17,13 +17,13 @@ namespace HMSX.Second.Plugin.供应链
     [Description("销售订单--项目号")]
     //热启动,不用重启IIS
     [Kingdee.BOS.Util.HotUpdate]
-    public class XSDDServicePlugin: AbstractOperationServicePlugIn
+    public class XSDDServicePlugin : AbstractOperationServicePlugIn
     {
-        readonly string[] reloadKeys = new string[] {"F_260_XMHH", "FMtoNo"  };
+        readonly string[] reloadKeys = new string[] { "F_260_XMHH", "FMtoNo" };
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
-            base.OnPreparePropertys(e);
-            String[] propertys = { "FMaterialId", "F_260_XMHH", "FCustId", "FMtoNo", "F_260_BaseJHY" };
+            base.OnPreparePropertys(e);//, "F_260_SFSI"
+            String[] propertys = { "FMaterialId", "F_260_XMHH", "FCustId", "FMtoNo", "F_260_BaseJHY", "F_260_SFSI" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -39,11 +39,11 @@ namespace HMSX.Second.Plugin.供应链
                     long i = 0;
                     foreach (ExtendedDataEntity extended in e.SelectedRows)
                     {
-                        DynamicObject dates = extended.DataEntity;                     
+                        DynamicObject dates = extended.DataEntity;
                         foreach (var date in dates["SaleOrderEntry"] as DynamicObjectCollection)
                         {
                             if (((DynamicObject)date["MaterialId"])["Number"].ToString().Substring(0, 6) == "260.02" &&
-                                (date["F_260_XMHH"] as DynamicObjectCollection).Count == 0 )
+                                (date["F_260_XMHH"] as DynamicObjectCollection).Count == 0)
                             {
                                 string cxsql = $@"select 
                                         XMH.F_260_XMH,XMH.FPKID
@@ -59,7 +59,7 @@ namespace HMSX.Second.Plugin.供应链
                                        and XMH.F_260_XMH is not null
                                         order by XMH.FPKID desc";
                                 var cxs = DBUtils.ExecuteDynamicObject(Context, cxsql);
-                                if (cxs.Count> 0)
+                                if (cxs.Count > 0)
                                 {
                                     i++;
                                     long id = 0;
@@ -71,33 +71,23 @@ namespace HMSX.Second.Plugin.供应链
                                     }
                                     var dyc = new DynamicObject((date["F_260_XMHH"] as DynamicObjectCollection).DynamicCollectionItemPropertyType);
                                     //给基础资料的Id赋值
-                                    if((id - i) == 0)
+                                    if ((id - i) == 0)
                                     {
                                         i++;
                                     }
-                                    dyc["PKID"] = id -i;
+                                    dyc["PKID"] = id - i;
                                     //单个的账簿Id对应的账簿实体
                                     dyc["F_260_XMHH_Id"] = cxs[0]["F_260_XMH"];
                                     (date["F_260_XMHH"] as DynamicObjectCollection).Add(dyc);
                                 }
                             }
                             string jhy = "";
-                            foreach(var plan in (((DynamicObject)date["MaterialId"])["MaterialPlan"])as DynamicObjectCollection)
+                            foreach (var plan in (((DynamicObject)date["MaterialId"])["MaterialPlan"]) as DynamicObjectCollection)
                             {
                                 jhy = plan["PlanerID_Id"].ToString();
                             }
                             date["F_260_BaseJHY_Id"] = jhy;
                         }
-                        //foreach (var date in dates["SaleOrderEntry"] as DynamicObjectCollection)
-                        //{
-                        //    if (((DynamicObject)date["MaterialId"])["Number"].ToString().Substring(0, 6) == "260.02")
-                        //    {
-                        //        if ((date["F_260_XMHH"] as DynamicObjectCollection).Count == 0)
-                        //        {
-                        //            throw new KDBusinessException("", "项目号未选择，不允许提交！");
-                        //        }
-                        //    }
-                        //}
                     }
                 }
             }
@@ -115,8 +105,8 @@ namespace HMSX.Second.Plugin.供应链
                         {
                             //校验
                             //if (entry["MtoNo"] == null || entry["MtoNo"].ToString() == "" || entry["MtoNo"].ToString() == " ")
-                           // {
-                                string jysql = $@"select *
+                            // {
+                            string jysql = $@"select *
                                             from T_BD_MATERIAL a
                                             left join t_BD_MaterialPlan c on c.FMATERIALID=a.FMATERIALID
                                             left join T_PLN_MANUFACTUREPOLICY d on c.FMFGPOLICYID=d.FID
@@ -126,29 +116,40 @@ namespace HMSX.Second.Plugin.供应链
                                             SUBSTRING(a.FNUMBER,1,6)='260.02'
                                             and a.FMATERIALID={entry["MaterialId_Id"]}
                                             and a.FCREATEORGID=100026";
-                                var jy = DBUtils.ExecuteDynamicObject(Context, jysql);
-                                if (jy.Count > 0)
+                            var jy = DBUtils.ExecuteDynamicObject(Context, jysql);
+                            if (jy.Count > 0)
+                            {
+                                string str = "";
+                                string khsql = $@"select FSHORTNAME from T_BD_CUSTOMER_L where FCUSTID={date["CustID_Id"]}";
+                                var khs = DBUtils.ExecuteDynamicObject(Context, khsql);
+                                if (khs.Count > 0)
                                 {
-                                    string str = "";
-                                    string khsql = $@"select FSHORTNAME from T_BD_CUSTOMER_L where FCUSTID={date["CustID_Id"]}";
-                                    var khs = DBUtils.ExecuteDynamicObject(Context, khsql);
-                                    if (khs.Count > 0)
-                                    {
-                                        str = khs[0]["FSHORTNAME"].ToString();
-                                    }
-                                    foreach (var xmh in entry["F_260_XMHH"] as DynamicObjectCollection)
-                                    {
-                                        string xmhsql = $@"select FNAME from ora_t_Cust100045_L WHERE FID={xmh["F_260_XMHH_Id"]}";
-                                        var xmhs = DBUtils.ExecuteDynamicObject(Context, xmhsql);
-                                        if (xmhs.Count > 0)
-                                        {
-                                            str += "_" + xmhs[0]["FNAME"].ToString();
-                                        }
-                                    }
-                                    string upsql = $@"/*dialect*/ update T_SAL_ORDERENTRY set FMTONO='{str}' where FENTRYID={entry["Id"]}";
-                                    DBUtils.Execute(Context, upsql);
+                                    str = khs[0]["FSHORTNAME"].ToString();
                                 }
-                            //}
+                                foreach (var xmh in entry["F_260_XMHH"] as DynamicObjectCollection)
+                                {
+                                    string xmhsql = $@"select FNAME from ora_t_Cust100045_L WHERE FID={xmh["F_260_XMHH_Id"]}";
+                                    var xmhs = DBUtils.ExecuteDynamicObject(Context, xmhsql);
+                                    if (xmhs.Count > 0)
+                                    {
+                                        str += "_" + xmhs[0]["FNAME"].ToString();
+                                    }
+                                }
+                                if (date["F_260_SFNPI"].ToString() != "NPI_NEW")
+                                {
+                                    string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{date["CustID_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1 and F_260_SFSI!=''";
+                                    var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                    if (khwl.Count > 0 && khwl[0]["F_260_SFSI"].ToString() == "SI")
+                                    {
+                                        str += "_SI";
+                                    }
+                                }                               
+                                string upsql = $@"/*dialect*/ update T_SAL_ORDERENTRY set FMTONO='{str}' where FENTRYID={entry["Id"]}";
+                                DBUtils.Execute(Context, upsql);
+                            }
                         }
                     }
                 }

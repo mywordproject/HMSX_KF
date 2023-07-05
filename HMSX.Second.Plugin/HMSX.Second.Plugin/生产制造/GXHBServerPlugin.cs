@@ -24,7 +24,7 @@ namespace HMSX.Second.Plugin.生产制造
         {
             base.OnPreparePropertys(e);
             String[] propertys = { "FPrdOrgId", "FLot", "FMoNumber", "FDispatchDetailEntryId", "FFinishQty", "FMaterialId", "FBillNo", "FHMSXKHBQYD", "FHMSXKHBQYD", "F_260_SFNPI1",
-             "F_260_XMHH", "FHMSXKH", "FMtoNo"};
+             "F_260_XMHH", "FHMSXKH", "FMtoNo","FCheckType"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -42,7 +42,7 @@ namespace HMSX.Second.Plugin.生产制造
                         var entrys = dates["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in entrys)
                         {
-                            if (entry["MoNumber"].ToString().Contains("MO")|| entry["MoNumber"].ToString().Contains("XNY"))
+                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY"))
                             {
                                 //单据转换上
                                 //string x = ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 6);
@@ -141,7 +141,7 @@ namespace HMSX.Second.Plugin.生产制造
                         DynamicObject dy = extended.DataEntity;
                         DynamicObjectCollection docPriceEntity = dy["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in docPriceEntity)
-                        {                         
+                        {
                             if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY"))
                             {
                                 string cxsql = $@"/*dialect*/select FMATERIALID,FFINISHQTY,FDISPATCHDETAILENTRYID from T_SFC_OPTRPTENTRY a
@@ -152,7 +152,8 @@ namespace HMSX.Second.Plugin.生产制造
                                             AND FFINISHQTY={Convert.ToDouble(entry["FinishQty"])}
                                             AND FDISPATCHDETAILENTRYID='{entry["DispatchDetailEntryId"]}'
                                             and FLOT_TEXT='{entry["Lot_Text"]}'
-                                            and FHMSXKHBQYD='{entry["FHMSXKHBQYD_Id"]}' ";
+                                            and FHMSXKHBQYD='{entry["FHMSXKHBQYD_Id"]}' 
+                                            and FISREWORKRPT!=1";
                                 var cx = DBUtils.ExecuteDynamicObject(Context, cxsql);
                                 if (dy["BillNo"] == null)
                                 {
@@ -171,7 +172,7 @@ namespace HMSX.Second.Plugin.生产制造
                             }
                             if (((DynamicObject)entry["MaterialID"])["Number"].ToString().Substring(0, 6) == "260.02" &&
                                     (entry["F_260_XMHH"] as DynamicObjectCollection).Count == 0 &&
-                                    (entry["FMtoNo"]==null || entry["FMtoNo"].ToString() == "" || entry["FMtoNo"].ToString() == " "))
+                                    (entry["FMtoNo"] == null || entry["FMtoNo"].ToString() == "" || entry["FMtoNo"].ToString() == " "))
                             {
                                 string cxsql = $@"select 
                                         XMH.F_260_XMH,XMH.FPKID
@@ -209,7 +210,7 @@ namespace HMSX.Second.Plugin.生产制造
                                     dyc["F_260_XMHH_Id"] = cxs[0]["F_260_XMH"];
                                     (entry["F_260_XMHH"] as DynamicObjectCollection).Add(dyc);
                                 }
-                            }                            
+                            }
                         }
                     }
                 }

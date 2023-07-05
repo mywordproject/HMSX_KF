@@ -26,8 +26,8 @@ namespace HMSX.Second.Plugin.供应链
         //readonly string[] reloadKeys = new string[] { "F_260_XMHH", "FMtoNo" };
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
-            base.OnPreparePropertys(e);
-            String[] propertys = { "FMaterialID", "F_260_XMHH", "FCustID" };
+            base.OnPreparePropertys(e);//, "F_260_SFSI1" 
+            String[] propertys = { "FMaterialID", "F_260_XMHH", "FCustID", "F_260_SFSI" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -206,6 +206,15 @@ namespace HMSX.Second.Plugin.供应链
                                         str +="_"+ xmhs[0]["FNAME"].ToString();
                                     }
                                 }
+                                string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{entry["CustID_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1 and F_260_SFSI!=''";
+                                var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                if (khwl.Count > 0 && khwl[0]["F_260_SFSI"].ToString() == "SI")
+                                {
+                                    str += "_SI";
+                                }
                                 string upsql = $@"/*dialect*/ update T_PLN_FORECASTENTRY set FMTONO='{str}' where FENTRYID={entry["Id"]}";
                                 DBUtils.Execute(Context, upsql);
                             }
@@ -250,6 +259,15 @@ namespace HMSX.Second.Plugin.供应链
                                     {
                                         str += "_" + xmhs[0]["FNAME"].ToString();
                                     }
+                                }
+                                string khwlsql = $@"/*dialect*/select F_260_SFSI from t_Sal_CustMatMappingEntry a
+                                              left join t_Sal_CustMatMapping b on a.fid=b.fid
+                                              where FCUSTOMERID='{entry["CustID_Id"]}' 
+                                              and FMATERIALID='{entry["MaterialID_Id"]}' and FEFFECTIVE=1 and F_260_SFSI!=''";
+                                var khwl = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                                if (khwl.Count>0 && khwl[0]["F_260_SFSI"].ToString()=="SI")
+                                {
+                                    str += "_SI";
                                 }
                                 string upsql = $@"/*dialect*/ update T_PLN_FORECASTENTRY set FMTONO='{str}' where FENTRYID={entry["Id"]}";
                                 DBUtils.Execute(Context, upsql);

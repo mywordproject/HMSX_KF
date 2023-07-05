@@ -69,5 +69,29 @@ namespace HMSX.Second.Plugin.供应链
                 }
             }
         }
+        public override void DataChanged(DataChangedEventArgs e)
+        {
+            base.DataChanged(e);
+            if (this.Context.CurrentOrganizationInfo.ID == 100026)
+            {
+                if (e.Field.Key == "FMaterialId" || e.Field.Key == "FCustId")
+                {
+                    var kh = this.Model.GetValue("FCUSTID");
+                    var wl = this.Model.GetValue("FMATERIALID", e.Row);
+                    if (kh != null && wl != null)
+                    {
+                        string khwlsql = $@"/*dialect*/select F_260_SFSI from V_SAL_CUSTMATMAPPING 
+                                where FCUSTOMERID='{((DynamicObject)kh)["Id"]}' and
+                                      FMATERIALID='{((DynamicObject)wl)["Id"]}' and FEFFECTIVE=1 ";
+                        var khwls = DBUtils.ExecuteDynamicObject(Context, khwlsql);
+                        if (khwls.Count > 0)
+                        {
+                            this.Model.SetValue("F_260_SFSI", khwls[0]["F_260_SFSI"], e.Row);
+
+                        }
+                    }
+                }
+            }
+        }
     }
 }
