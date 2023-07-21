@@ -62,7 +62,7 @@ namespace HMSX.Second.Plugin.供应链
                                               SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
                                               inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                                               where  F_RUJP_LOT!='' 
-                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%' OR FMOBILLNO  LIKE '%YJ%')
                                                and FMATERIALID='{date["MaterialId_Id"]}'
                                                and F_RUJP_LOT='{date["Lot_Text"]}'
                                                )";
@@ -76,7 +76,7 @@ namespace HMSX.Second.Plugin.供应链
                                               SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
                                               inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                                               where  F_RUJP_LOT!='' 
-                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%' OR FMOBILLNO  LIKE '%YJ%')
                                                and FMATERIALID='{date["MaterialId_Id"]}'
                                                and F_RUJP_LOT='{date["Lot_Text"]}'
                                                )";
@@ -104,7 +104,7 @@ namespace HMSX.Second.Plugin.供应链
                                               SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
                                               inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                                               where  F_RUJP_LOT!='' 
-                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%' OR FMOBILLNO  LIKE '%YJ%')
                                                and FMATERIALID='{date["MaterialId_Id"]}'
                                                and F_RUJP_LOT='{date["Lot_Text"]}'
                                                )";
@@ -118,7 +118,7 @@ namespace HMSX.Second.Plugin.供应链
                                               SELECT FENTRYID FROM T_SFC_DISPATCHDETAIL t 
                                               inner join T_SFC_DISPATCHDETAILENTRY t1 on t.FID=t1.FID 
                                               where  F_RUJP_LOT!='' 
-                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%')
+                                               AND (FMOBILLNO  LIKE '%MO%' OR FMOBILLNO  LIKE '%XNY%' OR FMOBILLNO  LIKE '%YJ%')
                                                and FMATERIALID='{date["MaterialId_Id"]}'
                                                and F_RUJP_LOT='{date["Lot_Text"]}'
                                                )";

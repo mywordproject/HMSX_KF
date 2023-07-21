@@ -164,7 +164,9 @@ namespace HMSX.Second.Plugin.生产制造
                         string jydsql = $@"/*dialect*/
                          select distinct F_260_HBBH,F_260_HBNM FID,F_260_HBFLNM FENTRYID,F_260_HBHH FSEQ from T_QM_INSPECTBILL a
                          left join T_QM_INSPECTBILLENTRY b on a.fid=b.fid
-                         where FINSPECTORGID=100026 and A.FID IN ({ydnm.Trim(',')}) AND b.FENTRYID IN ({ydflnm.Trim(',')})";
+                         left join T_BAS_BILLTYPE c on c.FBILLTYPEID=a.FBILLTYPEID
+                         where FINSPECTORGID=100026 and c.FNUMBER='JYD004_SYS'
+                         and A.FID IN ({ydnm.Trim(',')}) AND b.FENTRYID IN ({ydflnm.Trim(',')})";
                         DynamicObjectCollection jyd = DBUtils.ExecuteDynamicObject(Context, jydsql);
                         if (jyd.Count > 0)
                         {

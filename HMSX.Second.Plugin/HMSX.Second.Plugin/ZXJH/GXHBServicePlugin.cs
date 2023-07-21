@@ -18,6 +18,7 @@ namespace HMSX.Second.Plugin.ZXJH
                                         left join T_SFC_OPTRPTENTRY_C hbc on hb.FENTRYID = hbc.FENTRYID
                                         where hb.FMONUMBER not like 'MO%'
                                         and hb.FMONUMBER not like 'XNY%'
+                                        and hb.FMONUMBER not like 'YJ%'
                                         AND hb.FMONUMBER not like '%ZD%'
                                         AND F_260_SJWGRQ IS NULL
                                         and FPRDORGID=100026
@@ -38,6 +39,7 @@ namespace HMSX.Second.Plugin.ZXJH
                                where FREALPROCESSFINISHTIME IS NULL
                                and a.FMONUMBER not like '%MO%' 
                                AND a.FMONUMBER not like '%XNY%'
+                               and a.FMONUMBER not like 'YJ%'
                                AND a.FMONUMBER not like '%ZD%'
                                AND FPROORGID=100026
                                and FPRDORGID=100026

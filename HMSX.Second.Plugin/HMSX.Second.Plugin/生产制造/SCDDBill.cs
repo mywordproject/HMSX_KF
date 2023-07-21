@@ -112,7 +112,7 @@ namespace HMSX.Second.Plugin.生产制造
                 {
                     foreach (var date in dates)
                     {
-                        if(date["SrcBillType"].ToString()== "QM_DefectProcessBill")
+                        if(date["SrcBillType"].ToString()== "QM_DefectProcessBill" || date["SrcBillType"].ToString() == "PAEZ_HMSX_CPBSSQD")
                         {
                             string wlqdsql = $@"select top 1 FID,FNUMBER from T_ENG_BOM where FMATERIALID='{date["MaterialId_Id"]}'
                              order by FNUMBER desc";

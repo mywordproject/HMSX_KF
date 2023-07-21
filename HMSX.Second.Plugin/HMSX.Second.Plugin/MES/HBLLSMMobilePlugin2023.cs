@@ -28,9 +28,9 @@ using System.Threading.Tasks;
 
 namespace HMSX.Second.Plugin.MES
 {
-    [Description("合并领料--移动端")]
+    [Description("合并领料--移动端2023")]
     [Kingdee.BOS.Util.HotUpdate]
-    public class HBLLSMMobilePlugin : AbstractMobilePlugin
+    public class HBLLSMMobilePlugin2023 : AbstractMobilePlugin
     {
         string FEntryId;//派工明细EntryId
         string MoBillNo = "";//生产订单号
@@ -41,6 +41,7 @@ namespace HMSX.Second.Plugin.MES
         List<pickinfo> pickinfoListsum = new List<pickinfo>();//领料汇总
         List<pickinfo1> pickinfoListsm = new List<pickinfo1>();//扫码的领料
         List<pickinfo1> pickinfoListmx = new List<pickinfo1>();//领料明细
+        List<pickinfo1> pickinfoListmxsum = new List<pickinfo1>();
         protected FormCacheModel cacheModel4Save = new FormCacheModel();
         protected bool HasCached;
 
@@ -167,7 +168,7 @@ namespace HMSX.Second.Plugin.MES
                     strSql = string.Format(@"SELECT  t.FSTOCKSTATUSID,T2.FNAME,t.FStockOrgId,t.FStockId,t.FMaterialId,t.FLot,t1.FNUMBER,t.FBASEUNITID,t.FBASEQTY FROM T_STK_INVENTORY t 
                 LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
                 left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId
-                WHERE t.FSTOCKSTATUSID in (33194113,33797546,5410804)  
+                WHERE t.FSTOCKSTATUSID in (33194113,33797546)  
                 AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
                 AND(t1.FSUPPLYID={2} or {2}=0 or {2}='')
                 ORDER BY FNUMBER ASC", pp.stockId, pp.materialid, pp.gys);
@@ -291,6 +292,18 @@ namespace HMSX.Second.Plugin.MES
                     pickinfoListgroup.Add(pInfogroup);
                     pickinfoListmx.Add(pInfogroup1);
                 }
+                //领料明细汇总
+                pickinfoListmx.GroupBy(x => new { x.MONumber, x.MaterialNumber, x.MaterialName, x.Model, x.lot, x.baseUnitId, x.Kczt, x.pbomEntryId, x.IsParent, x.pgEntryId }, (x, y) =>
+                {
+                    var Qty = y.Sum(a => a.Qty);
+                    var tt = y.Select(t =>
+                    { 
+                        t.Qty = Qty;
+                        return t;
+                    }).ToList();
+                    pickinfoListmxsum.Add(tt.First());
+                    return tt;
+                }).ToList();
                 //汇总
                 pickinfoListgroup.GroupBy(x => new { x.MONumber, x.MaterialNumber, x.MaterialName, x.Model, x.lot, x.baseUnitId,x.Kczt,x.pbomEntryId }, (x, y) =>
                 {
@@ -500,13 +513,13 @@ namespace HMSX.Second.Plugin.MES
                 {
                     if (row["FIsScan"] != null && row["FIsScan"].ToString() == "Y")
                     {
-                        for (int i = 0; i < pickinfoListmx.Count; i++)
+                        for (int i = 0; i < pickinfoListmxsum.Count; i++)
                         {
-                            if(row["FMaterialNumber"].ToString()== pickinfoListmx[i].MaterialNumber &&
-                               row["FLot"].ToString() == pickinfoListmx[i].lot)
+                            if(row["FMaterialNumber"].ToString()== pickinfoListmxsum[i].MaterialNumber &&
+                               row["FLot"].ToString() == pickinfoListmxsum[i].lot)
                             {
-                                pickinfoListsm.Add(pickinfoListmx[i]);
-                                entryIds.Add(Convert.ToInt64(pickinfoListmx[i].pbomEntryId));
+                                pickinfoListsm.Add(pickinfoListmxsum[i]);
+                                entryIds.Add(Convert.ToInt64(pickinfoListmxsum[i].pbomEntryId));
                             }
                         }                           
                     }
@@ -984,6 +997,156 @@ namespace HMSX.Second.Plugin.MES
             {
                 get { return _stockQty; }
                 set { _stockQty = value; }
+            }
+            /// <summary>
+            /// 用料清单分录Id
+            /// </summary>
+            public long pbomEntryId
+            {
+                get
+                {
+                    return _pbomEntryId;
+                }
+                set
+                {
+                    _pbomEntryId = value;
+                }
+            }
+            /// <summary>
+            /// 派工明细分录Id
+            /// </summary>
+            public long pgEntryId
+            {
+                get { return _PgEntryId; }
+                set { _PgEntryId = value; }
+            }
+            /// <summary>
+            /// 基本计量单位
+            /// </summary>
+            public long baseUnitId
+            {
+                get { return _baseUnitId; }
+                set { _baseUnitId = value; }
+            }
+
+            /// <summary>
+            /// 是否父分录
+            /// </summary>
+            public int IsParent
+            {
+                get { return _IsParent; }
+                set { _IsParent = value; }
+            }
+
+        }
+        internal class pickinfo2
+        {
+            private static string _moNumber;
+            private string _MaterialNumber;
+            private string _MaterialName;
+            private string _Model;
+            private string _lot;
+            private decimal _Qty;
+            private long _pbomEntryId;
+            private long _PgEntryId;
+            private long _baseUnitId;
+            private int _IsParent;
+            private string _kczt;
+            /// <summary>
+            /// 库存状态
+            /// </summary>
+            public string Kczt
+            {
+                get
+                {
+                    return _kczt;
+                }
+                set
+                {
+                    _kczt = value;
+                }
+            }
+            /// <summary>
+            /// 生产订单号
+            /// </summary>
+            public string MONumber
+            {
+                get
+                {
+                    return _moNumber;
+                }
+                set
+                {
+                    _moNumber = value;
+                }
+            }
+            /// <summary>
+            /// 物料编码
+            /// </summary>
+            public string MaterialNumber
+            {
+                get
+                {
+                    return _MaterialNumber;
+                }
+                set
+                {
+                    _MaterialNumber = value;
+                }
+            }
+
+            /// <summary>
+            /// 物料名称
+            /// </summary>
+            public string MaterialName
+            {
+                get
+                {
+                    return _MaterialName;
+                }
+                set
+                {
+                    _MaterialName = value;
+                }
+            }
+
+            /// <summary>
+            /// 规格型号
+            /// </summary>
+            public string Model
+            {
+                get { return _Model; }
+                set { _Model = value; }
+            }
+
+            /// <summary> 
+            /// 批号
+            /// </summary>
+            public string lot
+            {
+                get
+                {
+                    return _lot;
+                }
+                set
+                {
+                    _lot = value;
+                }
+            }
+
+            /// <summary>
+            /// 领料数量
+            /// </summary>
+            public decimal Qty
+            {
+                get
+                {
+                    return _Qty;
+                }
+                set
+                {
+                    _Qty = value;
+                }
             }
             /// <summary>
             /// 用料清单分录Id

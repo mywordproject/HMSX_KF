@@ -135,7 +135,7 @@ namespace HMSX.Second.Plugin.MES
                          inner join T_PRD_MOENTRY b on a.fid=b.fid
                          inner join T_BAS_BILLTYPE c on c.FBILLTYPEID=A.FBILLTYPE
                          where
-                         (A.FBILLNO like '%MO%' or A.FBILLNO like '%XNY%')
+                         (A.FBILLNO like '%MO%' or A.FBILLNO like '%XNY%' or A.FBILLNO like '%YJ%')
                          and FPRDORGID=100026
                          and  C.FNUMBER='SCDD02_SYS' and F_260_YDLX!='' 
                          and FBILLNO='{MoBillNo}' and FSEQ='{MoBillEntrySeq}' ";
@@ -149,7 +149,7 @@ namespace HMSX.Second.Plugin.MES
                                                                   LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
                                                                   left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId                                                                                                                             
                                                                   WHERE 
-                                                                  t.FSTOCKSTATUSID in (33194113,33797546)
+                                                                  t.FSTOCKSTATUSID in (33194113,33797546,5410804)
                                                                   AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
                                                                   and   T1.FNUMBER='{2}'
                                                                   ORDER BY t.FSTOCKSTATUSID desc,FNUMBER ASC", pp.stockId, pp.materialid, pp.LOT, CSTM);
@@ -699,7 +699,7 @@ namespace HMSX.Second.Plugin.MES
                          inner join T_PRD_MOENTRY b on a.fid=b.fid
                          inner join T_BAS_BILLTYPE c on c.FBILLTYPEID=A.FBILLTYPE
                          where
-                         (A.FBILLNO like '%MO%' or A.FBILLNO like '%XNY%')
+                         (A.FBILLNO like '%MO%' or A.FBILLNO like '%XNY%' or A.FBILLNO like '%YJ%')
                          and FPRDORGID=100026
                          and  C.FNUMBER='SCDD02_SYS' and F_260_YDLX!='' 
                          and FBILLNO='{MoBillNo}' and FSEQ='{MoBillEntrySeq}' ";
@@ -714,7 +714,7 @@ namespace HMSX.Second.Plugin.MES
                                                                   LEFT JOIN T_BD_LOTMASTER T1 ON t.FLOT=t1.FLOTID  AND t.FMaterialId=T1.FmaterialId
                                                                   left JOIN t_BD_StockStatus_L T2 ON t.FSTOCKSTATUSID=T2.FStockStatusId                                                                  
                                                                   WHERE 
-                                                                  t.FSTOCKSTATUSID in (33194113,33797546)
+                                                                  t.FSTOCKSTATUSID in (33194113,33797546,5410804)
                                                                   AND  t.FStockId={0} AND  t.FMaterialId={1}  AND t.FBASEQTY>0 
                                                                   and   T1.FNUMBER='{2}'
                                                                   ORDER BY t.FSTOCKSTATUSID desc,FNUMBER ASC", pp.stockId, pp.materialid, pp.LOT, scanText);

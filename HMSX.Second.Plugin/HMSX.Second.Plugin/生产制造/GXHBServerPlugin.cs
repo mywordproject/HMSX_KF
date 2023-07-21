@@ -42,7 +42,7 @@ namespace HMSX.Second.Plugin.生产制造
                         var entrys = dates["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in entrys)
                         {
-                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY"))
+                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY") || entry["MoNumber"].ToString().Contains("YJ"))
                             {
                                 //单据转换上
                                 //string x = ((DynamicObject)entry["MaterialId"])["Number"].ToString().Substring(0, 6);
@@ -78,39 +78,39 @@ namespace HMSX.Second.Plugin.生产制造
                                     DBUtils.Execute(Context, khsql);
 
                                     long FStockId = 0;
-                                    if (cxs[0]["FSHORTNAME"].ToString() == "CDFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    if (cxs[0]["FSHORTNAME"].ToString() == "CDFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784504;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "LHFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "LHFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784506;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "吉宝" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "吉宝" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784508;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "达功" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "达功" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784509;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "BYD" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "BYD" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784511;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "翊宝" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "翊宝" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 11784513;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "歌尔" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "歌尔" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 25856631;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "鸿富成" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "鸿富成" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 31116287;
                                     }
-                                    else if (cxs[0]["FSHORTNAME"].ToString() == "VNFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD")
+                                    else if (cxs[0]["FSHORTNAME"].ToString() == "VNFX" && entry["F_260_SFNPI1"].ToString() != "NPI_OLD" && entry["F_260_SFNPI1"].ToString() != "NPI_NEW")
                                     {
                                         FStockId = 32379391;
                                     }
@@ -142,7 +142,7 @@ namespace HMSX.Second.Plugin.生产制造
                         DynamicObjectCollection docPriceEntity = dy["OptRptEntry"] as DynamicObjectCollection;
                         foreach (var entry in docPriceEntity)
                         {
-                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY"))
+                            if (entry["MoNumber"].ToString().Contains("MO") || entry["MoNumber"].ToString().Contains("XNY") || entry["MoNumber"].ToString().Contains("YJ"))
                             {
                                 string cxsql = $@"/*dialect*/select FMATERIALID,FFINISHQTY,FDISPATCHDETAILENTRYID from T_SFC_OPTRPTENTRY a
                                             inner join T_SFC_OPTRPT b on a.FID=b.FID

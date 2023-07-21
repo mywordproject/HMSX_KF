@@ -52,7 +52,7 @@ namespace HMSX.Second.Plugin.MES
              left join T_BD_STOCK_L C ON C.FSTOCKID=B.FSTOCKID
              left join t_BD_Material wl on wl.FMATERIALID=b1.FMATERIALID
 			 left join t_BD_MaterialBase c1 ON c1.FMATERIALID=b1.FMATERIALID
-             where a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and  FNUMERATOR!=0 and substring(wl.fnumber,1,6)!='260.07'";
+             where a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and  FNUMERATOR!=0 ";
             var cks = DBUtils.ExecuteDynamicObject(Context, cksql);
             if (cks.Count > 0)
             {
@@ -103,7 +103,6 @@ namespace HMSX.Second.Plugin.MES
                            ) PGMX ON PGMX.FMATERIALID=b.FMATERIALID						  
                          where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}'and FNUMERATOR!=0
                            and FMATERIALTYPE!=3 and FERPCLSID not in(1,3) and PGMX.F_260_CSTM is not null
-                           and substring(d.fnumber,1,6)!='260.07'
                         order by b.FMATERIALID,PGMX.F_RUJP_LOT ";
             //校验剩余数量是否为零
             var rs = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
@@ -788,8 +787,7 @@ namespace HMSX.Second.Plugin.MES
                          left join T_BD_MATERIAL d1 on  b.FMATERIALID=d1.FMATERIALID
                          left join t_BD_MaterialBase e on b.FMATERIALID=e.FMATERIALID
                          where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' 
-                          and FERPCLSID not in (1,3) and a.FPRDORGID=100026 and FMATERIALTYPE=1 AND FNUMERATOR!=0
-                           and substring(d1.fnumber,1,6)!='260.07'";
+                          and FERPCLSID not in (1,3) and a.FPRDORGID=100026 and FMATERIALTYPE=1 AND FNUMERATOR!=0";
             var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
             DynamicObjectCollection dates = this.Model.DataObject["MobileListViewEntity"] as DynamicObjectCollection;
             foreach (var ylqd in ylqds)
@@ -939,8 +937,7 @@ namespace HMSX.Second.Plugin.MES
                          left join T_BD_MATERIAL d1 on  b.FMATERIALID=d1.FMATERIALID
                          left join t_BD_MaterialBase e on b.FMATERIALID=e.FMATERIALID
                          where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}' and FPARENTROWID='{FROWID}'
-                          and FERPCLSID not in (1,3) and a.FPRDORGID=100026 and FMATERIALTYPE=3
-                          and  substring(d1.fnumber,1,6)!='260.07'";
+                          and FERPCLSID not in (1,3) and a.FPRDORGID=100026 and FMATERIALTYPE=3";
             var ylqds = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
             if (ylqds.Count > 0)
             {

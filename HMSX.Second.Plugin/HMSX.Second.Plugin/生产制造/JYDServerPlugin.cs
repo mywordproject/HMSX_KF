@@ -79,7 +79,7 @@ namespace HMSX.Second.Plugin.生产制造
                                        WHERE A.FBILLNO='{dates["BillNo"]}' AND 
                                        C.FSRCBILLTYPE='SFC_OperationReport' AND
                                        SUBSTRING(D.FNUMBER,1,6)='260.02' AND
-                                        (C.FORDERBILLNO LIKE '%MO%' OR C.FORDERBILLNO LIKE '%XNY%')
+                                        (C.FORDERBILLNO LIKE '%MO%' OR C.FORDERBILLNO LIKE '%XNY%' OR C.FORDERBILLNO LIKE '%YJ%')
                                         AND  A.FINSPECTORGID=100026";
                         var CX = DBUtils.ExecuteDynamicObject(Context, CXSQL);
                         if (CX.Count > 0)
