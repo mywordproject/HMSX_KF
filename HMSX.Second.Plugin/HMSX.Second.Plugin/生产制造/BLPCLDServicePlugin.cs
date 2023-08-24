@@ -39,8 +39,8 @@ namespace HMSX.Second.Plugin.生产制造
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FMateridlId", "FSrcEntryId0", "FSrcInterId0", "FSourceBillEntryId",
-                "FSourceBillId" ,"F_260_ComboCZZT2","FDefectiveQty","FUsePolicy","FWorkShopId1"};
+            String[] propertys = { "FMateridlId", "FSrcEntryId0", "FSrcInterId0", "FSourceBillEntryId","FUsePolicy",
+                "FSourceBillId" ,"F_260_ComboCZZT2","FDefectiveQty","FUsePolicy","FWorkShopId1","FOrderEntrySeq","FOrderBillNo"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -118,6 +118,34 @@ namespace HMSX.Second.Plugin.生产制造
                     }
                 }
             }
+            else if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Context.CurrentOrganizationInfo.ID == 100026)
+                {
+                    foreach (ExtendedDataEntity extended in e.SelectedRows)
+                    {
+                        Kingdee.BOS.Orm.DataEntity.DynamicObject dates = extended.DataEntity;
+                        if (dates["FBillTypeID"] != null && ((DynamicObject)dates["FBillTypeID"])["Number"].ToString() == "BLPCL004_SYS")
+                        {
+                            foreach (var Entity in dates["Entity"] as DynamicObjectCollection)
+                            {
+                                foreach(var RefEntity in Entity["RefEntity"]as DynamicObjectCollection)
+                                {
+                                    string scddsql = $@"/*dialect*/ select a.FID from T_PRD_MO a
+                                                     inner join T_PRD_MOENTRY b on a.FID=b.FID
+                                                     INNER JOIN T_PRD_MOENTRY_A C ON C.Fentryid=B.Fentryid
+                                                     where FSTATUS in (5,6,7) and fbillno='{RefEntity["OrderBillNo"]}' and fseq='{RefEntity["OrderEntrySeq"]}'";
+                                    var scdd = DBUtils.ExecuteDynamicObject(Context,scddsql);
+                                    if (scdd.Count > 0)
+                                    {
+                                        throw new KDBusinessException("", "生产订单结案/结算/完工,不允许审核!!!");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         public override void AfterExecuteOperationTransaction(AfterExecuteOperationTransaction e)
         {
@@ -133,6 +161,7 @@ namespace HMSX.Second.Plugin.生产制造
                         string ydflnm = "";
                         string lx = "";
                         string czzt = "";
+                        string syjc = "";
                         if (date["F_260_ComboCZZT2"] != null)
                         {
                             czzt = date["F_260_ComboCZZT2"].ToString();
@@ -145,11 +174,16 @@ namespace HMSX.Second.Plugin.生产制造
                             {
                                 lx = "de29f16214744c21b374044d629595f2";
                             }
-                            else if (((DynamicObject)entry["MateridlId"])["Number"].ToString().Contains("260.02."))
+                            else if (((DynamicObject)entry["MateridlId"])["Number"].ToString().Contains("260.02.")
+                             && entry["UsePolicy"] != null && entry["UsePolicy"].ToString() != "B")
                             {
                                 lx = "23f62df80a644d05bce25d9d22c69d8f";
                             }
 
+                            if (entry["UsePolicy"]!=null && entry["UsePolicy"].ToString() == "C")
+                            {
+                                syjc = "返修";
+                            }
                             if (entry["UsePolicy"] != null && entry["UsePolicy"].ToString() == "K" &&
                                entry["SourceBillId"] != null && entry["SourceBillEntryId"] != null && date["F_260_ComboCZZT2"] != null)
                             {
@@ -170,8 +204,15 @@ namespace HMSX.Second.Plugin.生产制造
                         DynamicObjectCollection jyd = DBUtils.ExecuteDynamicObject(Context, jydsql);
                         if (jyd.Count > 0)
                         {
-                            IOperationResult result = CreateInstock(jyd.ToList<DynamicObject>(), lx, czzt);
-                            this.PickSetResult(result);
+                            if(czzt=="返修" && syjc == "返修")
+                            {
+
+                            }
+                            else
+                            {
+                                IOperationResult result = CreateInstock(jyd.ToList<DynamicObject>(), lx, czzt);
+                                this.PickSetResult(result);
+                            }
                         }
                     }
                 }

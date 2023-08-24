@@ -77,13 +77,13 @@ namespace HMSX.Second.Plugin.基础资料
                                 formid = "1010200000000000000907E427106110055";
                                 ywlx = "1010200000000000000";
                             }
-                            else if (date["Number"].ToString().Substring(0, 7) == "260.01."&& 
-                                date["Number"].ToString().Contains("260.01.8888")==false &&
+                            else if (date["Number"].ToString().Substring(0, 7) == "260.01." &&
+                                date["Number"].ToString().Contains("260.01.8888") == false &&
                                 date["Number"].ToString().Contains("260.01.15") == false &&
                                 date["Number"].ToString().Contains("260.01.19") == false &&
                                 date["Number"].ToString().Contains("260.01.20") == false &&
                                 date["Number"].ToString().Contains("260.01.18") == false &&
-                                date["Number"].ToString().Contains("260.01.99") == false )
+                                date["Number"].ToString().Contains("260.01.99") == false)
                             {
                                 formid = "1010300000000000000893B1AFAF2B3442D";
                                 ywlx = "1010300000000000000";
@@ -108,7 +108,7 @@ namespace HMSX.Second.Plugin.基础资料
                                     //obj["Specification"] =//采购单位                                                    
                                     obj["F260KHBB"] = date["F_260_KHWLBB"];//客户图纸版本号
                                     obj["F260NBBB"] = date["F_260_Textbbh"];//内部物料版本
-                                    obj["F260XMMC"] = date["F_260_Basexm"];//项目号名称
+                                    obj["F260XMMC_Id"] = date["F_260_Basexm_Id"];//项目号名称
                                     obj["F260XMMCWB"] = date["F_260_XMMCWB"];//项目名称文本
                                     obj["CategoryID_Id"] = ywlx;//业务类型  产成品
                                     obj["LifeCircleStage"] = "AC";//生命周期阶段
@@ -137,6 +137,64 @@ namespace HMSX.Second.Plugin.基础资料
                                     if (result.IsSuccess == false)
                                     {
                                         throw new KDBusinessException("", "物料同步PLM失败");
+                                    }
+                                    //是否同步成功                     
+                                }
+                            }
+                        }
+                        else if (cx.Count > 0)
+                        {
+                            var formid = "";
+                            if (date["Number"].ToString().Substring(0, 7) == "260.02.")
+                            {
+                                formid = "10101000000000000007875BE6D201FE5A3";
+                            }
+                            else if (date["Number"].ToString().Substring(0, 7) == "260.03.")
+                            {
+                                formid = "1010200000000000000907E427106110055";
+                            }
+                            else if (date["Number"].ToString().Substring(0, 7) == "260.01." &&
+                               date["Number"].ToString().Contains("260.01.8888") == false &&
+                               date["Number"].ToString().Contains("260.01.15") == false &&
+                               date["Number"].ToString().Contains("260.01.19") == false &&
+                               date["Number"].ToString().Contains("260.01.20") == false &&
+                               date["Number"].ToString().Contains("260.01.18") == false &&
+                               date["Number"].ToString().Contains("260.01.99") == false)
+                            {
+                                formid = "1010300000000000000893B1AFAF2B3442D";
+                            }
+                            if (formid != "")
+                            {
+                                //创建物料表单
+                                using (CommonViewProxy proxy = new CommonViewProxy(PLMContext, formid, false))
+                                {
+                                    //查询出FID
+                                    long fid = 0;
+                                    if (cx.Count > 0)
+                                    {
+                                        fid = Convert.ToInt64(cx[0]["FID"]);
+                                        var view = proxy.GetEditView(fid);
+                                        var obj = view.Model.DataObject;
+                                        //对对象进行赋值；
+                                        obj["Code"] = date["Number"];//编码
+                                        obj["Name"] = date["Name"];//名称
+                                        obj["Specification"] = date["Specification"].ToString();//规格型号
+                                        obj["F260XMMC_Id"] = date["F_260_Basexm_Id"];//项目号名称
+                                        obj["F260XMMCWB"] = date["F_260_XMMCWB"];//项目名称文本
+                                        foreach (var zdate in date["MaterialBase"] as DynamicObjectCollection)
+                                        {
+                                            obj["BaseUnitId_Id"] = zdate["BaseUnitId_Id"];//基本单位 基本
+                                            obj["ErpClsID"] = zdate["ErpClsID"];//物料属性 
+                                        }
+                                        //调用保存操作
+                                        var service = ServiceHelper.GetService<IDoNothingService>();
+                                        Kingdee.BOS.Orm.OperateOption option = Kingdee.BOS.Orm.OperateOption.Create();
+                                        OperationHelper.MarkBackCalling(option);
+                                        var result = service.DoNothingWithDataEntity(PLMContext.BOSContext, view.BillBusinessInfo, new DynamicObject[] { view.Model.DataObject }, "Save", option);
+                                        if (result.IsSuccess == false)
+                                        {
+                                            throw new KDBusinessException("", "物料同步PLM失败");
+                                        }
                                     }
                                     //是否同步成功                     
                                 }

@@ -2,16 +2,22 @@
 using Kingdee.BOS;
 using Kingdee.BOS.App.Data;
 using Kingdee.BOS.Core;
+using Kingdee.BOS.Core.Bill;
 using Kingdee.BOS.Core.Bill.PlugIn;
+using Kingdee.BOS.Core.DynamicForm;
 using Kingdee.BOS.Core.DynamicForm.PlugIn;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
 using Kingdee.BOS.Core.List.PlugIn;
+using Kingdee.BOS.Core.Metadata;
+using Kingdee.BOS.Core.Metadata.FormElement;
 using Kingdee.BOS.JSON;
 using Kingdee.BOS.Orm.DataEntity;
+using Kingdee.BOS.ServiceHelper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -33,7 +39,8 @@ namespace HMSX.Second.Plugin.生产制造
             base.OnPreparePropertys(e);
             String[] propertys = { "FPrdOrgId", "FMaterialId", "F_260_SFNPI", "F_260_SB", "FBillNo", "FStockId" ,
                 "FSaleOrderNo", "FSaleOrderEntrySeq", "FReqSrc" ,"FMTONO","F_260_XMHH","F_260_WLDWLX","FApproveDate",
-                "F_260_WLDWS","FBillType","FBillNo","FProductType","FGroup","FParentRowId","FRowId","FCheckProduct"};
+                "F_260_WLDWS","FBillType","FBillNo","FProductType","FGroup","FParentRowId","FRowId","FCheckProduct"
+                 ,"FSrcBillEntrySeq","FSrcBillNo"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -399,6 +406,75 @@ namespace HMSX.Second.Plugin.生产制造
                     }
                 }
             }
+        }
+        public override void AfterExecuteOperationTransaction(AfterExecuteOperationTransaction e)
+        {
+            base.AfterExecuteOperationTransaction(e);
+            if (this.Context.CurrentOrganizationInfo.ID == 100026)
+            {
+                foreach (DynamicObject entity in e.DataEntitys)
+                {
+                    if (((DynamicObject)entity["BillType"])["Number"].ToString() == "SCDD02_SYS")
+                    {
+                        FormMetadata meta = (FormMetadata)MetaDataServiceHelper.Load(this.Context, "PRD_PPBOM");
+                        DynamicObjectCollection entrys = entity["TreeEntity"] as DynamicObjectCollection;
+                        foreach (DynamicObject entry in entrys)
+                        {
+                            string ydlx = entry["SrcBillType"] == null ? "" : entry["SrcBillType"].ToString();
+                            if (ydlx == "PAEZ_HMSX_CPBSSQD")
+                            {
+                                //获取产品标识物料对应bom
+                                string cpbssql = $@"/*dialect*/
+                                    select F_260_WLBM FMATERIALID from PAEZ_t_Cust100416 a
+                                    left join PAEZ_t_Cust_Entry100507 b on a.fid=b.fid                                   
+                                    where a.fbillno='{entry["SrcBillNo"]}' and b.fseq='{entry["SrcBillEntrySeq"]}'";
+                                DynamicObjectCollection cpbss = DBUtils.ExecuteDynamicObject(this.Context, cpbssql);
+
+                                 //获取生产用料清单
+                                 string ylsql = $@"/*dialect*/select FID from T_PRD_PPBOM 
+                                     where FMOBillNO ='{entity["BillNo"]}' and FMOENTRYSEQ ='{entry["Seq"]}'";
+                                 var ylobj = DBUtils.ExecuteDynamicObject(this.Context, ylsql);
+
+                                 //加载生产用料清单视图，进行模拟录单
+                                 IDynamicFormView ylView = this.formView(meta, Convert.ToInt64(ylobj[0]["FID"]));
+                                foreach(var date in ylView.Model.DataObject["PPBomEntry"] as DynamicObjectCollection)
+                                {
+                                    ylView.Model.SetValue("FNumerator", 0, Convert.ToInt32(date["Seq"]) - 1);
+                                }
+                                foreach(var cpbs in cpbss)
+                                {
+                                    ylView.Model.CreateNewEntryRow("FEntity");
+                                    ylView.Model.SetValue("FMaterialID2", cpbs["FMATERIALID"], ylView.Model.GetEntryCurrentRowIndex("FEntity"));
+                                }
+                                ylView.InvokeFormOperation("Save");
+                                 (ylView as IBillView).CommitNetworkCtrl();
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private IDynamicFormView formView(FormMetadata meta, long id)
+        {
+            BusinessInfo info = meta.BusinessInfo;
+            Form form = info.GetForm();
+            BillOpenParameter param = new BillOpenParameter("PRD_PPBOM", null);
+            param.SetCustomParameter("formID", form.Id);
+            param.SetCustomParameter("status", "Edit");
+            param.SetCustomParameter("PlugIns", form.CreateFormPlugIns());  //插件实例模型
+            param.SetCustomParameter("ShowConformDialogWhenChangeOrg", false);
+            param.Context = this.Context;
+            param.FormMetaData = meta;
+            param.LayoutId = param.FormMetaData.GetLayoutInfo().Id;
+            param.PkValue = id;//单据主键内码FID
+            param.Status = Kingdee.BOS.Core.Metadata.OperationStatus.EDIT;
+            IResourceServiceProvider provider = form.GetFormServiceProvider();
+            Type type = Type.GetType("Kingdee.BOS.Web.Import.ImportBillView,Kingdee.BOS.Web");
+            IDynamicFormView billview = (IDynamicFormView)Activator.CreateInstance(type);
+            (billview as IBillViewService).Initialize(param, provider);//初始化
+            (billview as IBillViewService).LoadData();//加载单据数据            
+            return billview;
         }
     }
 }

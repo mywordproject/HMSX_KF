@@ -26,3 +26,4 @@ G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.
 D:\WorkSpace\SLSB\本地测试\K3Cloud\bin\HMSX.Second.Plugin.dll.config
 D:\WorkSpace\SLSB\本地测试\K3Cloud\bin\HMSX.Second.Plugin.dll
 D:\WorkSpace\SLSB\本地测试\K3Cloud\bin\HMSX.Second.Plugin.pdb
+G:\git_HMSX\HMSX_KF\HMSX.Second.Plugin\HMSX.Second.Plugin\obj\Debug\HMSX.Second.Plugin.csproj.AssemblyReference.cache

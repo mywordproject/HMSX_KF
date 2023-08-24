@@ -1,10 +1,19 @@
-﻿using Kingdee.BOS;
+﻿using DingTalk.Api;
+using DingTalk.Api.Request;
+using DingTalk.Api.Response;
+using Kingdee.BOS;
 using Kingdee.BOS.App.Data;
 using Kingdee.BOS.Core;
 using Kingdee.BOS.Core.DynamicForm.PlugIn;
 using Kingdee.BOS.Core.DynamicForm.PlugIn.Args;
+using Kingdee.BOS.Core.Metadata.FieldElement;
+using Kingdee.BOS.Core.Msg;
 using Kingdee.BOS.JSON;
+using Kingdee.BOS.Msg;
+using Kingdee.BOS.Orm;
 using Kingdee.BOS.Orm.DataEntity;
+using Kingdee.BOS.ServiceHelper;
+using Kingdee.BOS.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -16,6 +25,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static HMSX.Second.Plugin.Tool.Results;
 
 namespace HMSX.Second.Plugin.供应链
 {
@@ -28,7 +38,8 @@ namespace HMSX.Second.Plugin.供应链
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FApproveDate", "F_260_WMSJYSHRQ" , "FBillNo", "F_260_XTLY", "FMaterialID", "F_260_XMHH", "FHMSXKH", "FMtoNo" };
+            String[] propertys = { "FApproveDate", "F_260_WMSJYSHRQ" , "FBillNo", "F_260_XTLY", "FMaterialID", "F_260_XMHH",
+                "FHMSXKH", "FMtoNo" ,"FSupplierId","FLot","FActReceiveQty","FPriceUnitId","FDemanderId","F_260_ComboSFDH"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -38,7 +49,7 @@ namespace HMSX.Second.Plugin.供应链
         {
             base.EndOperationTransaction(e);
             if (Context.CurrentOrganizationInfo.ID == 100026)
-            {
+            {             
                 if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var data in e.DataEntitys)
@@ -156,7 +167,7 @@ namespace HMSX.Second.Plugin.供应链
                             {
                                 if (((DynamicObject)entry["MaterialID"])["Number"].ToString().Substring(0, 6) == "260.02")
                                 {
-                                    if (entry["MtoNo"]==null || entry["MtoNo"].ToString() == "" || entry["MtoNo"].ToString() == " ")
+                                    if (entry["MtoNo"] == null || entry["MtoNo"].ToString() == "" || entry["MtoNo"].ToString() == " ")
                                     {
                                         //校验
                                         string jysql = $@"select *
@@ -206,15 +217,15 @@ namespace HMSX.Second.Plugin.供应链
                                         var khs2 = DBUtils.ExecuteDynamicObject(Context, khsql2);
                                         if (khs2.Count > 0)
                                         {
-                                             str2= khs2[0]["FNUMBER"].ToString();
-                                             str3= khs2[0]["FSHORTNAME"].ToString();
+                                            str2 = khs2[0]["FNUMBER"].ToString();
+                                            str3 = khs2[0]["FSHORTNAME"].ToString();
                                         }
-                                        if (str3!= entry["MtoNo"].ToString().Substring(0, entry["MtoNo"].ToString().IndexOf('_')))
+                                        if (str3 != entry["MtoNo"].ToString().Substring(0, entry["MtoNo"].ToString().IndexOf('_')))
                                         {
                                             throw new KDBusinessException("", "客户标签与计划跟踪号上的客户标签不一致！");
                                         }
                                         try
-                                            {
+                                        {
                                             string name = entry["MtoNo"].ToString().Substring(entry["MtoNo"].ToString().IndexOf('_') + 1, entry["MtoNo"].ToString().Length - (entry["MtoNo"].ToString().IndexOf('_') + 1));
                                             string xmhnamesql = $@"select e.FNUMBER,L.FNAME
                                                    from T_BD_MATERIAL a
@@ -234,8 +245,8 @@ namespace HMSX.Second.Plugin.供应链
                                             var xmhname = DBUtils.ExecuteDynamicObject(Context, xmhnamesql);
                                             if (xmhname.Count > 0)
                                             {
-                                                 str2 += "_" + xmhname[0]["FNUMBER"];
-                                              
+                                                str2 += "_" + xmhname[0]["FNUMBER"];
+
                                             }
                                             string upsql = $@"/*dialect*/ update T_PUR_ReceiveEntry set F_260_JHGZHBM='{str2}' where FENTRYID={entry["Id"]}";
                                             DBUtils.Execute(Context, upsql);
@@ -250,6 +261,49 @@ namespace HMSX.Second.Plugin.供应链
                         }
                     }
                 }
+                else if(FormOperation.Operation.Equals("StatusConvertsfdh", StringComparison.OrdinalIgnoreCase))
+                {
+                    EndSetStatusTransactionArgs endSetStatusTransactionArgs = (EndSetStatusTransactionArgs)e;
+                    List<KeyValuePair<object, object>> EntryIds = endSetStatusTransactionArgs.PkEntryIds;
+                    foreach (var data in e.DataEntitys)
+                    {
+                        foreach (var entity in data["PUR_ReceiveEntry"] as DynamicObjectCollection)
+                        {
+                            foreach (var ids in EntryIds)
+                            {
+                                if (entity["Id"].ToString() == ids.Value.ToString())
+                                {
+                                    var wl = entity["MaterialID"] as DynamicObject;
+                                    var msg = string.Format("您申请采购的“{0}”、“{1}”，供应商为“{2}”的“{3}”批次，已到货“{4}”，请知悉！",
+                                        wl["Name"].ToString(), wl["Specification"].ToString(), ((DynamicObject)data["SupplierId"])["Name"].ToString(), entity["Lot_Text"].ToString(),
+                                        entity["ActReceiveQty"].ToString() + ((DynamicObject)entity["PriceUnitId"])["Name"].ToString());
+                                    // 发送消息给多人
+                                    string yhsql = $@"/*dialect*/SELECT a.FUSERID, a.FNAME 用户名,yg.FMOBILE
+                                            FROM T_SEC_USER a 
+                                            INNER JOIN T_BD_PERSON b ON a.FLINKOBJECT = b.FPERSONID 
+                                            INNER JOIN T_BD_STAFF c ON b.FPERSONID=c.FPERSONID
+                                            left join T_HR_EMPINFO yg on c.FEMPINFOID=yg.fid
+                                            WHERE c.FSTAFFID='{Convert.ToInt64(entity["DemanderId_Id"])}'";
+                                    var yh = DBUtils.ExecuteDynamicObject(Context, yhsql);
+                                    if (yh.Count > 0)
+                                    {
+                                        var receiverIds = new object[] { Convert.ToInt64(yh[0]["FUSERID"]) };
+                                        SendMessage(this.Context, "PUR_ReceiveBill", data["Id"].ToString()
+                                            , "收料通知单通知", msg, this.Context.UserId, receiverIds);
+
+                                        IDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/user/getbymobile");
+                                        OapiV2UserGetbymobileRequest req = new OapiV2UserGetbymobileRequest();
+                                        req.Mobile = yh[0]["FMOBILE"].ToString();
+                                        string access_token = Token();
+                                        OapiV2UserGetbymobileResponse rsp = client.Execute(req, access_token);
+                                        string userid = rsp.Result.Userid;
+                                        dingding3(access_token, userid, msg);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
             }
         }
@@ -257,7 +311,7 @@ namespace HMSX.Second.Plugin.供应链
         {
             base.BeforeExecuteOperationTransaction(e);
             if (Context.CurrentOrganizationInfo.ID == 100026)
-            {
+            {               
                 if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
                 {
                     //反审校验
@@ -343,11 +397,11 @@ namespace HMSX.Second.Plugin.供应链
                                     }
                                 }
                             }
-                           //}
-                           //catch
-                           //{
-                           //    throw new KDBusinessException("", "访问WMS接口异常");
-                           //}
+                            //}
+                            //catch
+                            //{
+                            //    throw new KDBusinessException("", "访问WMS接口异常");
+                            //}
                         }
                     }
                 }
@@ -363,7 +417,7 @@ namespace HMSX.Second.Plugin.供应链
                             {
                                 if (((DynamicObject)date["MaterialID"])["Number"].ToString().Substring(0, 6) == "260.02" &&
                                     (date["F_260_XMHH"] as DynamicObjectCollection).Count == 0 &&
-                                    (date["MtoNo"]==null || date["MtoNo"].ToString() == "" || date["MtoNo"].ToString() == " "))
+                                    (date["MtoNo"] == null || date["MtoNo"].ToString() == "" || date["MtoNo"].ToString() == " "))
                                 {
                                     string cxsql = $@"select 
                                         XMH.F_260_XMH,XMH.FPKID
@@ -443,6 +497,128 @@ namespace HMSX.Second.Plugin.供应链
                         this.FormOperation.LoadKeys = KDObjectConverter.SerializeObject(loadKeys);
                     }
                 }
+            }
+        }
+       
+        /// <summary>
+        /// 发送消息（支持多个收件人，写发件箱）
+        /// </summary>
+        /// <param name="ctx">上下文</param>
+        /// <param name="formId">业务对象标识(不可以使用扩展的标识)</param>
+        /// <param name="pkId">单据主键值</param>
+        /// <param name="title">标题</param>
+        /// <param name="content">内容</param>
+        /// <param name="senderId">发生人内码</param>
+        /// <param name="receiverIds">接收人内码集合</param>
+        private static void SendMessage(Context ctx, string formId, string pkId, string title, string content, long senderId, object[] receiverIds)
+        {
+            var businessInfo = FormMetaDataCache.GetCachedFormMetaData(ctx, "WF_MessageSendBill").BusinessInfo;
+            var receiverField = (MulBaseDataField)businessInfo.GetField("FRECEIVERS");
+            var dt = businessInfo.GetDynamicObjectType();
+            var dataObject = new DynamicObject(dt);
+            dataObject["TYPE"] = ((int)MsgType.CommonMessage).ToString();
+            dataObject["SENDERID_Id"] = senderId;
+            FieldSetValue(ctx, receiverField, dataObject, receiverIds);
+            dataObject["Title"] = title;
+            dataObject["Content"] = content;
+            dataObject["ObjectTypeId_Id"] = formId;
+            dataObject["KeyValue"] = pkId;
+            dataObject["CREATETIME"] = DateTime.Now;
+            // 保存消息
+            var msgSend = new MessageSend(dataObject);
+            msgSend.KeyValue = pkId;
+            SMSServiceHelper.SendMessage(ctx, msgSend, true);
+        }
+        /// <summary>
+        /// 发送消息（精简版，仅支持一个收件人，不写发件箱）
+        /// </summary>
+        /// <param name="ctx">上下文</param>
+        /// <param name="formId">业务对象标识(不可以使用扩展的标识)</param>
+        /// <param name="pkId">单据主键值</param>
+        /// <param name="title">标题</param>
+        /// <param name="content">内容</param>
+        /// <param name="senderId">发生人内码</param>
+        /// <param name="receiverId">接收人内码</param>
+        private static void SendMessage(Context ctx, string formId, string pkId, string title, string content, long senderId, long receiverId)
+        {
+            Message msg = new DynamicObject(Message.MessageDynamicObjectType);
+            msg.MessageId = SequentialGuid.NewGuid().ToString();
+            msg.MsgType = MsgType.CommonMessage;
+            msg.SenderId = senderId;
+            msg.ReceiverId = receiverId;
+            msg.Title = title;
+            msg.Content = content;
+            msg.ObjectTypeId = formId;
+            msg.KeyValue = pkId;
+            msg.CreateTime = DateTime.Now;
+            // 保存消息
+            var dataManager = DataManagerUtils.GetDataManager(Message.MessageDynamicObjectType, new OLEDbDriver(ctx));
+            dataManager.Save(msg.DataEntity);
+        }
+        /// <summary>
+        /// 多选基础资料字段赋值（通过字段修改数据包）
+        /// </summary>
+        /// <param name="ctx">上下文</param>
+        /// <param name="field">多选基础资料字段</param>
+        /// <param name="entityObj">多选基础资料字段所在数据行</param>
+        /// <param name="pkValues">多个基础资料的内码的集合</param>
+        private static void FieldSetValue(Context ctx, MulBaseDataField field, DynamicObject entityObj, object[] pkValues)
+        {
+            // 获取多选基础资料字段的数据包集合
+            var mulBaseDataEntitySet = field.GetFieldValue(entityObj) as DynamicObjectCollection;
+            if (mulBaseDataEntitySet == null)
+            {
+                mulBaseDataEntitySet = new DynamicObjectCollection(field.RefEntityDynamicObjectType, entityObj);
+                field.RefEntityDynamicProperty.SetValue(entityObj, mulBaseDataEntitySet);
+            }
+            mulBaseDataEntitySet.Clear();
+            // 从数据库读取指定的基础资料的数据包，并填充到当前多选基础资料字段的数据包集合中
+            var baseDataObjects = BusinessDataServiceHelper.LoadFromCache(ctx, pkValues, field.RefFormDynamicObjectType);
+            foreach (var baseDataObject in baseDataObjects)
+            {
+                var mulBaseDataEntity = new DynamicObject(field.RefEntityDynamicObjectType);
+                mulBaseDataEntitySet.Add(mulBaseDataEntity);
+                field.RefIDDynamicProperty.SetValue(mulBaseDataEntity, baseDataObject[0]);
+                field.DynamicProperty.SetValue(mulBaseDataEntity, baseDataObject);
+            }
+        }
+
+
+        public static string Token()//登录钉钉
+        {
+            IDingTalkClient dlclient = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
+            OapiGettokenRequest dlreq = new OapiGettokenRequest();
+            dlreq.Appkey = "ding4zkzmf7yz0l5neya";
+            dlreq.Appsecret = "xRmBxtjJQh9DwPGrz8HG9hMWqw0xOj9IySBvZR1Ga0iVoQ1YwA1PmFFDxhEAgSvJ";
+            dlreq.SetHttpMethod("GET");
+            OapiGettokenResponse dlrsp = dlclient.Execute(dlreq);
+            DING_Token get = new DING_Token();
+            get = JsonConvert.DeserializeObject<DING_Token>(dlrsp.Body);
+            string access_token = get.Access_token;
+            return access_token;
+        }
+        private void dingding3(string token, string id, string value)
+        {
+
+            IDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2");
+            OapiMessageCorpconversationAsyncsendV2Request req = new OapiMessageCorpconversationAsyncsendV2Request();
+            req.AgentId = 1870548521L;
+            req.UseridList = id;
+            OapiMessageCorpconversationAsyncsendV2Request.MsgDomain obj1 = new OapiMessageCorpconversationAsyncsendV2Request.MsgDomain();
+            obj1.Msgtype = "text";
+            OapiMessageCorpconversationAsyncsendV2Request.TextDomain obj2 = new OapiMessageCorpconversationAsyncsendV2Request.TextDomain();
+            obj2.Content = value;
+            obj1.Text = obj2;
+            OapiMessageCorpconversationAsyncsendV2Request.OADomain obj3 = new OapiMessageCorpconversationAsyncsendV2Request.OADomain();
+            OapiMessageCorpconversationAsyncsendV2Request.BodyDomain obj4 = new OapiMessageCorpconversationAsyncsendV2Request.BodyDomain();
+            obj4.Content = value;
+            obj3.Body = obj4;
+            obj1.Oa = obj3;
+            req.Msg_ = obj1;
+            OapiMessageCorpconversationAsyncsendV2Response rsp = client.Execute(req, token);
+            if (rsp.Errmsg == "ok")
+            {
+
             }
         }
     }

@@ -173,18 +173,7 @@ namespace HMSX.Second.Plugin
                              )aa on aa.FBILLNO=a.FSRCBILLNO and aa.FSEQ=a.FSRCENTRYSEQ and aa.FMATERIALID=a.FMATERIALID and c.FNUMBER=aa.FNUMBER)";
                                 DBUtils.Execute(Context, up1sql);
                             }
-                            //直接调拨单
-                            string zjdbsql = $@"select FLOT, c.fnumber,FSRCMATERIALID from T_STK_STKTRANSFERIN a
-                                               inner join T_STK_STKTRANSFERINENTRY b on a.FID = B.FID
-                                               left join T_BD_LOTMASTER c on c.FLOTID = B.FLOT
-                                               WHERE FSTOCKOUTORGID=100026 and
-                                               FSRCMATERIALID ='{entry["MaterialId_Id"]}'
-                                               AND c.FNUMBER='{entry["Lot_text"]}'";
-                            var zjdb = DBUtils.ExecuteDynamicObject(Context, zjdbsql);
-                            if (zjdb.Count > 0)
-                            {
-                                throw new KDBusinessException("", "有调拨单无法反审核！");
-                            }
+
                         }
                     }
                 }
@@ -296,9 +285,40 @@ namespace HMSX.Second.Plugin
                         DynamicObjectCollection docPriceEntity = dy["Entity"] as DynamicObjectCollection;
                         foreach (var entry in docPriceEntity)
                         {
-                            if(entry["F_260_FLDDLX"]!=null && entry["F_260_FLDDLX"].ToString() == "车间返工前工序")
+                            if (entry["F_260_FLDDLX"] != null && entry["F_260_FLDDLX"].ToString() == "车间返工前工序")
                             {
                                 entry["StockStatusId_Id"] = 33797546;
+                            }
+                        }
+                    }
+                }
+                else if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (ExtendedDataEntity extended in e.SelectedRows)
+                    {
+                        DynamicObject dy = extended.DataEntity;
+                        DynamicObjectCollection docPriceEntity = dy["Entity"] as DynamicObjectCollection;
+                        foreach (var entry in docPriceEntity)
+                        {
+                            string jskcsql = $@"/*dialect*/select sum(A.FBASEQTY)FBASEQTY FROM T_STK_INVENTORY A
+                                                           left JOIN T_BD_LOTMASTER B ON B.FLOTID = A.FLOT
+                                                           where A.FMATERIALID='{entry["MaterialId_Id"]}'
+                                                           and B.FNUMBER='{entry["Lot_text"]}'";
+                            var jskc = DBUtils.ExecuteDynamicObject(Context, jskcsql);
+                            if (jskc.Count > 0 && Convert.ToDecimal(jskc[0]["FBASEQTY"])< Convert.ToDecimal(entry["RealQty"]))
+                            {
+                                //直接调拨单
+                                string zjdbsql = $@"select FLOT, c.fnumber,FSRCMATERIALID from T_STK_STKTRANSFERIN a
+                                               inner join T_STK_STKTRANSFERINENTRY b on a.FID = B.FID
+                                               left join T_BD_LOTMASTER c on c.FLOTID = B.FLOT
+                                               WHERE FSTOCKOUTORGID=100026 and
+                                               FSRCMATERIALID ='{entry["MaterialId_Id"]}'
+                                               AND c.FNUMBER='{entry["Lot_text"]}'";
+                                var zjdb = DBUtils.ExecuteDynamicObject(Context, zjdbsql);
+                                if (zjdb.Count > 0)
+                                {
+                                    throw new KDBusinessException("", "有调拨单无法反审核！");
+                                }
                             }
                         }
                     }
@@ -332,7 +352,7 @@ namespace HMSX.Second.Plugin
                             if (source.Count > 0)
                             {
                                 CreatePickMtrl(source.ToList<DynamicObject>());
-                            }                           
+                            }
                             //this.PickSetResult(result);
                         }
                     }

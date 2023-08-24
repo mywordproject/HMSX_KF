@@ -36,7 +36,7 @@ namespace HMSX.Second.Plugin.财务会计
                 {
                     foreach (ExtendedDataEntity extended in e.SelectedRows)
                     {
-                        if (Convert.ToInt64(extended["FMATCHMETHODID_Id"])==30)
+                        if (Convert.ToInt64(extended["FMATCHMETHODID_Id"])!=10)
                         {
                             foreach (var entity in extended["FEntity"] as DynamicObjectCollection)
                             {
@@ -46,8 +46,8 @@ namespace HMSX.Second.Plugin.财务会计
                                     var ysd = DBUtils.ExecuteDynamicObject(Context, ysdsql);
                                     if (ysd.Count > 0)
                                     {
-                                        decimal je = Convert.ToDecimal(entity["FBASICUNITQTY"]) / (Convert.ToDecimal(entity["FCUROPENQTY"]) == 0 ? 1 : Convert.ToDecimal(entity["FCUROPENQTY"]));
-                                        entity["F_260_Amount"] = je * Convert.ToDecimal(ysd[0]["FCOSTAMTSUM"]);
+                                        decimal je = Convert.ToDecimal(entity["FCUROPENQTY"]) / (Convert.ToDecimal(entity["FBASICUNITQTY"]) == 0 ? 1 : Convert.ToDecimal(entity["FBASICUNITQTY"]));
+                                        entity["F_260_Amount"] = je * Convert.ToDecimal(ysd[0]["FCOSTAMTSUM"]); 
                                     }
                                 }
                             }
@@ -63,15 +63,38 @@ namespace HMSX.Second.Plugin.财务会计
             {
                 if (FormOperation.Operation.Equals("GXCBJE", StringComparison.OrdinalIgnoreCase))
                 {
-                     string ysdsql = $@"/*dialect*/ UPDATE A SET F_260_AMOUNT=(A.FBASICUNITQTY/CASE WHEN FCUROPENQTY=0 THEN 1 ELSE FCUROPENQTY END)*FCOSTAMTSUM
-                                      FROM T_AR_BillingMatchLogENTRY A
-                                      LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
-                                      LEFT JOIN t_AR_receivableEntry C ON C.FENTRYID=A.FSRCROWID
-                                      WHERE FSETTLEORGID=100026
-                                      AND FMATCHMETHODID=30
-                                      AND A.FSRCBILLNO NOT LIKE '%-%'";
+                     string ysdsql = $@"/*dialect*/ UPDATE A SET F_260_AMOUNT=(isnull(FCUROPENQTY,0)/CASE WHEN A.FBASICUNITQTY=0 THEN 1 ELSE A.FBASICUNITQTY END)*isnull(FCOSTAMTSUM,0)
+                     FROM T_AR_BillingMatchLogENTRY A
+                     LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
+                     LEFT JOIN t_AR_receivableEntry C ON C.FENTRYID=A.FSRCROWID
+                     WHERE FSETTLEORGID=100026
+                     and year(FVERIFYDATE)=year(getdate()) and month(FVERIFYDATE)=month(getdate())
+                     AND A.FSRCBILLNO NOT LIKE '%-%' and FMATCHMETHODID!=10";
+                     DBUtils.Execute(Context, ysdsql);
 
-                    DBUtils.Execute(Context, ysdsql);
+                    string ysdsql1 = $@"/*dialect*/UPDATE A SET A.F_260_AMOUNT=C.F_260_AMOUNT
+                    FROM T_AR_BillingMatchLogENTRY A
+                    LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
+                    LEFT JOIN (
+                    select A.FID,SUM(F_260_AMOUNT)F_260_AMOUNT FROM T_AR_BillingMatchLogENTRY A
+                    LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
+                    WHERE A.FSRCBILLNO NOT LIKE '%-%'AND FSETTLEORGID=100026 and year(FVERIFYDATE)=year(getdate()) and month(FVERIFYDATE)=month(getdate()) and FMATCHMETHODID!=10
+                    GROUP BY A.FID)C ON A.FID=C.FID
+                    WHERE A.FSRCBILLNO LIKE '%-%'AND FSETTLEORGID=100026 and year(FVERIFYDATE)=year(getdate()) and month(FVERIFYDATE)=month(getdate()) and FMATCHMETHODID!=10";
+                    //DBUtils.Execute(Context, ysdsql1);
+                }
+                else if(FormOperation.Operation.Equals("Save", StringComparison.OrdinalIgnoreCase))
+                {
+                    string ysdsql1 = $@"/*dialect*/UPDATE A SET A.F_260_AMOUNT=C.F_260_AMOUNT
+                    FROM T_AR_BillingMatchLogENTRY A
+                    LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
+                    LEFT JOIN (
+                    select A.FID,SUM(F_260_AMOUNT)F_260_AMOUNT FROM T_AR_BillingMatchLogENTRY A
+                    LEFT JOIN T_AR_BillingMatchLog B ON A.FID=B.FID
+                    WHERE A.FSRCBILLNO NOT LIKE '%-%'AND FSETTLEORGID=100026 and year(FVERIFYDATE)=year(getdate()) and month(FVERIFYDATE)=month(getdate()) and FMATCHMETHODID!=10
+                    GROUP BY A.FID)C ON A.FID=C.FID
+                    WHERE A.FSRCBILLNO LIKE '%-%'AND FSETTLEORGID=100026 and year(FVERIFYDATE)=year(getdate()) and month(FVERIFYDATE)=month(getdate()) and FMATCHMETHODID!=10";
+                    //DBUtils.Execute(Context, ysdsql1);
                 }
             }
         }

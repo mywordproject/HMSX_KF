@@ -995,7 +995,7 @@ namespace HMSX.Second.Plugin.PLM
             }
             else if (e.Field.Key == "FObjectType" && e.NewValue.ToString() == "5")
             {
-                userid = "320646";
+                userid = "1296611";
             }
             else if (e.Field.Key == "FAssignText")
             {
@@ -1234,8 +1234,8 @@ namespace HMSX.Second.Plugin.PLM
             this.Entity[index]["Id"] = entryId;
             if (user != null)
             {
-                ECNModel.Instance.BuildExecutorsData(pkId, entryId, 320646, dt);
-                this.PLMView.CurrentView.Model.SetValue("FAssignText", "董艳", index);
+                ECNModel.Instance.BuildExecutorsData(pkId, entryId, 1296611, dt);
+                this.PLMView.CurrentView.Model.SetValue("FAssignText", "邓灵萍", index);
             }
         }
         protected List<long> GetAllChangeChangeObjectIdss(Dictionary<ChangeObjectType, List<long>> allChangeObjectDic)

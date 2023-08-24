@@ -374,8 +374,10 @@
     <Compile Include="MES\JSWDMobilePlugin.cs" />
     <Compile Include="MES\PGGXBGModilPlugin2023.cs" />
     <Compile Include="MES\SMBDMobilePlugin.cs" />
+    <Compile Include="MES\SMZYQRMobilePlugin.cs" />
     <Compile Include="MES\ZJLLMobilePlugin.cs" />
     <Compile Include="MES\ZYQRMobilePlugin.cs" />
+    <Compile Include="MES\ZYSQLRMobilePlugin.cs" />
     <Compile Include="PLM\ECNBillPlugin.cs" />
     <Compile Include="PLM\KHBBHSDBPLMPlugin.cs" />
     <Compile Include="PLM\SDBJYPLMPlugin.cs" />
@@ -481,6 +483,7 @@
     <Compile Include="生产制造\GXHBBillPlugin.cs" />
     <Compile Include="生产制造\GXHBConvertPlugin.cs" />
     <Compile Include="生产制造\GXHBListPlugin.cs" />
+    <Compile Include="生产制造\GXZYDBillePlugin.cs" />
     <Compile Include="生产制造\JYDConvertPlugin.cs" />
     <Compile Include="生产制造\PHTZServicePlugin.cs" />
     <Compile Include="生产制造\QTCKConvertPlugin.cs" />

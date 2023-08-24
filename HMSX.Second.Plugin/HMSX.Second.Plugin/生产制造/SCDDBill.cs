@@ -114,7 +114,7 @@ namespace HMSX.Second.Plugin.生产制造
                     {
                         if(date["SrcBillType"].ToString()== "QM_DefectProcessBill" || date["SrcBillType"].ToString() == "PAEZ_HMSX_CPBSSQD")
                         {
-                            string wlqdsql = $@"select top 1 FID,FNUMBER from T_ENG_BOM where FMATERIALID='{date["MaterialId_Id"]}'
+                            string wlqdsql = $@"select top 1 FID,FNUMBER from T_ENG_BOM where FMATERIALID='{date["MaterialId_Id"]}' and FFORBIDSTATUS='A'
                              order by FNUMBER desc";
                             var wlqd = DBUtils.ExecuteDynamicObject(Context, wlqdsql);
                             if (wlqd.Count > 0)

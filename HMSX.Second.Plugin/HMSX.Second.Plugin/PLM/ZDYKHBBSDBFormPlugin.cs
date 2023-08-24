@@ -121,7 +121,7 @@ namespace HMSX.Second.Plugin.PLM
 				{
 					List<EnumItem> list = new List<EnumItem>();
 					int k = -1;
-					for (int i = 1; i < array1.Count<string>(); i++)
+					for (int i = 0; i < array1.Count<string>(); i++)
 					{
                         if (bbh.Count > 0)
                         {

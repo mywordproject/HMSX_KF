@@ -100,6 +100,18 @@ namespace HMSX.Second.Plugin.生产制造
                 {
                     if (Context.UserId != 9409480 && Context.UserId != 1226615)
                     {
+                        //不良品处理单
+                        string blpsql = $@"/*dialect*/ select FORDERBILLNO,FORDERENTRYSEQ from T_QM_DEFECTPROCESS a
+                                    left join T_QM_DEFECTPROCESSENTRY b on a.fid=b.fid
+                                    left join T_QM_DEFECTPROCESSRDETAIL c on b.fentryid =c.fentryid
+                                    left join T_BAS_BILLTYPE d on d.FBILLTYPEID=a.FBILLTYPEID
+                                    where d.fnumber='BLPCL004_SYS' and FORDERENTRYID='{ids.Value}'
+                                    and a.FDOCUMENTSTATUS!='C' and a.FINSPECTORGID=100026";
+                        var blp = DBUtils.ExecuteDynamicObject(Context, blpsql);
+                        if (blp.Count > 0)
+                        {
+                            throw new KDBusinessException("", "订单有未审核的不良品处理单，不允许结案");
+                        }
                         //派工明细
                         string pgmxSQL = $@"select distinct FMOENTRYID from T_SFC_DISPATCHDETAIL a 
                          inner join T_SFC_DISPATCHDETAILENTRY b on a.FID = b.FID
