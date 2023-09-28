@@ -8,12 +8,12 @@ namespace HMSX.Second.Plugin.study
 {
     public class Class2
     {
-        static void Main(string[] args)
-        {
-            string val = "Hello";
-            //creates a new instance of the string 
-            val += "World";
-            Console.WriteLine(val);
-        }
+        //static void Main(string[] args)
+        //{
+        //    string val = "Hello";
+        //    //creates a new instance of the string 
+        //    val += "World";
+        //    Console.WriteLine(val);
+        //}
     }
 }

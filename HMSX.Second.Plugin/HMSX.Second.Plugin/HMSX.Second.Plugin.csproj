@@ -388,6 +388,7 @@
     <Compile Include="study\BankReport.cs" />
     <Compile Include="study\CJDDGZTBillPlugin.cs" />
     <Compile Include="study\Class2.cs" />
+    <Compile Include="study\JSKC.cs" />
     <Compile Include="study\OperationPickMtrlWork.cs" />
     <Compile Include="study\LinkEntityInfo.cs" />
     <Compile Include="study\InquiryBillToComparePrice.cs" />
@@ -404,6 +405,7 @@
     <Compile Include="WebAPI\GZXX.cs" />
     <Compile Include="WebAPI\PGCXAPI.cs" />
     <Compile Include="WebAPI\SBJDApi.cs" />
+    <Compile Include="WebAPI\XNYGZXXAPI.cs" />
     <Compile Include="YQHSPCFormPlugin.cs" />
     <Compile Include="MES\GYSLRMobilePlugin.cs" />
     <Compile Include="MES\JYDBJMobilePlugin.cs" />
@@ -418,12 +420,14 @@
     <Compile Include="PLM\PLMYXPGBillPlugin.cs" />
     <Compile Include="ZXJH\DDTXLServicePlugin.cs" />
     <Compile Include="ZXJH\GXHBServicePlugin.cs" />
+    <Compile Include="供应链\CGDDConvertPlugin.cs" />
     <Compile Include="供应链\CGDDServicePlugin.cs" />
     <Compile Include="供应链\CGRKDBillPlugin.cs" />
     <Compile Include="供应链\CGRKDServerPlugin.cs" />
     <Compile Include="供应链\CGSQBillPlugin.cs" />
     <Compile Include="供应链\CGTLServicePlugin.cs" />
     <Compile Include="供应链\CKSQServicePlugin.cs" />
+    <Compile Include="供应链\JSKCListPlugin.cs" />
     <Compile Include="供应链\PGMXBillPlugin.cs" />
     <Compile Include="供应链\PGMXServerPlugin.cs" />
     <Compile Include="供应链\SLTZBillPlugin.cs" />
@@ -449,6 +453,7 @@
     <Compile Include="供应链\ZDXZFormPlugin.cs" />
     <Compile Include="基础资料\WLListPlugin.cs" />
     <Compile Include="基础资料\WLPLMPlugin.cs" />
+    <Compile Include="基础资料\WLQDBillPlugin.cs" />
     <Compile Include="基础资料\WLQDPLMPlugin.cs" />
     <Compile Include="基础资料\WLQDZCFormPlugin.cs" />
     <Compile Include="批号追溯\ZXSCPCZSFB.cs" />
@@ -479,6 +484,7 @@
     <Compile Include="生产制造\BRPTYHYEBillPlugin.cs" />
     <Compile Include="生产制造\CJHSQServicePlugin.cs" />
     <Compile Include="生产制造\CPBSGHSQBillPlugin.cs" />
+    <Compile Include="生产制造\DBSQBillPlugin.cs" />
     <Compile Include="生产制造\GXJHCHANGE.cs" />
     <Compile Include="生产制造\GXHBBillPlugin.cs" />
     <Compile Include="生产制造\GXHBConvertPlugin.cs" />
@@ -523,6 +529,7 @@
     <Compile Include="生产制造\TMCFBillPlugin.cs" />
     <Compile Include="生产制造\TMZDListPlugin.cs" />
     <Compile Include="生产制造\TMZDPLXGFormPlugin.cs" />
+    <Compile Include="生产制造\XNYGZXXFormPlugin.cs" />
     <Compile Include="生产制造\ZJDBServerPlugin.cs" />
     <Compile Include="生产制造\TLServerPlugin.cs" />
     <Compile Include="考勤报表\KQBBGLReportPlugin.cs" />

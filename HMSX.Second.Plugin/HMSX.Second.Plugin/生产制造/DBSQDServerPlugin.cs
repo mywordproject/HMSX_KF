@@ -27,7 +27,7 @@ namespace HMSX.Second.Plugin.生产制造
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FAPPORGID", "FMATERIALID", "FLot", "FBillNo", "F_260_XTLY" };
+            String[] propertys = { "FAPPORGID", "FMATERIALID", "FLot", "FBillNo", "F_260_XTLY", "F_260_DXGYS" };
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -56,6 +56,26 @@ namespace HMSX.Second.Plugin.生产制造
                                         throw new KDBusinessException("", "相同物料不允许有相同批号！");
                                     }
                                 }
+                                if(Entitys[i]["F_260_DXGYS"] !=null && Entitys[i]["F_260_DXGYS"].ToString() != "")
+                                {
+                                    string gysname = "";
+                                    foreach (var sup in Entitys[i]["F_260_DXGYS"].ToString().Split(','))
+                                    {
+                                        gysname += "'" + sup + "',";
+                                    }
+                                    string strsql = $@"select  a.fid,A.FMATERIALID,FLOT,c.FNAME from T_STK_INVENTORY a
+                                     left join T_BD_LOTMASTER b on a.FLOT= b.FLOTid
+                                     left join T_BD_SUPPLier_l c on c.FSUPPLIERID=b.FSUPPLYID
+                                     where FSTOCKORGID=100026 and a.FMATERIALID='{Entitys[i]["MATERIALID_Id"]}'
+                                     and a.FLOT='{Entitys[i]["FLot_Id"]}'
+                                     and (c.Fname in ({gysname.Trim(',')}))";
+                                    var strs = DBUtils.ExecuteDynamicObject(Context, strsql);
+                                    if (strs.Count == 0)
+                                    {
+                                        throw new KDBusinessException("", "未使用指定供应商批号！");
+                                    }
+                                }
+                                
                             }
                         }
                     }

@@ -14,8 +14,29 @@ namespace HMSX.Second.Plugin
 {
     class Class1
     {
-        //static void Main(string[] args)
-        //{
+        static void Main(string[] args)
+        {
+            login(); 
+        }
+        /// </summary>
+        static void login()
+        {
+            //K3CloudApiClient client = new K3CloudApiClient("http://10.40.1.54/k3cloud");
+            //var loginResult = client.ValidateLogin("60d1d4bd412569", "李德飞", "ww111", 2052);
+            K3CloudApiClient client = new K3CloudApiClient("http://10.40.1.54/k3cloud/");
+            var loginResult = client.ValidateLogin("60d1d4bd412569", "李德飞", "wwy111", 2052);
+            var resultType = JObject.Parse(loginResult)["LoginResultType"].Value<int>();
+            if (resultType == 1)
+            {
+                var result = client.Execute<Object>("HMSX.Second.Plugin.WebAPI.XNYGZXXAPI.GETJG,HMSX.Second.Plugin", new object[] { "71173C1D7F00112" });
+                Console.WriteLine(result);
+                Console.ReadKey();
+            }
+          
+        }
+    }
+}
+/**
         //    K3CloudApiClient client = new K3CloudApiClient("http://10.42.4.211/k3cloud/");
         //    client.ValidateLogin("646585ba560dc4", "王锋", "666666", 2052);
         //    var result = client.Execute<Object>("HMSX.Second.Plugin.WebAPI.SBJDApi.GetSBJD,HMSX.Second.Plugin", new object[] { "2023-05-25 10:30:00", "2023-05-25 10:40:00" });
@@ -59,73 +80,73 @@ namespace HMSX.Second.Plugin
             //        }
             //    }
         //}
-        #region ResponseDto
-        public class ResponseDto
-        {
-            #region method
-            /// <summary>
-            /// 将当前对象序列化为Json字符串
-            /// </summary>
-            /// <returns></returns>
-            public virtual string ToJson()
-            {
-                return JsonConvert.SerializeObject(this);
-            }
-            /// <summary>
-            /// 将Json字符串反序列化为指定对象
-            /// </summary>
-            /// <param name="json"></param>
-            /// <returns></returns>
-            public static ResponseDto Parse(string json)
-            {
-                return JsonConvert.DeserializeObject<ResponseDto>(json);
-            }
-            #endregion
-            #region property
-            /// <summary>
-            /// 响应结果
-            /// </summary>
-            public ResponseResult Result { get; set; }
-            #endregion
-            #region class
-            public class ResponseResult
-            {
-                public string Id { get; set; }
-                public long StartIndex { get; set; }
-                public bool IsLast { get; set; }
-                public int FileSize { get; set; }
-                public string FileName { get; set; }
-                public string FilePart { get; set; }
-                public string Message { get; set; }
-                public ResponseResultStatus ResponseStatus { get; set; }
-                public class ResponseResultStatus
-                {
-                    public string MsgCode { get; set; }
-                    public bool IsSuccess { get; set; }
-                    public string ErrorCode { get; set; }
-                    public System.Collections.Generic.IList<ResponseMessage> Errors { get; set; }
-                    public System.Collections.Generic.IList<ResponseMessage> SuccessMessages { get; set; }
-                    public System.Collections.Generic.IList<SuccessEntity> SuccessEntitys { get; set; }
-                    public class ResponseMessage
-                    {
-                        public string FieldName { get; set; }
-                        public string Message { get; set; }
-                        public int DIndex { get; set; }
-                    }
-                    public class SuccessEntity
-                    {
-                        public string Id { get; set; }
-                        public string Number { get; set; }
-                        public string BillNo { get; set; }
-                        public int DIndex { get; set; }
-                    }
-                }
-                #endregion
-            }
-            #endregion
-        }
-    }
-}
+       // #region ResponseDto
+        //public class ResponseDto
+        //{
+        //    #region method
+        //    /// <summary>
+        //    /// 将当前对象序列化为Json字符串
+        //    /// </summary>
+        //    /// <returns></returns>
+        //    public virtual string ToJson()
+        //    {
+        //        return JsonConvert.SerializeObject(this);
+        //    }
+        //    /// <summary>
+        //    /// 将Json字符串反序列化为指定对象
+        //    /// </summary>
+        //    /// <param name="json"></param>
+        //    /// <returns></returns>
+        //    public static ResponseDto Parse(string json)
+        //    {
+        //        return JsonConvert.DeserializeObject<ResponseDto>(json);
+        //    }
+        //    #endregion
+        //    #region property
+        //    /// <summary>
+        //    /// 响应结果
+        //    /// </summary>
+        //    public ResponseResult Result { get; set; }
+        //    #endregion
+        //    #region class
+        //    public class ResponseResult
+        //    {
+        //        public string Id { get; set; }
+        //        public long StartIndex { get; set; }
+        //        public bool IsLast { get; set; }
+        //        public int FileSize { get; set; }
+        //        public string FileName { get; set; }
+        //        public string FilePart { get; set; }
+        //        public string Message { get; set; }
+        //        public ResponseResultStatus ResponseStatus { get; set; }
+        //        public class ResponseResultStatus
+        //        {
+        //            public string MsgCode { get; set; }
+        //            public bool IsSuccess { get; set; }
+        //            public string ErrorCode { get; set; }
+        //            public System.Collections.Generic.IList<ResponseMessage> Errors { get; set; }
+        //            public System.Collections.Generic.IList<ResponseMessage> SuccessMessages { get; set; }
+        //            public System.Collections.Generic.IList<SuccessEntity> SuccessEntitys { get; set; }
+        //            public class ResponseMessage
+        //            {
+        //                public string FieldName { get; set; }
+        //                public string Message { get; set; }
+        //                public int DIndex { get; set; }
+        //            }
+        //            public class SuccessEntity
+        //            {
+        //                public string Id { get; set; }
+        //                public string Number { get; set; }
+        //                public string BillNo { get; set; }
+        //                public int DIndex { get; set; }
+        //            }
+        //        }
+        //        #endregion
+        //    }
+        //    #endregion
+        //}
+ //   }
+//}
 
 //K3CloudApiClient client = new K3CloudApiClient("http://10.41.1.87/k3cloud/");
 //var a = client.ValidateLogin("63e9834523dea1", "王锋", "666666", 2052);
@@ -283,7 +304,7 @@ namespace HMSX.Second.Plugin
 
 //}
 //Console.ReadKey();
-// var result = client.Execute<Object>("HMSX.Second.Plugin.WebAPI.PGCXAPI.GETPGXX,HMSX.Second.Plugin", new object[] { "100026", "2022-11-1" });
+// var result = client.Execute<Object>("HMSX.Second.Plugin.WebAPI.XNYGZXXAPI.GETGZXX,HMSX.Second.Plugin", new object[] { "100026"});
 // Console.WriteLine(result.ToString());
 // Console.ReadKey();
 
@@ -300,3 +321,4 @@ namespace HMSX.Second.Plugin
 //var result = client.Execute<Object>("HMSX.Second.Plugin.WebAPI.PGCXAPI.GETPGMX,HMSX.Second.Plugin", new object[] { "100026", "2022-11-01" });
 //Console.WriteLine(result.ToString());
 //Console.ReadKey();
+**/

@@ -45,7 +45,7 @@ namespace HMSX.Second.Plugin.MES
         public override void AfterBindData(EventArgs e)
         {
             base.AfterBindData(e);
-            string strSql = $@"/*dialect*/SELECT  T1.FMATERIALID,t3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,T6.GYS, 
+            string strSql = $@"/*dialect*/SELECT  T1.FMATERIALID,t3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,case when T6.GYS=''or T6.GYS=null then 0 else T6.GYS end GYS, 
             (
             SELECT distinct convert(varchar(255),FPgEntryId,111)+',' FROM t_PgBomInfo WHERE FPgEntryId IN ({FEntryId})  AND  t_PgBomInfo.FMATERIALID=T1.FMATERIALID 
             for xml path('')) as PGID
@@ -57,7 +57,7 @@ namespace HMSX.Second.Plugin.MES
             INNER JOIN T_BD_MATERIAL_L T4 ON T1.FMATERIALID=T4.FMATERIALID AND T4.FLOCALEID=2052
             INNER JOIN t_PgBomInfo T6 ON T1.FENTRYID=T6.FPPBomEntryId AND T6.FPgEntryId IN ({FEntryId})    AND T6.FMustQty-T6.FAvailableQty>0
             WHERE T.FMOBillNO='{MoBillNo}' AND T.FMOENTRYSEQ={MoBillEntrySeq} AND T5.FISSUETYPE IN ('1','3') 
-			GROUP BY T1.FMATERIALID,t3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,T6.GYS
+			GROUP BY T1.FMATERIALID,t3.FNUMBER,T4.FNAME,T4.FSPECIFICATION,case when T6.GYS=''or T6.GYS=null then 0 else T6.GYS end
             ORDER BY T1.FMATERIALID ASC ";
             var date = DBUtils.ExecuteDynamicObject(Context, strSql);
             this.View.Model.DeleteEntryData("F_SLSB_MobileListViewEntity");
@@ -152,6 +152,7 @@ namespace HMSX.Second.Plugin.MES
                                                  param.FormId = "kcda126f86b6f4754a6d58570ca2221e3";
                                                  param.ParentPageId = this.View.PageId;
                                                  param.SyncCallBackAction = false;
+                                                 param.CustomParams.Add("ZJLL", "F");
                                                  param.CustomParams.Add("FPgEntryId", entryId.Trim(','));
                                                  this.View.ShowForm(param);
                                              }

@@ -49,7 +49,7 @@ namespace HMSX.Second.Plugin.供应链
         {
             base.EndOperationTransaction(e);
             if (Context.CurrentOrganizationInfo.ID == 100026)
-            {             
+            {
                 if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var data in e.DataEntitys)
@@ -261,7 +261,7 @@ namespace HMSX.Second.Plugin.供应链
                         }
                     }
                 }
-                else if(FormOperation.Operation.Equals("StatusConvertsfdh", StringComparison.OrdinalIgnoreCase))
+                else if (FormOperation.Operation.Equals("StatusConvertsfdh", StringComparison.OrdinalIgnoreCase))
                 {
                     EndSetStatusTransactionArgs endSetStatusTransactionArgs = (EndSetStatusTransactionArgs)e;
                     List<KeyValuePair<object, object>> EntryIds = endSetStatusTransactionArgs.PkEntryIds;
@@ -273,31 +273,38 @@ namespace HMSX.Second.Plugin.供应链
                             {
                                 if (entity["Id"].ToString() == ids.Value.ToString())
                                 {
-                                    var wl = entity["MaterialID"] as DynamicObject;
-                                    var msg = string.Format("您申请采购的“{0}”、“{1}”，供应商为“{2}”的“{3}”批次，已到货“{4}”，请知悉！",
-                                        wl["Name"].ToString(), wl["Specification"].ToString(), ((DynamicObject)data["SupplierId"])["Name"].ToString(), entity["Lot_Text"].ToString(),
-                                        entity["ActReceiveQty"].ToString() + ((DynamicObject)entity["PriceUnitId"])["Name"].ToString());
-                                    // 发送消息给多人
-                                    string yhsql = $@"/*dialect*/SELECT a.FUSERID, a.FNAME 用户名,yg.FMOBILE
+                                    try
+                                    {
+                                        var wl = entity["MaterialID"] as DynamicObject;
+                                        var msg = string.Format("您申请采购的“{0}”、“{1}”，供应商为“{2}”的“{3}”批次，已到货“{4}”，请知悉！",
+                                            wl["Name"].ToString(), wl["Specification"].ToString(), ((DynamicObject)data["SupplierId"])["Name"].ToString(), entity["Lot_Text"].ToString(),
+                                            entity["ActReceiveQty"].ToString() + ((DynamicObject)entity["PriceUnitId"])["Name"].ToString());
+                                        // 发送消息给多人
+                                        string yhsql = $@"/*dialect*/SELECT a.FUSERID, a.FNAME 用户名,yg.FMOBILE
                                             FROM T_SEC_USER a 
                                             INNER JOIN T_BD_PERSON b ON a.FLINKOBJECT = b.FPERSONID 
                                             INNER JOIN T_BD_STAFF c ON b.FPERSONID=c.FPERSONID
                                             left join T_HR_EMPINFO yg on c.FEMPINFOID=yg.fid
                                             WHERE c.FSTAFFID='{Convert.ToInt64(entity["DemanderId_Id"])}'";
-                                    var yh = DBUtils.ExecuteDynamicObject(Context, yhsql);
-                                    if (yh.Count > 0)
-                                    {
-                                        var receiverIds = new object[] { Convert.ToInt64(yh[0]["FUSERID"]) };
-                                        SendMessage(this.Context, "PUR_ReceiveBill", data["Id"].ToString()
-                                            , "收料通知单通知", msg, this.Context.UserId, receiverIds);
+                                        var yh = DBUtils.ExecuteDynamicObject(Context, yhsql);
+                                        if (yh.Count > 0)
+                                        {
+                                            var receiverIds = new object[] { Convert.ToInt64(yh[0]["FUSERID"]) };
+                                            SendMessage(this.Context, "PUR_ReceiveBill", data["Id"].ToString()
+                                                , "收料通知单通知", msg, this.Context.UserId, receiverIds);
 
-                                        IDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/user/getbymobile");
-                                        OapiV2UserGetbymobileRequest req = new OapiV2UserGetbymobileRequest();
-                                        req.Mobile = yh[0]["FMOBILE"].ToString();
-                                        string access_token = Token();
-                                        OapiV2UserGetbymobileResponse rsp = client.Execute(req, access_token);
-                                        string userid = rsp.Result.Userid;
-                                        dingding3(access_token, userid, msg);
+                                            IDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/user/getbymobile");
+                                            OapiV2UserGetbymobileRequest req = new OapiV2UserGetbymobileRequest();
+                                            req.Mobile = yh[0]["FMOBILE"].ToString();
+                                            string access_token = Token();
+                                            OapiV2UserGetbymobileResponse rsp = client.Execute(req, access_token);
+                                            string userid = rsp.Result.Userid;
+                                            dingding3(access_token, userid, msg);
+                                        }
+                                    }
+                                    catch
+                                    {
+
                                     }
                                 }
                             }
@@ -311,7 +318,7 @@ namespace HMSX.Second.Plugin.供应链
         {
             base.BeforeExecuteOperationTransaction(e);
             if (Context.CurrentOrganizationInfo.ID == 100026)
-            {               
+            {
                 if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
                 {
                     //反审校验
@@ -499,7 +506,7 @@ namespace HMSX.Second.Plugin.供应链
                 }
             }
         }
-       
+
         /// <summary>
         /// 发送消息（支持多个收件人，写发件箱）
         /// </summary>

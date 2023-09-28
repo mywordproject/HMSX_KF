@@ -29,7 +29,8 @@ namespace HMSX.Second.Plugin
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID", "F_260_XTLY", "FBillNo", "FMOBillNO" };
+            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID", 
+                                   "F_260_XTLY", "FBillNo", "FMOBillNO" , "FMaterialID2" ,"F_260_DXGYS"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -83,19 +84,19 @@ namespace HMSX.Second.Plugin
                     {
                         var mater = dates["MaterialID"] as DynamicObject;
                         var stocks = mater["MaterialStock"] as DynamicObjectCollection;
-                        foreach(var stock in stocks)
+                        foreach (var stock in stocks)
                         {
                             if (stock["StockId"] != null)
                             {
-                                if(((DynamicObject)stock["StockId"])["Number"].ToString()== "260CK090")
+                                if (((DynamicObject)stock["StockId"])["Number"].ToString() == "260CK090")
                                 {
                                     string upsql = $@"update T_PRD_PPBOMENTRY_C set FSTOCKID={((DynamicObject)stock["StockId"])["Id"]} where FID={dates["Id"]}";
                                     DBUtils.Execute(Context, upsql);
                                 }
                             }
-                        }                      
+                        }
                     }
-                } 
+                }
                 else if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var date in e.DataEntitys)
@@ -198,16 +199,23 @@ namespace HMSX.Second.Plugin
                     foreach (ExtendedDataEntity extended in e.SelectedRows)
                     {
                         DynamicObject dy = extended.DataEntity;
-                        if (dy["MOBillNO"].ToString().Substring(0, 2) == "YJ" && dy["MaterialID"]!=null)
+                        DynamicObjectCollection docPriceEntity = dy["PPBomEntry"] as DynamicObjectCollection;
+                        DynamicObjectCollection wldu = ((DynamicObject)dy["MaterialID"])["MaterialProduce"] as DynamicObjectCollection;
+                        foreach (var entry in docPriceEntity)
                         {
-                            DynamicObjectCollection wldu = ((DynamicObject)dy["MaterialID"])["MaterialProduce"] as DynamicObjectCollection;
-                            DynamicObjectCollection docPriceEntity = dy["PPBomEntry"] as DynamicObjectCollection;
-                            foreach (var entry in docPriceEntity)
+                            if (dy["MOBillNO"].ToString().Substring(0, 2) == "YJ" && dy["MaterialID"] != null)
                             {
                                 entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
                             }
-                        }
-                        
+                            //foreach (var wlqd in ((DynamicObject)dy["FBOMID"])["TreeEntity"] as DynamicObjectCollection)
+                            //{
+                            //    if (wlqd["MATERIALIDCHILD"] != null && entry["MaterialID"] != null &&
+                            //        Convert.ToInt64(wlqd["MATERIALIDCHILD_Id"]) == Convert.ToInt64(entry["MaterialID_Id"]))
+                            //    {
+                            //        entry["F_260_DXGYS"] = wlqd["F_260_DXGYSWB"];
+                            //    }
+                            //}
+                        }                                  
                     }
                 }
             }

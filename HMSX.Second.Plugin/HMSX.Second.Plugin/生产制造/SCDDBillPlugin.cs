@@ -40,7 +40,7 @@ namespace HMSX.Second.Plugin.生产制造
             String[] propertys = { "FPrdOrgId", "FMaterialId", "F_260_SFNPI", "F_260_SB", "FBillNo", "FStockId" ,
                 "FSaleOrderNo", "FSaleOrderEntrySeq", "FReqSrc" ,"FMTONO","F_260_XMHH","F_260_WLDWLX","FApproveDate",
                 "F_260_WLDWS","FBillType","FBillNo","FProductType","FGroup","FParentRowId","FRowId","FCheckProduct"
-                 ,"FSrcBillEntrySeq","FSrcBillNo"};
+                 ,"FSrcBillEntrySeq","FSrcBillNo","F_260_BaseMJYT"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -149,14 +149,13 @@ namespace HMSX.Second.Plugin.生产制造
                                     throw new KDBusinessException("", "母订单单据编号不允许有横杠（-）");
                                 }
                             }
-                            //if (entry["WorkShopID"] != null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString() == "000362" &&
-                            //    dates["BillNo"].ToString().Contains("-"))
-                            //{
-                            //    if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) != 0)
-                            //    {
-                            //        throw new KDBusinessException("", "子订单模具用途为空");
-                            //    }
-                            //}
+                            if (entry["MaterialId"] != null && ((DynamicObject)entry["MaterialId"])["Number"].ToString().Contains("260.07."))
+                            {
+                                if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) == 0)
+                                {
+                                    throw new KDBusinessException("", "模具用途不能为空");
+                                }
+                            }
                         }
                     }
                 }
