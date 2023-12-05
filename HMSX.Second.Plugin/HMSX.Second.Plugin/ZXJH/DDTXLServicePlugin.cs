@@ -18,8 +18,7 @@ namespace HMSX.Second.Plugin.ZXJH
     {
         public void Run(Context ctx, Schedule schedule)
         {
-            string gzxxsql = $@"/*dialect*/delete SX_DataAdapt.dbo.hmsx_DDYG where RQ='{DateTime.Now.ToString("yyyy-MM-dd")}' 
-               OR RQ='{DateTime.Now.AddDays(-60).ToString("yyyy-MM-dd")}';  ";
+            string gzxxsql = $@"/*dialect*/delete SX_DataAdapt.dbo.hmsx_DDYG where RQ='{DateTime.Now.ToString("yyyy-MM-dd")}'";
             DBUtils.Execute(ctx, gzxxsql);
             string gzxxsql2 = $@"/*dialect*/delete SX_DataAdapt.dbo.hmsx_DDBM";
             DBUtils.Execute(ctx, gzxxsql2);
@@ -40,15 +39,16 @@ namespace HMSX.Second.Plugin.ZXJH
             {
                 try
                 {
-                    long x = date.Result.NextCursor;
-                    if (x == 0)
+                   
+                    if (date.Result==null ||date.Result.NextCursor==0)
                     {
                         T = false;
                     }
                     else
                     {
+                        long x = date.Result.NextCursor;
                         date = ZZYG(x, access_token);
-                        YHXX(date, access_token,ctx);
+                        YHXX(date, access_token, ctx);
                     }
                 }
                 catch
@@ -59,7 +59,7 @@ namespace HMSX.Second.Plugin.ZXJH
             List<long> bms = new List<long>();
             bms.Add(544844262);
             bms.Add(576667036);
-            BMID(access_token, bms,ctx);
+            BMID(access_token, bms, ctx);
 
         }
         public OapiSmartworkHrmEmployeeQueryonjobResponse ZZYG(long Y, string token)
@@ -78,44 +78,47 @@ namespace HMSX.Second.Plugin.ZXJH
         public void YHXX(OapiSmartworkHrmEmployeeQueryonjobResponse DA, string token, Context ctx)
         {
             string strsql = "";
-            foreach (var list in DA.Result.DataList)
+            if (DA.Result != null)
             {
-                //获取名字                
-                reqYH.Userid = list;
-                OapiV2UserGetResponse rsp = clientYH.Execute(reqYH, token);
-                YHXX yhxx = new YHXX();
-                yhxx = JsonConvert.DeserializeObject<YHXX>(rsp.Body);
-                string rylb = "";
-                string gzcs = "";
-                if (yhxx.result != null && yhxx.result.ext_attrs != null)
+                foreach (var list in DA.Result.DataList)
                 {
-                    foreach (var ext_attrs in yhxx.result.ext_attrs)
+                    //获取名字                
+                    reqYH.Userid = list;
+                    OapiV2UserGetResponse rsp = clientYH.Execute(reqYH, token);
+                    YHXX yhxx = new YHXX();
+                    yhxx = JsonConvert.DeserializeObject<YHXX>(rsp.Body);
+                    string rylb = "";
+                    string gzcs = "";
+                    if (yhxx.result != null && yhxx.result.ext_attrs != null)
                     {
-                        if (ext_attrs.name == "人员类别")
+                        foreach (var ext_attrs in yhxx.result.ext_attrs)
                         {
-                            rylb = ext_attrs.value.text;
-                        }
-                        if (ext_attrs.name == "工作场所")
-                        {
-                            gzcs = ext_attrs.value.text;
+                            if (ext_attrs.name == "人员类别")
+                            {
+                                rylb = ext_attrs.value.text;
+                            }
+                            if (ext_attrs.name == "工作场所")
+                            {
+                                gzcs = ext_attrs.value.text;
+                            }
                         }
                     }
+                    string bm = "";
+                    if (yhxx.result != null && yhxx.result.dept_id_list != null)
+                    {
+                        foreach (var bmid in yhxx.result.dept_id_list)
+                        {
+                            bm += bmid + ",";
+                        }
+                    }
+                    strsql += $@"({j},'{DateTime.Now.ToString("yyyy-MM-dd")}','{yhxx.result.job_number}','{yhxx.result.name}','{rylb}','{gzcs}','{bm.Trim(',')}'),";
+                    j++;
                 }
-                string bm = "";
-                if (yhxx.result != null && yhxx.result.dept_id_list != null)
-                {
-                    foreach (var bmid in yhxx.result.dept_id_list)
-                    {
-                        bm += bmid + ",";
-                    }
-                }             
-                strsql += $@"({j},'{DateTime.Now.ToString("yyyy-MM-dd")}','{yhxx.result.job_number}','{yhxx.result.name}','{rylb}','{gzcs}','{bm.Trim(',')}'),";
-                j++;
-            }               
-            string gzxxsql = $@"/*dialect*/insert into SX_DataAdapt.dbo.hmsx_DDYG values {strsql.Trim(',')}";
-            DBUtils.Execute(ctx, gzxxsql);
+                string gzxxsql = $@"/*dialect*/insert into SX_DataAdapt.dbo.hmsx_DDYG values {strsql.Trim(',')}";
+                DBUtils.Execute(ctx, gzxxsql);
+            }
         }
-        public void BMID(string token, List<long> BMS,Context ctx)
+        public void BMID(string token, List<long> BMS, Context ctx)
         {
             IDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsubid");
             OapiV2DepartmentListsubidRequest req = new OapiV2DepartmentListsubidRequest();
@@ -131,13 +134,13 @@ namespace HMSX.Second.Plugin.ZXJH
                     foreach (var bmid in rsp.Result.DeptIdList)
                     {
                         strbm.Add(bmid);
-                        str += "('" + bmid + "'),";                    
+                        str += "('" + bmid + "'),";
                     }
                     if (str != "")
                     {
                         string gzxxsql = $@"/*dialect*/insert into SX_DataAdapt.dbo.hmsx_DDBM values {str.Trim(',')}";
                         DBUtils.Execute(ctx, gzxxsql);
-                        BMID(token, strbm,ctx);
+                        BMID(token, strbm, ctx);
                     }
                 }
             }

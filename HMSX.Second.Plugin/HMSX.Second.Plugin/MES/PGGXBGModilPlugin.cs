@@ -17,7 +17,6 @@ using Kingdee.BOS.Orm.DataEntity;
 using Kingdee.BOS.ServiceHelper;
 using System.ComponentModel;
 using Kingdee.BOS.Resource;
-using HMSX.MFG.Mobile.Business.PlugIn;
 using Kingdee.K3.MFG.ServiceHelper.SFS;
 using Kingdee.BOS.Mobile.PlugIn.ControlModel;
 using Kingdee.BOS.Core.Validation;
@@ -25,6 +24,7 @@ using Kingdee.BOS;
 using Kingdee.K3.MFG.Mobile.ServiceHelper;
 using Kingdee.BOS.Orm;
 using Kingdee.K3.MFG.Common.BusinessEntity.SFC.SFCEntity;
+using HMSX.MFG.Mobile.Business.PlugIn.Second;
 
 namespace HMSX.Second.Plugin.MES
 {

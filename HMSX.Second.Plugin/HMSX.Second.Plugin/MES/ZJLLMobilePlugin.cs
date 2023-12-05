@@ -144,7 +144,7 @@ namespace HMSX.Second.Plugin.MES
             {
                 string strSql = "";
                 string gysname = "";
-                foreach (var sup in pp.gys.ToString().Split(','))
+                foreach (var sup in pp.gys.ToString().Split(';'))
                 {
                     gysname += "'" + sup + "',";
                 }
@@ -709,7 +709,7 @@ namespace HMSX.Second.Plugin.MES
                         ytm = Convert.ToString(pp.ystm);
                         string strSql = "";
                         string gysname = "";
-                        foreach (var sup in pp.gys.ToString().Split(','))
+                        foreach (var sup in pp.gys.ToString().Split(';'))
                         {
                             gysname += "'" + sup + "',";
                         }

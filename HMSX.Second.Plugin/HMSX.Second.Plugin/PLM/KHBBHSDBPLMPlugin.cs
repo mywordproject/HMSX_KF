@@ -25,20 +25,21 @@ namespace HMSX.Second.Plugin.PLM
 	[HotUpdate, Description("客户版本号升大版服务插件")]
 	public class KHBBHSDBPLMPlugin : UpgradeVersionService
 	{
-		protected override bool HistoryObjectToggle
-		{
-			get
-			{
-				return false;
-			}
-		}
-		public override PLMPermissionItem PermissionItem
+        protected override bool HistoryObjectToggle
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override PLMPermissionItem PermissionItem
 		{
 			get
 			{
 				return PLMPermissionItem.Upgrade_bigversion;
 			}
 		}
+
 		public override void Upgrade(PLMContext ctx, DynamicObject o)
 		{
 			VersionManager.Instance.UpgradeVerNew(this.PLMContext, o, this.GetUpgradeVersionType(), 1);
@@ -73,7 +74,7 @@ namespace HMSX.Second.Plugin.PLM
 							foreach (DynamicObject current in listupgradeObj)
 							{
 								long num = Convert.ToInt64(current["Id"]);
-								DynamicObject dynamicObject2 = (num != 0L) ? DomainObjectManager.Instance(this.PLMContext, Convert.ToInt64(current["CategoryId_Id"])).Get(this.PLMContext, num) : null;
+								DynamicObject dynamicObject2 = (num != 0L) ? DomainObjectManager.Instance(this.PLMContext, Convert.ToInt64(current["CategoryId_Id"]), true).Get(this.PLMContext, num) : null;
 								DynamicObject dynamicObject3 = dynamicObject2 ?? current;
 								list2.Add(dynamicObject3);
 								IBomManagerEx bomManagerEx = PLMExtensionFactory.Create<IBomManagerEx>(true);
@@ -83,8 +84,7 @@ namespace HMSX.Second.Plugin.PLM
 							{
 								DynamicObject dynamicObject4 = list2[i];
 								VersionManager.Instance.UpgradeVerNew(this.PLMContext, dynamicObject4, UpgradeVersionType.UpMaxVer, (list[i] == 2147483647) ? 1 : list[i]);
-								ReleaseObjStatusManager.Instance.CancelObjReleaseStatus(ctx, Convert.ToInt64(dynamicObject4["Id"]), -1L);
-								DomainObjectManager.Instance(ctx, Convert.ToInt64(dynamicObject4["CategoryId_Id"])).Save(ctx, dynamicObject4);
+								DomainObjectManager.Instance(ctx, Convert.ToInt64(dynamicObject4["CategoryId_Id"]), true).Save(ctx, dynamicObject4);
 							}
 							if (list3.Count <= 0)
 							{
@@ -98,6 +98,7 @@ namespace HMSX.Second.Plugin.PLM
 										VersionManager.Instance.UpgradeVerNew(this.PLMContext, current2, this.GetUpgradeVersionType(), 1);
 									}
 								}
+
 							}
 							foreach (DynamicObject current in listupgradeObj)
 							{
@@ -153,5 +154,6 @@ namespace HMSX.Second.Plugin.PLM
 		{
 			return UpgradeVersionType.UpMaxVer;
 		}
+
 	}
 }

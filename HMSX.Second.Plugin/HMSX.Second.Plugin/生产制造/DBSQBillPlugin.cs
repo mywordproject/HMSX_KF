@@ -22,8 +22,8 @@ namespace HMSX.Second.Plugin.生产制造
     {
         public override void AfterEntryBarItemClick(AfterBarItemClickEventArgs e)
         {
-            base.AfterEntryBarItemClick(e);
-            if (e.BarItemKey.Equals("F_KCCX"))
+            base.AfterEntryBarItemClick(e);         
+            if (Context.CurrentOrganizationInfo.ID==100026 && e.BarItemKey.Equals("F_KCCX"))
             {
                 ListShowParameter listShowParameter = new ListShowParameter();
                 //FormId你要调用那个单据的列表,通过打开未扩展的销售订单,找到唯一标识     
@@ -41,19 +41,19 @@ namespace HMSX.Second.Plugin.生产制造
                 string gys = this.Model.GetValue("F_260_DXGYS", hs) == null ? "" : this.Model.GetValue("F_260_DXGYS", hs).ToString();
                 if (wl != "")
                 {
-                    string gl = "FSTOCKORGID=100026 and FMATERIALID=" + wl;
-                    string flotid = "";
-                    if (gys != "")
+                    string gl = "FSTOCKORGID=100026 AND FBASEQTY>0 and FMATERIALID=" + wl;
+                    string flotid = "0,";
+                    if (gys != "" && gys != " ")
                     {
                         string gysname = "";
-                        foreach (var sup in gys.ToString().Split(','))
+                        foreach (var sup in gys.ToString().Split(';'))
                         {
                             gysname += "'" + sup + "',";
                         }
                         string strsql = $@"select  a.fid,A.FMATERIALID,FLOT,c.FNAME from T_STK_INVENTORY a
                                      left join T_BD_LOTMASTER b on a.FLOT= b.FLOTid
                                      left join T_BD_SUPPLier_l c on c.FSUPPLIERID=b.FSUPPLYID
-                                     where FSTOCKORGID=100026 and a.FMATERIALID='{wl}'
+                                     where FSTOCKORGID=100026 and a.FMATERIALID='{wl}' AND FBASEQTY>0
                                      and (c.Fname in ({gysname.Trim(',')}))";
                         var strs = DBUtils.ExecuteDynamicObject(Context, strsql);
                         
@@ -61,7 +61,11 @@ namespace HMSX.Second.Plugin.生产制造
                         {
                             flotid += str["FLOT"].ToString() + ",";
                         }
-                        gl += " AND FLOT IN (" + flotid.Trim(',') + ")";
+                        if (flotid != "")
+                        {
+                            gl += " AND FLOT IN (" + flotid.Trim(',') + ")";
+                        }
+                        
                     }
                     ListRegularFilterParameter regularFilterPara = new ListRegularFilterParameter();
                     regularFilterPara.Filter =gl;
@@ -89,15 +93,29 @@ namespace HMSX.Second.Plugin.生产制造
                             }
                             this.Model.SetItemValueByID("FLOT", ((DynamicObject)list.DataRow["FLot_Ref"])["Number"].ToString(), i);
                             this.Model.SetValue("FQTY", list.DataRow["FBASEQTY"], i);
-
-                            //this.View.Model.SetValue("FCGSQDDH", fbillno, e.Row);
+                            this.Model.SetItemValueByID("FSTOCKID", list.DataRow["FStockId_Id"], i);
+                            this.View.Model.SetValue("F_260_DXGYS", gys, i);
                             //this.View.Model.SetValue("F_260_YCLYJDHRQ", dhrq, e.Row);
-
+                            this.View.InvokeFieldUpdateService("FSTOCKID", i);
+                            this.View.InvokeFieldUpdateService("FLOT", i);
+                            this.View.UpdateView("F_260_DXGYS", i);
+                            this.View.UpdateView("FSTOCKID", i);
                             this.View.UpdateView("FLot", i);
                             i++;
                         }
                     }
                 });
+            }
+        }
+        public override void AfterDoOperation(AfterDoOperationEventArgs e)
+        {
+            base.AfterDoOperation(e);
+            if (Context.CurrentOrganizationInfo.ID == 100026)
+            {
+                if (e.Operation.OperationId == 8 && e.Operation.Operation == "Save" && e.OperationResult.IsSuccess)
+                {
+                    this.View.InvokeFormOperation("Refresh");
+                }
             }
         }
     }

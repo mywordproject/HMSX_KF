@@ -53,20 +53,127 @@ namespace HMSX.Second.Plugin
             {
                 if (FormOperation.Operation.Equals("Audit", StringComparison.OrdinalIgnoreCase))
                 {
+                    long i = 0;
                     foreach (var date in e.DataEntitys)
                     {
-                        if (date["CreateOrgId_Id"].ToString() == "100026" && ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.02"))
+                        //if (date["CreateOrgId_Id"].ToString() == "100026" && ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.02"))
+                        //{
+                        //    string countsql = $@"select top 1 FCREATEDATE from T_ENG_BOM where FMATERIALID = '{date["MATERIALID_Id"].ToString()}' order by FCREATEDATE asc";
+                        //    var cont = DBUtils.ExecuteDynamicObject(Context, countsql);
+                        //    if (cont.Count > 0)
+                        //    {
+                        //        DateTime createtime = Convert.ToDateTime(cont[0]["FCREATEDATE"].ToString());
+                        //        string upsql = $@"update T_BD_MATERIAL set F_260_LCKSDATE='{createtime.AddDays(5)}'  where FMATERIALID='{date["MATERIALID_Id"].ToString()}'";
+                        //        DBUtils.Execute(Context, upsql);
+                        //    }
+                        //}
+                        string wlqdsql = $@"/*dialect*/
+                            IF OBJECT_ID('tempdb.dbo.#WLQD')IS NOT NULL DROP TABLE #WLQD 
+                              IF OBJECT_ID('tempdb.dbo.#WLQDZS')IS NOT NULL DROP TABLE #WLQDZS 
+                              CREATE TABLE #WLQDZS(
+                              FID INT,
+                              PWL INT,
+                              WL INT
+                              )
+                              select A.FID,a.FMATERIALID PWL,b.FMATERIALID WL ,FCREATEDATE
+                              INTO #WLQD
+                               from
+                              (select FMATERIALID,FNUMBER,FID,FCREATEDATE,row_number() over (partition by FMATERIALID order by FNUMBER desc) rn 
+                              from T_ENG_BOM where FUSEORGID=100026 and FFORBIDSTATUS='A' ) a
+                              left join T_ENG_BOMCHILD b on a.fid=b.fid
+                              left join t_BD_MaterialBase c on b.FMATERIALID=c.FMATERIALID
+                              where a.rn=1;   
+                                                                       
+                              with cte as
+                              (
+                              select FID,PWL,WL,FCREATEDATE,2 as CJ from #WLQD 
+                              where WL='{date["MATERIALID_Id"]}'
+                              union all
+                              select A.FID,a.PWL,a.WL,a.FCREATEDATE,cte.CJ+1 cj from #WLQD a
+                              inner join cte on cte.PWL=a.WL
+                              )
+                              INSERT INTO #WLQDZS SELECT FID,PWL,WL FROM cte;
+                            
+                              with cte1 as
+                              (
+                              select FID,PWL,WL,FCREATEDATE,2 as CJ from #WLQD 
+                              where PWL='{date["MATERIALID_Id"]}'
+                              union all
+                              select A.FID,a.PWL,a.WL,a.FCREATEDATE,cte1.CJ+1 cj from #WLQD a
+                              inner join cte1 on cte1.WL=a.PWL
+                              )
+                              INSERT INTO #WLQDZS SELECT FID,PWL,WL FROM cte1;
+                            
+                              select distinct FID,PWL FMATERIALID from #WLQDZS a
+                              inner join t_bd_material b on a.PWL=b.fmaterialid
+							  where b.fnumber like '260.02.%' or b.fnumber like '260.03.%' or b.fnumber like '260.07.%'";
+                        var wlqds = DBUtils.ExecuteDynamicObject(Context, wlqdsql);               
+                        foreach (var wlqd in wlqds)
                         {
-                            string countsql = $@"select top 1 FCREATEDATE from T_ENG_BOM where FMATERIALID = '{date["MATERIALID_Id"].ToString()}' order by FCREATEDATE asc";
-                            var cont = DBUtils.ExecuteDynamicObject(Context, countsql);
-                            if (cont.Count > 0)
+                            string cxsql = $@"/*dialect*/IF OBJECT_ID('tempdb.dbo.#WLQD1')IS NOT NULL DROP TABLE #WLQD1 
+                                           select a.FMATERIALID PWL,b.FMATERIALID WL ,FCREATEDATE
+                                           INTO #WLQD1
+                                            from
+                                           (select FMATERIALID,FNUMBER,FID,FCREATEDATE,row_number() over (partition by FMATERIALID order by FNUMBER desc) rn 
+                                           from T_ENG_BOM where FUSEORGID=100026  and FFORBIDSTATUS='A'  and FDOCUMENTSTATUS='C') a
+                                           left join T_ENG_BOMCHILD b on a.fid=b.fid
+                                           left join t_BD_MaterialBase c on b.FMATERIALID=c.FMATERIALID
+                                           where a.rn=1;                                            
+                                           with cte as
+                                           (
+                                           select PWL,WL,FCREATEDATE,2 as CJ from #WLQD1 
+                                           where WL='{wlqd["FMATERIALID"]}'
+                                           union all
+                                           select a.PWL,a.WL,a.FCREATEDATE,cte.CJ+1 cj from #WLQD1 a
+                                           inner join cte on cte.PWL=a.WL
+                                           )
+                                           select * from (
+                                           select 
+                                           PWL,WL,A.FCREATEDATE,CJ,C.FNAME,FNUMBER from cte a
+                                           left join t_bd_material b on a.PWL=b.fmaterialid
+                                           left join t_bd_material_L C on a.PWL=C.fmaterialid
+                                           union all 
+                                           select a.fmaterialid PWL,a.fmaterialid WL,FCREATEDATE,1 cj,b.FNAME,FNUMBER from t_bd_material a
+                                           left join t_bd_material_L b on a.fmaterialid=b.fmaterialid
+                                           where a.fmaterialid='{wlqd["FMATERIALID"]}'
+                                           )bb
+                                           where FNUMBER LIKE '260.02.%'
+                                           order by CJ DESC,FCREATEDATE ASC";
+                            var cxs = DBUtils.ExecuteDynamicObject(Context, cxsql);
+                            string delsql = $@"/*dialect*/ delete t_260_WLEntry where FID='{wlqd["FID"]}'";
+                            DBUtils.Execute(Context, delsql);
+                            if (cxs.Count == 0)
                             {
-                                DateTime createtime = Convert.ToDateTime(cont[0]["FCREATEDATE"].ToString());
-                                string upsql = $@"update T_BD_MATERIAL set F_260_LCKSDATE='{createtime.AddDays(5)}'  where FMATERIALID='{date["MATERIALID_Id"].ToString()}'";
+                                string upsql = $@"/*dialect*/ update T_ENG_BOM set F_260_ZSJWLWB='' where FID='{wlqd["FID"]}'";
+                                DBUtils.Execute(Context, upsql);
+                            }
+                            string str = "";
+                            string wlname = "";
+                            foreach (var wl in cxs)
+                            {
+                                i++;
+                                long id = 0;
+                                string xmhsql = $@"select MIN(FPKID)FPKID FROM t_260_WLEntry";
+                                var xmh = DBUtils.ExecuteDynamicObject(Context, xmhsql);
+                                if (xmh.Count > 0)
+                                {
+                                    id += Convert.ToInt64(xmh[0]["FPKID"]);
+                                }
+                                if ((id - i) == 0)
+                                {
+                                    i++;
+                                }
+                                str += "(" + Convert.ToString(id - i) + "," + wlqd["FID"].ToString() + "," + wl["PWL"].ToString() + "),";
+                                wlname += wl["FNAME"].ToString() + ",";
+                            }
+                            if (str != "")
+                            {
+                                string insertsql = $@"/*dialect*/ insert into t_260_WLEntry values {str.Trim(',')}";
+                                DBUtils.Execute(Context, insertsql);
+                                string upsql = $@"/*dialect*/ update T_ENG_BOM set F_260_ZSJWLWB='{wlname.Trim(',')}' where FID='{wlqd["FID"]}'";
                                 DBUtils.Execute(Context, upsql);
                             }
                         }
-
                     }
                 }
                 //更新成品信息
@@ -74,7 +181,9 @@ namespace HMSX.Second.Plugin
                 {
                     foreach (var date in e.DataEntitys)
                     {
-                        if (date["MATERIALID"] != null && ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.03"))
+                        if (date["MATERIALID"] != null && (((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.03") ||
+                                                          ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.02") ||
+                                                          ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.07")))
                         {
                             string strsql = $@"/*dialect*/ IF OBJECT_ID('tempdb.dbo.#WLQD')IS NOT NULL DROP TABLE #WLQD 
                                            select a.FMATERIALID PWL,b.FMATERIALID WL ,FCREATEDATE
@@ -108,17 +217,19 @@ namespace HMSX.Second.Plugin
                     long i = 0;
                     foreach (var date in e.DataEntitys)
                     {
-                        if (date["MATERIALID"] != null && (((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.03")|| ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.02")))
+                        if (date["MATERIALID"] != null && (((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.03") ||
+                                                            ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.02") ||
+                                                            ((DynamicObject)date["MATERIALID"])["Number"].ToString().Contains("260.07")))
                         {
                             string cxsql = $@"/*dialect*/IF OBJECT_ID('tempdb.dbo.#WLQD')IS NOT NULL DROP TABLE #WLQD 
                                            select a.FMATERIALID PWL,b.FMATERIALID WL ,FCREATEDATE
                                            INTO #WLQD
                                             from
                                            (select FMATERIALID,FNUMBER,FID,FCREATEDATE,row_number() over (partition by FMATERIALID order by FNUMBER desc) rn 
-                                           from T_ENG_BOM where FUSEORGID=100026 ) a
+                                           from T_ENG_BOM where FUSEORGID=100026 and FFORBIDSTATUS='A'  and FDOCUMENTSTATUS='C' ) a
                                            left join T_ENG_BOMCHILD b on a.fid=b.fid
                                            left join t_BD_MaterialBase c on b.FMATERIALID=c.FMATERIALID
-                                           where a.rn=1 and FERPCLSID=2;                                            
+                                           where a.rn=1;                                            
                                            with cte as
                                            (
                                            select PWL,WL,FCREATEDATE,2 as CJ from #WLQD 
@@ -144,6 +255,8 @@ namespace HMSX.Second.Plugin
                             {
                                 string delsql = $@"/*dialect*/ delete t_260_WLEntry where FID='{date["Id"]}'";
                                 DBUtils.Execute(Context, delsql);
+                                string upsql = $@"/*dialect*/ update T_ENG_BOM set F_260_ZSJWLWB='' where FID='{date["Id"]}'";
+                                DBUtils.Execute(Context, upsql);
                             }
                             string str = "";
                             string wlname = "";
@@ -170,9 +283,37 @@ namespace HMSX.Second.Plugin
                                 DBUtils.Execute(Context, insertsql);
                                 string upsql = $@"/*dialect*/ update T_ENG_BOM set F_260_ZSJWLWB='{wlname.Trim(',')}' where FID='{date["Id"]}'";
                                 DBUtils.Execute(Context, upsql);
-                            }                           
+                            }
                         }
-            
+
+                    }
+                }
+                else if (FormOperation.Operation.Equals("Save", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var date in e.DataEntitys)
+                    {
+                        string upsql = $@"/*dialect*/
+                               update b set B.F_260_DXGYS=d.F_260_DXGYSWB
+                               from T_PRD_PPBOM a
+                               inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                               inner join T_ENG_BOM c on c.FMATERIALID=a.FMATERIALID   and c.FID=a.FBOMID
+                               inner join T_ENG_BOMCHILD d on c.fid=d.fid and d.FMATERIALID=b.FMATERIALID
+                               inner join T_PRD_MOENTRY_A e on e.fentryid=a.FMOENTRYID 
+                               where 
+                               e.FSTATUS<>7 AND 
+                               c.FID='{date["Id"]}'
+                               
+                               update T6 set T6.GYS=d.F_260_DXGYSWB
+                               from T_PRD_PPBOM a
+                               inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                               inner join T_ENG_BOM c on c.FMATERIALID=a.FMATERIALID   and c.FID=a.FBOMID
+                               inner join T_ENG_BOMCHILD d on c.fid=d.fid and d.FMATERIALID=b.FMATERIALID
+                               inner join T_PRD_MOENTRY_A e on e.fentryid=a.FMOENTRYID 
+                               inner join t_PgBomInfo T6 ON B.FENTRYID=T6.FPPBomEntryId
+                               where 
+                               e.FSTATUS<>7 AND 
+                               c.FID='{date["Id"]}' ";
+                        DBUtils.Execute(Context, upsql);
                     }
                 }
             }

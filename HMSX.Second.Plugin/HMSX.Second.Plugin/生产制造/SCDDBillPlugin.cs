@@ -40,7 +40,7 @@ namespace HMSX.Second.Plugin.生产制造
             String[] propertys = { "FPrdOrgId", "FMaterialId", "F_260_SFNPI", "F_260_SB", "FBillNo", "FStockId" ,
                 "FSaleOrderNo", "FSaleOrderEntrySeq", "FReqSrc" ,"FMTONO","F_260_XMHH","F_260_WLDWLX","FApproveDate",
                 "F_260_WLDWS","FBillType","FBillNo","FProductType","FGroup","FParentRowId","FRowId","FCheckProduct"
-                 ,"FSrcBillEntrySeq","FSrcBillNo","F_260_BaseMJYT"};
+                 ,"FSrcBillEntrySeq","FSrcBillNo","F_260_BaseMJYT","FCreateType"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -138,7 +138,8 @@ namespace HMSX.Second.Plugin.生产制造
                         {
                             if (entry["MaterialId"] != null && ((DynamicObject)entry["MaterialId"])["Number"].ToString().EndsWith(".000") &&
                                 entry["WorkShopID"] != null && ((DynamicObject)entry["WorkShopID"])["Number"].ToString() == "000362" &&
-                                entry["StockId"] != null && ((DynamicObject)entry["StockId"])["Name"].ToString().Contains("模具"))
+                                entry["StockId"] != null && ((DynamicObject)entry["StockId"])["Name"].ToString().Contains("模具") &&
+                                entry["CreateType"] != null && entry["CreateType"].ToString()!="8")
                             {
                                 if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) == 0)
                                 {
@@ -149,7 +150,8 @@ namespace HMSX.Second.Plugin.生产制造
                                     throw new KDBusinessException("", "母订单单据编号不允许有横杠（-）");
                                 }
                             }
-                            if (entry["MaterialId"] != null && ((DynamicObject)entry["MaterialId"])["Number"].ToString().Contains("260.07."))
+                            if (entry["MaterialId"] != null && ((DynamicObject)entry["MaterialId"])["Number"].ToString().Contains("260.07.")&&
+                                entry["CreateType"] != null && entry["CreateType"].ToString() != "8")
                             {
                                 if (Convert.ToInt64(dates["F_260_BaseMJYT_Id"]) == 0)
                                 {

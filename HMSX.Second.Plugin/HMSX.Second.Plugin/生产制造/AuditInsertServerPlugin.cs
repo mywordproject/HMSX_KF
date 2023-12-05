@@ -29,8 +29,8 @@ namespace HMSX.Second.Plugin
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);
-            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID", 
-                                   "F_260_XTLY", "FBillNo", "FMOBillNO" , "FMaterialID2" ,"F_260_DXGYS"};
+            String[] propertys = { "FStockID", "FIssueType", "FPrdOrgId", "FNumerator", "FMaterialID","FWorkshopID","FIssueType",
+                                   "F_260_XTLY", "FBillNo", "FMOBillNO" , "FMaterialID2" ,"F_260_DXGYS","FBOMID"};
             foreach (String property in propertys)
             {
                 e.FieldKeys.Add(property);
@@ -77,25 +77,6 @@ namespace HMSX.Second.Plugin
                     //        }
                     //    }
                     //}
-                }
-                else if (FormOperation.Operation.Equals("Save", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (var dates in e.DataEntitys)
-                    {
-                        var mater = dates["MaterialID"] as DynamicObject;
-                        var stocks = mater["MaterialStock"] as DynamicObjectCollection;
-                        foreach (var stock in stocks)
-                        {
-                            if (stock["StockId"] != null)
-                            {
-                                if (((DynamicObject)stock["StockId"])["Number"].ToString() == "260CK090")
-                                {
-                                    string upsql = $@"update T_PRD_PPBOMENTRY_C set FSTOCKID={((DynamicObject)stock["StockId"])["Id"]} where FID={dates["Id"]}";
-                                    DBUtils.Execute(Context, upsql);
-                                }
-                            }
-                        }
-                    }
                 }
                 else if (FormOperation.Operation.Equals("UnAudit", StringComparison.OrdinalIgnoreCase))
                 {
@@ -203,19 +184,43 @@ namespace HMSX.Second.Plugin
                         DynamicObjectCollection wldu = ((DynamicObject)dy["MaterialID"])["MaterialProduce"] as DynamicObjectCollection;
                         foreach (var entry in docPriceEntity)
                         {
-                            if (dy["MOBillNO"].ToString().Substring(0, 2) == "YJ" && dy["MaterialID"] != null)
+                            if (wldu.Count > 0)
                             {
-                                entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
+                                if (dy["MOBillNO"].ToString().Substring(0, 2) == "YJ" && dy["MaterialID"] != null)
+                                {
+                                    entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
+                                }
+                                if(wldu[0]["PickStockId"] !=null &&((DynamicObject)wldu[0]["PickStockId"])["Number"].ToString() == "260CK090")
+                                {
+                                    entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
+                                }
+                                if(dy["WorkshopID"] != null && ((DynamicObject)dy["WorkshopID"])["Number"].ToString() == "000362")
+                                {
+                                    entry["StockID_Id"] = wldu[0]["PickStockId_Id"];
+                                }
                             }
-                            //foreach (var wlqd in ((DynamicObject)dy["FBOMID"])["TreeEntity"] as DynamicObjectCollection)
-                            //{
-                            //    if (wlqd["MATERIALIDCHILD"] != null && entry["MaterialID"] != null &&
-                            //        Convert.ToInt64(wlqd["MATERIALIDCHILD_Id"]) == Convert.ToInt64(entry["MaterialID_Id"]))
-                            //    {
-                            //        entry["F_260_DXGYS"] = wlqd["F_260_DXGYSWB"];
-                            //    }
-                            //}
-                        }                                  
+                            if (dy["FBOMID"]!=null)
+                            {
+                                foreach (var wlqd in ((DynamicObject)dy["FBOMID"])["TreeEntity"] as DynamicObjectCollection)
+                                {
+                                    if (wlqd["MATERIALIDCHILD"] != null && entry["MaterialID"] != null &&
+                                        Convert.ToInt64(wlqd["MATERIALIDCHILD_Id"]) == Convert.ToInt64(entry["MaterialID_Id"]))
+                                    {
+                                        entry["F_260_DXGYS"] = wlqd["F_260_DXGYSWB"];
+                                    }
+                                }
+                            }
+                        }
+                        if (dy["WorkshopID"] != null && ((DynamicObject)dy["WorkshopID"])["Number"].ToString() == "001567")
+                        {
+                            foreach (var entry in dy["PPBomEntry"] as DynamicObjectCollection)
+                            {
+                                if (entry["IssueType"] != null && (entry["IssueType"].ToString()=="2" || entry["IssueType"].ToString() == "4"))
+                                {
+                                    entry["StockID_Id"] = 37513088;
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -73,15 +73,15 @@ namespace HMSX.Second.Plugin.MES
         }
         public void autodate()
         {
-            string ylqdsql = $@"/*dialect*/select FMATERIALTYPE,FERPCLSID,b.FMATERIALID,
+            string ylqdsql = $@"/*dialect*/select FMATERIALTYPE,FERPCLSID,b.FMATERIALID,FNUMERATOR/CASE WHEN FDENOMINATOR=0 THEN 1 ELSE FDENOMINATOR END BL,
                          PGMX.FMoNumber,PGMX.FProcess,PGMX.OptPlanNo,PGMX.FMaterialName,
                          PGMX.F_RUJP_LOT,PGMX.F_260_CSTM,PGMX.FBARCODE,F_260_SYBDSL ,PGMX.FBASEQTY 
                          from T_PRD_PPBOM a
-                         left join T_PRD_PPBOMENTRY b on a.fid=b.fid
-                         left JOIN t_BD_Material c on a.FMATERIALID=c.FMATERIALID
-                         left join T_BD_MATERIAL d on  b.FMATERIALID=d.FMATERIALID
-                         left join t_BD_MaterialBase d1 ON b.FMATERIALID=d1.FMATERIALID
-                         left JOIN
+                         inner join T_PRD_PPBOMENTRY b on a.fid=b.fid
+                         inner JOIN t_BD_Material c on a.FMATERIALID=c.FMATERIALID
+                         inner join T_BD_MATERIAL d on  b.FMATERIALID=d.FMATERIALID
+                         inner join t_BD_MaterialBase d1 ON b.FMATERIALID=d1.FMATERIALID
+                         inner JOIN
                          (   select 
                              concat(FMoBillNo,'-',FMOSEQ) as FMoNumber,t3.FName as FProcess,t.FMATERIALID,
                              F_260_CSTM,concat(FOptPlanNo,'-',FSEQNUMBER,'-',FOperNumber) as OptPlanNo,
@@ -101,16 +101,16 @@ namespace HMSX.Second.Plugin.MES
 							 )jskc on jskc.FMATERIALID=t.FMATERIALID and t1.F_RUJP_LOT=jskc.FNUMBER
                                 WHERE F_260_CSTM!=''and F_260_SYBDSL!=0  and jskc.FBASEQTY is not null
                            ) PGMX ON PGMX.FMATERIALID=b.FMATERIALID						  
-                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}'and FNUMERATOR!=0
+                         where c.FNUMBER='{WLDM}' and a.FMOBILLNO='{SCDD}' and a.FMOENTRYSEQ='{SEQ}'and FNUMERATOR!=0 and FDENOMINATOR!=0
                            and FMATERIALTYPE!=3 and FERPCLSID not in(1,3) and PGMX.F_260_CSTM is not null
                         order by b.FMATERIALID,PGMX.F_RUJP_LOT ";
             //校验剩余数量是否为零
             var rs = DBUtils.ExecuteDynamicObject(Context, ylqdsql);
-            var PPBomInfos = (from p in rs.ToList<DynamicObject>() select new { materialid = Convert.ToInt64(p["FMATERIALID"]) }).Distinct().ToList();
+            var PPBomInfos = (from p in rs.ToList<DynamicObject>() select new { materialid = Convert.ToInt64(p["FMATERIALID"]),BL=Convert.ToDecimal(p["BL"]) }).Distinct().ToList();
             int i = 0;
             foreach (var PPBomInfo in PPBomInfos)
             {
-                decimal rlsl = Convert.ToDecimal(RLSL);
+                decimal rlsl = Convert.ToDecimal(RLSL)* PPBomInfo.BL;
                 var PPBomInfotmp = (from p in rs.ToList<DynamicObject>() where Convert.ToInt64(p["FMATERIALID"]) == PPBomInfo.materialid orderby p["F_RUJP_LOT"] select p);
                 foreach (var PPBom in PPBomInfotmp)
                 {
@@ -130,6 +130,7 @@ namespace HMSX.Second.Plugin.MES
                         this.View.Model.SetValue("FQty", PPBom["F_260_SYBDSL"].ToString(), i);
                         this.View.Model.SetValue("FBASEQTY", PPBom["FBASEQTY"].ToString(), i);
                         this.View.Model.SetValue("F_CSTM", PPBom["F_260_CSTM"].ToString(), i);
+                        this.View.Model.SetValue("FBL", PPBom["BL"].ToString(), i);
                         rlsl -= Convert.ToDecimal(PPBom["FBASEQTY"].ToString());
                         i++;
                     }
@@ -675,11 +676,12 @@ namespace HMSX.Second.Plugin.MES
                     pInfo.FMaterialNumber = dates[i]["FProductId"].ToString();
                     pInfo.Flot = dates[i]["FLot"].ToString();
                     pInfo.Fcstm= dates[i]["F_CSTM"].ToString();
+                    pInfo.Fbl=Convert.ToDecimal( dates[i]["FBL"]);
                     if (i ==(dates.Count - 1)||wl != dates[i + 1]["FProductId"].ToString())
                     {
                         if (krlsl < rlsl)
                         {
-                            pInfo.Fsl = Convert.ToDecimal(dates[i]["FBASEQTY"])-(rlsl- krlsl);
+                            pInfo.Fsl = Convert.ToDecimal(dates[i]["FBASEQTY"])-(rlsl- krlsl)* Convert.ToDecimal(dates[i]["FBL"]);
                         }
                         else
                         {
@@ -708,7 +710,7 @@ namespace HMSX.Second.Plugin.MES
                 if (dates[i]["FIsScan"] != null && dates[i]["FIsScan"].ToString().Contains("Y"))
                 {                    
                     if ((Convert.ToDecimal(dates[i]["FBASEQTY"])== Convert.ToDecimal(dates[i]["FQty"])
-                      && zxsl% Convert.ToDecimal(dates[i]["FBASEQTY"])==0)||
+                      && (zxsl* Convert.ToDecimal(dates[i]["FBL"])) % Convert.ToDecimal(dates[i]["FBASEQTY"])==0)||
                       krlsl== rlsl  && rlsl < zxsl)
                     {
                         tshp = "是";
@@ -958,6 +960,15 @@ namespace HMSX.Second.Plugin.MES
             private string _ck;
             private string _pgtm;
             private string _cstm;
+            private decimal _bl;
+            /// <summary>
+            /// 比例
+            /// </summary>
+            public decimal Fbl
+            {
+                get { return _bl; }
+                set { _bl = value; }
+            }
             /// <summary>
             /// 物料名称
             /// </summary>

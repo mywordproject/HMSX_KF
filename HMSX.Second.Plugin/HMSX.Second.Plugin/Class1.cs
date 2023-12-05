@@ -14,10 +14,10 @@ namespace HMSX.Second.Plugin
 {
     class Class1
     {
-        static void Main(string[] args)
-        {
-            login(); 
-        }
+        //static void Main(string[] args)
+        //{
+        //    login(); 
+        //}
         /// </summary>
         static void login()
         {

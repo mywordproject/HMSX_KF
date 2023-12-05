@@ -19,7 +19,7 @@ namespace HMSX.Second.Plugin.供应链
     [Kingdee.BOS.Util.HotUpdate]
     public class XSDDServicePlugin : AbstractOperationServicePlugIn
     {
-        readonly string[] reloadKeys = new string[] { "F_260_XMHH", "FMtoNo" };
+        readonly string[] reloadKeys = new string[] { "F_260_XMHH", "FMtoNo", "FBomId" , "FMaterialId" };
         public override void OnPreparePropertys(PreparePropertysEventArgs e)
         {
             base.OnPreparePropertys(e);//, "F_260_SFSI"
@@ -87,6 +87,13 @@ namespace HMSX.Second.Plugin.供应链
                                 jhy = plan["PlanerID_Id"].ToString();
                             }
                             date["F_260_BaseJHY_Id"] = jhy;
+
+                            string wlsql = $@"/*dialect*/select top 1 FID from T_ENG_BOM where FDOCUMENTSTATUS='C'AND FFORBIDSTATUS='A' AND FMATERIALID='{date["MaterialId_Id"]}' order by FNUMBER desc";
+                            var wl = DBUtils.ExecuteDynamicObject(Context,wlsql);
+                            if (wl.Count > 0)
+                            {
+                                date["BomId_Id"] = wl[0]["FID"];
+                            }
                         }
                     }
                 }

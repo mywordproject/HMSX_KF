@@ -30,15 +30,17 @@ namespace HMSX.Second.Plugin.生产制造
                 else
                 {
                     string strsql = $@"/*dialect*/select 
-                           F_260_DGPPH,F_260_FBPPH,F_260_FBFHJSJ,F_260_HJJTH	
-                           ,F_260_ZFJZPH,F_260_MFQPH,F_260_ZSSJ,F_260_ZSJTH	
-                           ,F_260_XSJPH,F_260_RRSJ,F_260_RRXT,F_260_LLZ	
-                           ,F_260_QGXBCPTM	,F_260_HJSJ	,F_260_HJXT	,F_260_JMPH	
-                           ,F_260_ZJZZZ,F_260_FJGYJC,F_260_FJJYJC,F_260_DGNSJ	
+                            F_260_DGPPH,F_260_FBPPH,isnull(convert(varchar(20),F_260_FBFHJSJ,120 ),'')F_260_FBFHJSJ,F_260_HJJTH	
+                           ,F_260_ZFJZPH,F_260_MFQPH,isnull(convert(varchar(20),F_260_ZSSJ ,120),'')F_260_ZSSJ,F_260_ZSJTH	
+                           ,F_260_XSJPH,isnull(convert(varchar(20),F_260_RRSJ ,120),'')F_260_RRSJ,F_260_RRXT,F_260_LLZ	
+                           ,F_260_QGXBCPTM	,isnull(convert(varchar(20),F_260_HJSJ ,120),'')F_260_HJSJ	,F_260_HJXT	,F_260_JMPH	
+                           ,F_260_ZJZZZ,F_260_FJGYJC,F_260_FJJYJC,isnull(convert(varchar(20),F_260_DGNSJ ,120),'')F_260_DGNSJ	
                            ,F_260_DGNJT,F_260_FBPBDTFL	,F_260_FBPGQGL,F_260_FBPHJSD	
                            ,F_260_FBPLJL,F_260_FBPCCD,F_260_ZFJZSCS,F_260_RRZF	
-                           ,F_260_RRGL,F_260_CPM,F_260_BZQSMSJ,F_260_XM	
-                           ,F_260_HJJG,F_260_DGNJG,F_260_TMJG,F_260_TMSJ,F_260_CZY	,F_260_BC,F_260_CPBM
+                           ,F_260_RRGL,F_260_CPM,isnull(convert(varchar(20),F_260_BZQSMSJ ,120),'')F_260_BZQSMSJ
+						   ,F_260_XM	
+                           ,F_260_HJJG,F_260_DGNJG,F_260_TMJG,isnull(convert(varchar(20),F_260_TMSJ ,120),'')F_260_TMSJ
+						   ,F_260_CZY,F_260_BC,F_260_CPBM
                            from PAEZ_t_Cust_Entry100521 where F_260_XM like '%{cpm}%' or F_260_CPM like '%{cpm}%'";
                     var cxs = DBUtils.ExecuteDynamicObject(Context, strsql);
                     int i = 0;
@@ -88,9 +90,9 @@ namespace HMSX.Second.Plugin.生产制造
 
                         this.Model.SetValue("F_260_TMJG", cx["F_260_TMJG"], i);
                         this.Model.SetValue("F_260_TMSJ", cx["F_260_TMSJ"], i);
-                        this.Model.SetValue("F_260_CZY", cx["F_260_CZY"], i);
-                        this.Model.SetValue("F_260_BC", cx["F_260_BC"], i);
-                        this.Model.SetValue("F_260_CPBM", cx["F_260_CPBM"], i);
+                        //this.Model.SetValue("F_260_CZY", cx["F_260_CZY"], i);
+                        //this.Model.SetValue("F_260_BC", cx["F_260_BC"], i);
+                        //this.Model.SetValue("F_260_CPBM", cx["F_260_CPBM"], i);
 
                         i++;
                     }

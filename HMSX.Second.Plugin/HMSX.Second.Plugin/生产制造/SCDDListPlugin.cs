@@ -84,9 +84,10 @@ namespace HMSX.Second.Plugin.生产制造
                         }
                     }
                     //查询所有子订单
-                    string zddsql = $@"select a.FID,FENTRYID from T_PRD_MO a
+                    string zddsql = $@"select a.FID,B.FENTRYID from T_PRD_MO a
                           inner join T_PRD_MOENTRY b on a.FID=b.FID
-                          WHERE F_260_TEXTSJRW in ({str.Trim(',')}) AND SUBSTRING(FBILLNO,1,2)!='MO'";
+                          inner join T_PRD_MOENTRY_A c on c.FENTRYID=b.FENTRYID
+                          WHERE F_260_TEXTSJRW in ({str.Trim(',')}) AND SUBSTRING(FBILLNO,1,2)!='MO' and FSTATUS not in (6,7)";
                     var zdds = DBUtils.ExecuteDynamicObject(Context, zddsql);
                     if (zdds.Count > 0)
                     {

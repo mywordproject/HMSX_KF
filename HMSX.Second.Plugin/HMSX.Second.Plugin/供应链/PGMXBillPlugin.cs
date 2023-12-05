@@ -92,27 +92,27 @@ namespace HMSX.Second.Plugin.供应链
                             foreach (var ylqd in ylqds)
                             {
                                 //派工数
-                                decimal pgs = pgsl;
+                                decimal pgs = pgsl* Convert.ToDecimal(ylqd["bl"]);
                                 string pgmxsql = $@"/*dialect*/select FENTRYID,F_260_XBSL-isnull(SL,0) F_260_XBSL from T_SFC_DISPATCHDETAILENTRY a
 	                                 left join (select PGTM,sum(SL)SL FROM  HMSX_CFB GROUP BY PGTM) b on a.FBARCODE=b.PGTM
 	                                 where FENTRYID in ({ylqd["FENTRYID"].ToString().Trim(',')}) order by FENTRYID";
                                 var pgmxs = DBUtils.ExecuteDynamicObject(Context, pgmxsql);
                                 foreach (var pgmx in pgmxs)
                                 {
-                                    if (pgs > Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"]))
+                                    if (pgs > Convert.ToDecimal(pgmx["F_260_XBSL"]))
                                     {
                                         string upsql = $@"/*dialect*/update T_SFC_DISPATCHDETAILENTRY set 
-                                        F_260_SYBDSL+={Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"])},
-                                        F_260_XBSL-={Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"])}
+                                        F_260_SYBDSL+={Convert.ToDecimal(pgmx["F_260_XBSL"])},
+                                        F_260_XBSL-={Convert.ToDecimal(pgmx["F_260_XBSL"])}
                                         where FENTRYID in ({pgmx["FENTRYID"].ToString().Trim(',')})";
                                         DBUtils.Execute(Context, upsql);
-                                        pgs -= Convert.ToDecimal(pgmx["F_260_XBSL"]) / Convert.ToDecimal(ylqd["bl"]);
+                                        pgs -= Convert.ToDecimal(pgmx["F_260_XBSL"]);
                                     }
                                     else
                                     {
                                         string upsql = $@"/*dialect*/update T_SFC_DISPATCHDETAILENTRY set 
-                                        F_260_SYBDSL=F_260_SYBDSL+{pgs * Convert.ToDecimal(ylqd["bl"])},
-                                        F_260_XBSL=F_260_XBSL-{pgs * Convert.ToDecimal(ylqd["bl"])}
+                                        F_260_SYBDSL=F_260_SYBDSL+{pgs},
+                                        F_260_XBSL=F_260_XBSL-{pgs}
                                         where FENTRYID in ({pgmx["FENTRYID"].ToString().Trim(',')})";
                                         DBUtils.Execute(Context, upsql);
                                         pgs = 0;
